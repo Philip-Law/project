@@ -1,25 +1,21 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider} from "react-router-dom";
+import Home from "./components/Home";
+import {PassageAuth, PassageProfile, PassageProvider} from "@passageidentity/passage-react";
+import NotFound from "./components/NotFound";
 
-function App() {
+const App = () => {
+    const router = createBrowserRouter([
+        { path: "/", element: <Home /> },
+        { path: "/login", element: <PassageAuth /> },
+        { path: "/profile", element: <PassageProfile /> },
+        { path: "*", element: <NotFound /> },
+    ]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <PassageProvider appId={process.env.REACT_APP_PASSAGE_APP_ID || ""}>
+          <RouterProvider router={router} />
+      </PassageProvider>
   );
 }
 
