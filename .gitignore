@@ -4,3 +4,6 @@
 # ignore goland/idea files
 .idea
 .run
+
+# ignore .env files
+**/.env
