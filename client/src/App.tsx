@@ -1,22 +1,31 @@
-import React from 'react';
-import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider} from "react-router-dom";
-import Home from "./components/Home";
-import {PassageAuth, PassageProfile, PassageProvider} from "@passageidentity/passage-react";
-import NotFound from "./components/NotFound";
+import React from 'react'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Home from './views/Home'
+import NotFound from './views/NotFound'
+import { Auth0Provider } from '@auth0/auth0-react'
+import Profile from './views/Profile'
 
-const App = () => {
-    const router = createBrowserRouter([
-        { path: "/", element: <Home /> },
-        { path: "/login", element: <PassageAuth /> },
-        { path: "/profile", element: <PassageProfile /> },
-        { path: "*", element: <NotFound /> },
-    ]);
+const App = (): React.ReactElement => {
+  const router = createBrowserRouter([
+    { path: '/', element: <Home /> },
+    { path: '/profile', element: <Profile /> },
+    { path: '*', element: <NotFound /> }
+  ])
+
+  const domain = process.env.REACT_APP_DOMAIN ?? ''
+  const clientId = process.env.REACT_APP_CLIENT_ID ?? ''
 
   return (
-      <PassageProvider appId={process.env.REACT_APP_PASSAGE_APP_ID || ""}>
+      <Auth0Provider
+          domain={domain}
+          clientId={clientId}
+          authorizationParams={{
+            redirect_uri: window.location.origin
+          }}>
           <RouterProvider router={router} />
-      </PassageProvider>
-  );
+      </Auth0Provider>
+
+  )
 }
 
-export default App;
+export default App
