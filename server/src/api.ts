@@ -1,10 +1,12 @@
-const express = require('express');
-const { auth } = require('express-oauth2-jwt-bearer');
-const pino = require('pino');
+import {checkJwt} from "./authentication";
+import pino from 'pino';
+import express from 'express';
 
 const app = express();
+const port = process.env.PORT || 8080;
 
 const logger = pino({
+  name: 'tmu-connect-api',
   level: process.env.PINO_LOG_LEVEL || 'debug',
   timestamp: pino.stdTimeFunctions.isoTime,
   redact: {
@@ -12,12 +14,7 @@ const logger = pino({
   },
 });
 
-const checkJwt = auth({
-  audience: process.env.BACKEND_AUDIENCE,
-  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
-});
-
-app.listen(8080, () => {
+app.listen(port, () => {
   logger.info('TMU Connect server listening on port 8080!');
 });
 
