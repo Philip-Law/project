@@ -17,6 +17,7 @@ const Profile = (): React.ReactElement => {
       return
     }
 
+    console.log(token)
     const response = await fetch('http://localhost:8080/health', {
       headers: {
         Authorization: `Bearer ${token}`
