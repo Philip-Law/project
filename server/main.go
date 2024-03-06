@@ -14,16 +14,19 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("no .env file found")
 	}
-
 	ctx, cancelFunc := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancelFunc()
-	_, shutdown, err := store.ConnectMongo(ctx)
+	db, err := store.ConnectPostgres(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer shutdown()
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Printf("Failed to close DB connection: %v", err)
+		}
+	}()
 
-	r, err := api.ConfigureHandler()
+	r, err := api.ConfigureRouter()
 	if err != nil {
 		log.Fatal(err)
 	}

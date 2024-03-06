@@ -20,8 +20,11 @@ const App = (): React.ReactElement => {
           domain={domain}
           clientId={clientId}
           authorizationParams={{
-            redirect_uri: window.location.origin
-          }}>
+            redirect_uri: window.location.origin,
+            scope: 'openid profile email read:message',
+            audience: process.env.REACT_APP_BACKEND_AUDIENCE
+          }}
+      >
           <RouterProvider router={router} />
       </Auth0Provider>
 

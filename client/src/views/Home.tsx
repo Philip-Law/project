@@ -24,7 +24,11 @@ const Home = (): React.ReactElement => {
                         >Logout {user?.name}</h2>
                       : <h2 className="App-link"
                             onClick={(_) => {
-                              loginWithRedirect()
+                              loginWithRedirect({
+                                authorizationParams: {
+                                  scope: 'openid profile email'
+                                }
+                              })
                                 .then(r => { console.log(r) })
                                 .catch(e => { console.log(e) })
                             }}>Login</h2>

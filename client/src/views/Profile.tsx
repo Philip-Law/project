@@ -11,18 +11,12 @@ const Profile = (): React.ReactElement => {
   const healthCheck = useCallback(async () => {
     let token
     try {
-      token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: process.env.REACT_APP_BACKEND_AUDIENCE,
-          scope: 'read:message'
-        }
-      })
+      token = await getAccessTokenSilently()
     } catch (e) {
       console.log(e)
       return
     }
 
-    console.log(token)
     const response = await fetch('http://localhost:8080/health', {
       headers: {
         Authorization: `Bearer ${token}`

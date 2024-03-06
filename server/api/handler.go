@@ -1,28 +1,23 @@
 package api
 
 import (
+	"github.com/cps-630/project/api/middleware"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"net/http"
 )
 
-func ConfigureHandler() (*chi.Mux, error) {
+func ConfigureRouter() (*chi.Mux, error) {
 	r := chi.NewRouter()
-	r.Use(configureCORSHandler())
-	r.With(AuthenticateToken()).Get("/health", func(w http.ResponseWriter, r *http.Request) {
+	r.Use(chimiddleware.Logger, middleware.CORS())
+
+	r.With(middleware.AuthenticateToken()).Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("OK"))
 	})
 
-	return r, nil
-}
+	r.Route("/post", func(r chi.Router) {
 
-func configureCORSHandler() func(http.Handler) http.Handler {
-	return cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://*", "http://*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: true,
-		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	})
+
+	return r, nil
 }
