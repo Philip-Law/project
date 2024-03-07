@@ -2,9 +2,7 @@ CREATE TABLE Users (
     id SERIAL PRIMARY KEY,
     auth0_id VARCHAR UNIQUE NOT NULL,
     major VARCHAR NOT NULL,
-    year INTEGER NOT NULL,
-    phone_number VARCHAR NOT NULL,
-    tmu_email VARCHAR NOT NULL
+    year INTEGER NOT NULL
 );
 
 CREATE TABLE Posts (
