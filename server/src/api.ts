@@ -3,6 +3,7 @@ import express from 'express';
 import asyncHandler from 'express-async-handler';
 import { UnauthorizedError } from 'express-oauth2-jwt-bearer';
 import { checkJwt } from './authentication';
+import AppDataSource from './db';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -53,6 +54,14 @@ app.use((err: Error, _req: express.Request, res: express.Response) => {
   res.status(500).json({ error: 'Internal Server Error' });
 });
 
-app.listen(PORT, () => {
-  logger.info('TMU Connect server listening on PORT 8080.');
-});
+AppDataSource.initialize()
+  .then(() => {
+    // here you can start to work with your database
+    logger.debug('Successfully connected to database');
+    app.listen(PORT, () => {
+      logger.info('TMU Connect server listening on PORT 8080.');
+    });
+  })
+  .catch((error) => {
+    logger.fatal(`Could not connect to database: ${error}`);
+  });
