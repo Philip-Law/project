@@ -1,27 +1,30 @@
 module.exports = {
-  env: {
-    browser: true,
-    es2021: true,
-  },
-  extends: 'airbnb-base',
-  overrides: [
-    {
-      env: {
-        node: true,
-      },
-      files: [
-        '.eslintrc.{js,cjs}',
-      ],
-      parserOptions: {
-        sourceType: 'script',
-      },
+    env: {
+        browser: true,
+        es2021: true
     },
-  ],
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-  },
-  rules: {
-    'import/no-extraneous-dependencies': 'off',
-  },
-};
+    extends: [
+        'airbnb-base',
+        'airbnb-typescript/base',
+    ],
+    overrides: [
+        {
+            env: {
+                node: true
+            },
+            files: [
+                ".eslintrc.{js,cjs}"
+            ],
+            parserOptions: {
+                "sourceType": "script"
+            }
+        }
+    ],
+    parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        project: "./tsconfig.json"
+    },
+    rules: {
+    }
+}
