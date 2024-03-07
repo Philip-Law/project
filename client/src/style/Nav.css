@@ -1,0 +1,97 @@
+:root {
+  --shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+}
+
+.nav {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background-color: #00448b;
+  justify-content: center;
+}
+
+.nav img {
+  width: 80px;
+  object-fit: contain;
+}
+
+.nav.container {
+  display: flex;
+  flex-direction: row;
+  margin: 1rem 10rem 1rem 10rem;
+}
+
+.nav.child {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav.child h2 {
+  font-size: 20px;
+}
+
+.nav-button {
+  padding: 0.7rem 1.6rem;
+  background-color: #54769b;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  transition: 0.5s ease-in-out;
+}
+
+.nav-button:hover {
+  border-radius: 8px;
+  background-color: #93b9e2;
+}
+
+.nav-user {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 1.2rem;
+  gap: 0.7rem;
+}
+
+.profile-pic {
+  display: flex;
+  align-items: center;
+}
+
+.user-info img {
+  width: 40px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.side-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.side-info p {
+  text-align: left;
+  margin: 0;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+#logout {
+  font-weight: 100;
+  font-size: 13px;
+  color: rgb(255, 104, 104);
+  cursor: pointer;
+}
+
+#logout:hover {
+  text-decoration: underline;
+}
