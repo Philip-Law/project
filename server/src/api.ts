@@ -4,6 +4,7 @@ import asyncHandler from 'express-async-handler';
 import { UnauthorizedError } from 'express-oauth2-jwt-bearer';
 import { checkJwt } from './authentication';
 import AppDataSource from './db';
+import { Message } from './entities';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -18,12 +19,9 @@ const logger = pino({
 });
 
 app.get('/posts', (_req, res) => {
-  res.json([
-    {
-      id: 1,
-      title: 'Hello World',
-    },
-  ]);
+  AppDataSource.getRepository(Message).find().then((conversations) => {
+    res.json(conversations);
+  });
 });
 
 app.get('/post/:id', (req, res) => {

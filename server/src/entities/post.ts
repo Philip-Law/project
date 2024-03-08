@@ -1,7 +1,7 @@
 import {
   Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn,
 } from 'typeorm';
-import User from './User';
+import User from './user';
 
 @Entity('posts')
 class Post {
