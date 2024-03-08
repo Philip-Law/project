@@ -1,10 +1,8 @@
 import pino from 'pino';
 import express from 'express';
-import asyncHandler from 'express-async-handler';
 import { UnauthorizedError } from 'express-oauth2-jwt-bearer';
-import { checkJwt } from './authentication';
-import AppDataSource from './db';
-import { Message } from './entities';
+import AppDataSource from './configs/db';
+import { messageRoutes, postRoutes, userRoutes } from './routes';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -18,29 +16,9 @@ const logger = pino({
   },
 });
 
-app.get('/posts', (_req, res) => {
-  AppDataSource.getRepository(Message).find().then((conversations) => {
-    res.json(conversations);
-  });
-});
-
-app.get('/post/:id', (req, res) => {
-  res.json({
-    id: req.params.id,
-    title: 'Hello World',
-  });
-});
-
-app.post('/post', checkJwt, asyncHandler(async (_req, res) => {
-  res.send('Hello World');
-}));
-
-app.delete('/post/:id', checkJwt, (req, res) => {
-  res.json({
-    id: req.params.id,
-    title: 'Hello World',
-  });
-});
+app.use('/user', userRoutes);
+app.use('/post', postRoutes);
+app.use('/message', messageRoutes);
 
 app.use((err: Error, _req: express.Request, res: express.Response) => {
   logger.error(err.message, err.stack);

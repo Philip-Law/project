@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import {
   Conversation, Message, Post, User,
-} from './entities';
+} from '../entities';
 
 const AppDataSource = new DataSource({
   type: 'postgres',
