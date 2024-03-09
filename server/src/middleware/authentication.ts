@@ -1,4 +1,4 @@
-import { ManagementClient, UserInfoClient } from 'auth0';
+import { UserInfoClient } from 'auth0';
 import { auth } from 'express-oauth2-jwt-bearer';
 import express from 'express';
 import asyncHandler from 'express-async-handler';
@@ -25,12 +25,6 @@ if (!process.env.BACKEND_AUDIENCE) {
 
 const userInfoClient = new UserInfoClient({
   domain: process.env.AUTH0_DOMAIN!!,
-});
-
-const manageClient = new ManagementClient({
-  domain: process.env.AUTH0_DOMAIN,
-  clientId: process.env.AUTH0_CLIENT_ID,
-  clientSecret: process.env.AUTH0_CLIENT_SECRET,
 });
 
 export const checkJwt = auth({
@@ -75,17 +69,3 @@ export const requireAuth0User = asyncHandler(async (
     });
   }
 });
-
-export const updateAuth0User = async (user: Auth0User) => {
-  manageClient.users.update({
-    id: user.id,
-  }, {
-    ...user,
-  }).then((result) => {
-    if (result.status !== 200) {
-      LOGGER.warn(result.statusText);
-      throw new Error('Failed to update user info');
-    }
-    LOGGER.debug(`Successfully updated user info of ${user.id}`);
-  });
-};

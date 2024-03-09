@@ -1,12 +1,18 @@
 import {
   Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn,
 } from 'typeorm';
-import User from './user';
+import DatabaseUser from './user';
 import Conversation from './conversation';
 
 @Entity('messages')
 class Message {
-  constructor(id: number, conversation: Conversation, sender: User, content: string, sentAt: Date) {
+  constructor(
+    id: number,
+    conversation: Conversation,
+    sender: DatabaseUser,
+    content: string,
+    sentAt: Date,
+  ) {
     this.id = id;
     this.conversation = conversation;
     this.sender = sender;
@@ -21,9 +27,9 @@ class Message {
   @JoinColumn({ name: 'conversation_id' })
     conversation: Conversation;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => DatabaseUser)
   @JoinColumn({ name: 'sender_id' })
-    sender: User;
+    sender: DatabaseUser;
 
   @Column()
     content: string;

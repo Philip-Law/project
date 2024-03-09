@@ -1,12 +1,12 @@
 import {
   Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn,
 } from 'typeorm';
-import User from './user';
+import DatabaseUser from './user';
 import Post from './post';
 
 @Entity('conversations')
 class Conversation {
-  constructor(id: number, post: Post, author: User, buyer: User) {
+  constructor(id: number, post: Post, author: DatabaseUser, buyer: DatabaseUser) {
     this.id = id;
     this.post = post;
     this.seller = author;
@@ -20,13 +20,13 @@ class Conversation {
   @JoinColumn({ name: 'post_id' })
     post: Post;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => DatabaseUser)
   @JoinColumn({ name: 'seller_id' })
-    seller: User;
+    seller: DatabaseUser;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => DatabaseUser)
   @JoinColumn({ name: 'buyer_id' })
-    buyer: User;
+    buyer: DatabaseUser;
 }
 
 export default Conversation;

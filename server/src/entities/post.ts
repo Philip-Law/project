@@ -1,13 +1,13 @@
 import {
   Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn,
 } from 'typeorm';
-import User from './user';
+import DatabaseUser from './user';
 
 @Entity('posts')
 class Post {
   constructor(
     id: number,
-    user: User,
+    user: DatabaseUser,
     title: string,
     adType: string,
     description: string,
@@ -30,9 +30,9 @@ class Post {
   @PrimaryGeneratedColumn()
     id: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => DatabaseUser)
   @JoinColumn({ name: 'user_id' })
-    user: User;
+    user: DatabaseUser;
 
   @Column()
     title: string;

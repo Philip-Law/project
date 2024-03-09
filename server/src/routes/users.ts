@@ -2,20 +2,26 @@ import router from 'express';
 import asyncHandler from 'express-async-handler';
 import { z } from 'zod';
 import { checkJwt, requireAuth0User } from '../middleware/authentication';
-import { setupUser, updateUser } from '../services/users';
+import {
+  deleteUser, getUser, setupUser, updateUser,
+} from '../services/users';
+import { User } from '../entities';
 
 const userRoutes = router();
 
 userRoutes.use(checkJwt, requireAuth0User);
 
-const userInfoSchema = z.object({
+const userSchema = z.object({
+  phoneNumber: z.string().regex(/^\+[0-9]{10,15}$/, 'Phone number must be a valid E.164 number'),
   major: z.string().regex(/^[A-Za-z ]+$/, 'Major should only include letters'),
   year: z.number().int('Year must be a whole number'),
 });
 
 userRoutes.put('/setup', asyncHandler(async (req, res) => {
-  const parsedBody = userInfoSchema.parse(req.body);
-  const userId = await setupUser(req.auth0?.id!!, parsedBody.major, parsedBody.year);
+  const parsedBody = userSchema.parse(req.body);
+  const userId = await setupUser(
+    new User(0, req.auth0?.id!!, parsedBody.phoneNumber, parsedBody.major, parsedBody.year),
+  );
   res.status(201).json({
     id: userId,
     auth0Id: req.auth0?.id!!,
@@ -23,20 +29,24 @@ userRoutes.put('/setup', asyncHandler(async (req, res) => {
 }));
 
 userRoutes.post('/update', asyncHandler(async (req, res) => {
-  const parsedBody = userInfoSchema.parse(req.body);
-  const userId = await updateUser(req.auth0?.id!!, parsedBody.major, parsedBody.year);
+  const parsedBody = userSchema.parse(req.body);
+  const user = await updateUser(
+    new User(0, req.auth0?.id!!, parsedBody.phoneNumber, parsedBody.major, parsedBody.year),
+  );
+  res.status(200).json(user);
+}));
+
+userRoutes.get('/:id', asyncHandler(async (req, res) => {
+  const user = await getUser(req.params.id);
   res.status(200).json({
-    id: userId,
-    auth0Id: req.auth0?.id!!,
+    ...req.auth0!!,
+    ...user,
   });
 }));
 
-userRoutes.get('/user/:id', (_req, res) => {
-  res.send('returning user info');
-});
-
-userRoutes.delete('/user/:id', (_req, res) => {
-  res.send('user deleted');
-});
+userRoutes.delete('/', asyncHandler(async (req, res) => {
+  await deleteUser(req.auth0?.id!!);
+  res.status(200);
+}));
 
 export default userRoutes;
