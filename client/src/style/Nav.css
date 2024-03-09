@@ -18,12 +18,23 @@
 .nav.container {
   display: flex;
   flex-direction: row;
-  margin: 1rem 10rem 1rem 10rem;
 }
 
-@media screen and (min-width: 700px) {
+@media screen and (max-width: 1500px) {
+  .nav.container {
+    margin: 1rem 10rem 1rem 10rem;
+  }
+}
+
+@media screen and (max-width: 1200px) {
   .nav.container {
     margin: 1rem 5rem 1rem 5rem;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .nav.container {
+    margin: 1rem 3rem 1rem 3rem;
   }
 }
 
@@ -32,6 +43,16 @@
   flex-direction: row;
   align-items: center;
   gap: 1rem;
+}
+
+.nav.child.right {
+  width: 40%;
+  justify-content: right;
+}
+
+.nav.child.left {
+  width: 40%;
+  justify-content: left;
 }
 
 .nav.child h2 {

@@ -4,38 +4,38 @@ import '../style/Search.css'
 import { faChevronDown, faChevronUp, faMagnifyingGlass, faLocationDot } from '@fortawesome/free-solid-svg-icons'
 
 const Search = (): React.ReactElement => {
-    const [dropdownOpen, setDropdownOpen] = useState(false)
-    const [selectedOption, setSelectedOption] = useState('Current Location')
-    const [searchPlaceholder, setSearchPlaceholder] = useState('Search anything...')
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [selectedOption, setSelectedOption] = useState('Current Location')
+  const [searchPlaceholder, setSearchPlaceholder] = useState('Search anything...')
 
-    const handleDropdownToggle = (): void => {
-      setDropdownOpen(!dropdownOpen)
-    }
+  const handleDropdownToggle = (): void => {
+    setDropdownOpen(!dropdownOpen)
+  }
 
-    const handleOptionSelect = (option: string): void => {
-      setSelectedOption(option)
-      setSearchPlaceholder(option === 'Everything' ? 'Search Anything...' : `Search in ${option}...`)
-      setDropdownOpen(false)
-    }
+  const handleOptionSelect = (option: string): void => {
+    setSelectedOption(option)
+    setSearchPlaceholder(option === 'Everything' ? 'Search Anything...' : `Search in ${option}...`)
+    setDropdownOpen(false)
+  }
 
-    const [location] = useState('current')
-    const handleSubmit = (e: React.FormEvent): void => {
-      e.preventDefault()
-      console.log(e)
-      if (location === 'current') {
-          navigator.geolocation.getCurrentPosition(
-              (position) => {
-              const { latitude, longitude } = position.coords
-              console.log('Latitude:', latitude)
-              console.log('Longitude:', longitude)
-              },
-              (error) => {
-              console.error('Error getting location:', error.message)
-              }
-          )
-      }
+  const [location] = useState('current')
+  const handleSubmit = (e: React.FormEvent): void => {
+    e.preventDefault()
+    console.log(e)
+    if (location === 'current') {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords
+          console.log('Latitude:', latitude)
+          console.log('Longitude:', longitude)
+        },
+        (error) => {
+          console.error('Error getting location:', error.message)
+        }
+      )
     }
-    return (
+  }
+  return (
         <div className='search-container'>
             <div className='dropdown'>
                 <div className='dropdown-text' onClick={handleDropdownToggle}>
@@ -59,7 +59,7 @@ const Search = (): React.ReactElement => {
                 <FontAwesomeIcon icon={faMagnifyingGlass} onClick={ handleSubmit }/>
             </div>
         </div>
-      )
+  )
 }
 
 export default Search

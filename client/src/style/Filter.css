@@ -1,0 +1,67 @@
+.filters {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 3px;
+    text-align: left;
+    color: black;
+    width: 20%;
+    padding: 1rem;
+}
+
+.filters h2 {
+    font-size: 1.7rem;
+    margin: 0;
+}
+
+.filters h3 {
+    font-size: 1.3rem;
+    margin: 5px 0 0 0;
+}
+
+.filters label {
+    font-size: 1rem;
+    margin: 5px 0 0 0;
+}
+
+.check {
+    display: flex;
+    flex-direction: row;
+    gap: 0.3rem;
+    margin-top: 5px;
+    align-items: center;
+}
+
+.subheading {
+    font-size: 0.9rem;
+    margin: 5px 0 0 0;
+    color: darkgray;
+}
+
+hr {
+    width: 100%;
+    border-color: rgb(230, 230, 230);
+    border-style: solid;
+}
+
+.btn-row {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.btn-row button {
+    padding: 0.7rem 1rem;
+    background-color: #54769b;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+    margin-top: 1rem;
+}
+
+.btn-row button:hover {
+    border-radius: 8px;
+    background-color: #69a0da;
+}

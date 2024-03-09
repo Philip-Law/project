@@ -26,16 +26,10 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
-  cursor: pointer;
+.content {
+  display: flex;
+  flex-direction: row;
+  padding: 1rem 10rem 1rem 10rem;
+  gap: 2rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
