@@ -1,14 +1,9 @@
 import { ManagementClient, UserInfoClient } from 'auth0';
 import { auth } from 'express-oauth2-jwt-bearer';
-import LOGGER from './configs/logging';
-
-export type Auth0User = {
-  auth0Id: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  picture?: string;
-};
+import express from 'express';
+import asyncHandler from 'express-async-handler';
+import LOGGER from '../configs/logging';
+import { Auth0User } from '../types/custom';
 
 // Check that all required environment variables are set
 if (!process.env.AUTH0_DOMAIN) {
@@ -43,7 +38,7 @@ export const checkJwt = auth({
   issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
 });
 
-const getAuth0User = async (accessToken: string): Promise<Auth0User> => userInfoClient
+const retrieveUserInfo = async (accessToken: string): Promise<Auth0User> => userInfoClient
   .getUserInfo(accessToken).then((user) => {
     if (user.status !== 200) {
       LOGGER.error(user.statusText);
@@ -51,7 +46,7 @@ const getAuth0User = async (accessToken: string): Promise<Auth0User> => userInfo
     }
 
     return {
-      auth0Id: user.data.sub,
+      id: user.data.sub,
       email: user.data.email,
       firstName: user.data.given_name,
       lastName: user.data.family_name,
@@ -59,9 +54,31 @@ const getAuth0User = async (accessToken: string): Promise<Auth0User> => userInfo
     };
   });
 
-const updateAuth0User = async (user: Auth0User) => {
+export const requireAuth0User = asyncHandler(async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  if (!req.auth?.token) {
+    res.status(401).json({
+      error: 'Missing or invalid Authorization header',
+    });
+    return;
+  }
+
+  try {
+    req.auth0 = await retrieveUserInfo(req.auth.token); // Add the user to the request
+    next(); // Continue to the next middleware
+  } catch (error) {
+    res.status(500).send({
+      error: 'Failed to retrieve user info',
+    });
+  }
+});
+
+export const updateAuth0User = async (user: Auth0User) => {
   manageClient.users.update({
-    id: user.auth0Id,
+    id: user.id,
   }, {
     ...user,
   }).then((result) => {
@@ -69,8 +86,6 @@ const updateAuth0User = async (user: Auth0User) => {
       LOGGER.warn(result.statusText);
       throw new Error('Failed to update user info');
     }
-    LOGGER.debug(`Successfully updated user info of ${user.auth0Id}`);
+    LOGGER.debug(`Successfully updated user info of ${user.id}`);
   });
 };
-
-export default { getAuth0User, updateAuth0User };
