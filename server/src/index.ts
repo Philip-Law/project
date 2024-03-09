@@ -1,25 +1,20 @@
 import express from 'express';
-import { UnauthorizedError } from 'express-oauth2-jwt-bearer';
+import bodyParser from 'body-parser';
 import AppDataSource from './configs/db';
 import { messageRoutes, postRoutes, userRoutes } from './routes';
 import LOGGER from './configs/logging';
+import errorHandler from './middleware/error_handler';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+app.use(bodyParser.json());
+
 app.use('/user', userRoutes);
 app.use('/post', postRoutes);
+
 app.use('/message', messageRoutes);
-
-app.use((err: Error, _req: express.Request, res: express.Response) => {
-  LOGGER.error(err.message, err.stack);
-  if (err instanceof UnauthorizedError) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return;
-  }
-
-  res.status(500).json({ error: 'Internal Server Error' });
-});
+app.use(errorHandler);
 
 AppDataSource.initialize()
   .then(() => {

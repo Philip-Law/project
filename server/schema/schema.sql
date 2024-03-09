@@ -1,6 +1,7 @@
 CREATE TABLE Users (
     id SERIAL PRIMARY KEY,
     auth0_id VARCHAR UNIQUE NOT NULL,
+    phone_number VARCHAR(15) NOT NULL,
     major VARCHAR NOT NULL,
     year INTEGER NOT NULL
 );

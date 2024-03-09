@@ -1,6 +1,6 @@
 import router from 'express';
 import asyncHandler from 'express-async-handler';
-import { checkJwt } from '../authentication';
+import { requireAuth0User } from '../middleware/authentication';
 
 const postRoutes = router();
 
@@ -12,11 +12,11 @@ postRoutes.get('/:id', (_req, res) => {
   res.send('get complete post details for specific post');
 });
 
-postRoutes.post('/', checkJwt, asyncHandler(async (_req, res) => {
+postRoutes.post('/', requireAuth0User, asyncHandler(async (_req, res) => {
   res.send('post created');
 }));
 
-postRoutes.delete('/:id', checkJwt, (_req, res) => {
+postRoutes.delete('/:id', requireAuth0User, (_req, res) => {
   res.send('post deleted');
 });
 

@@ -1,9 +1,9 @@
 import router from 'express';
-import { checkJwt } from '../authentication';
+import { requireAuth0User } from '../middleware/authentication';
 
 const messageRoutes = router();
 
-messageRoutes.get('/:conversation_id', checkJwt, (req, res) => {
+messageRoutes.get('/:conversation_id', requireAuth0User, (req, res) => {
   res.send('all messages associated to a conversation');
 });
 
