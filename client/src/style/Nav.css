@@ -18,12 +18,7 @@
 .nav.container {
   display: flex;
   flex-direction: row;
-}
-
-@media screen and (max-width: 1500px) {
-  .nav.container {
-    margin: 1rem 10rem 1rem 10rem;
-  }
+  margin: 1rem 10rem 1rem 10rem;
 }
 
 @media screen and (max-width: 1200px) {
