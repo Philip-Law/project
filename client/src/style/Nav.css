@@ -23,8 +23,7 @@
 
 #mobile {
   display: none;
-  font-size: 1rem;
-  margin: 1rem 3rem 1rem 3rem;
+  margin: 1rem 1.5rem 1rem 1.5rem;
 }
 
 .top-nav {
@@ -45,7 +44,7 @@
 .mobile-right {
   display: flex;
   width: 20%;
-  justify-content: right;
+  justify-content: center;
 }
 
 .nav-icon {
@@ -65,11 +64,10 @@
   top: 108px;
   left: 0;
   right: 0;
-  max-width: 100%;
-  align-items: center;
+  width: 100%;
   background-color: #00448b;
   gap: 1rem;
-  padding: 1rem 2rem 1rem 2rem;
+  padding: 1rem;
   transition: height 0.5s ease-in-out, visibility 0.5s;
   height: 0;
   border-bottom-left-radius: 10px;
@@ -88,16 +86,12 @@
   visibility: hidden;
 }
 
-.nav-user-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-}
-
 @media screen and (max-width: 1300px) {
   .nav.container {
     margin: 1rem 5rem 1rem 5rem;
+  }
+  .content {
+    padding: 1rem 5rem 1rem 5rem;
   }
 }
 
@@ -112,9 +106,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-  .nav-button {
-    transition: none !important;
   }
 }
 
@@ -201,37 +192,4 @@
 
 #logout:hover {
   text-decoration: underline;
-}
-
-.loading.nav {
-  width: 100px;
-  height: 10px;
-  margin-bottom: 0 !important;
-  background-color: lightgray;
-  position: relative;
-  overflow: hidden; /* Ensures the animation stays within the loading element */
-}
-
-.loading.nav::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to right, transparent, darkgray);
-  animation: swoosh 1s infinite;
-}
-
-.loading.nav.smaller {
-  width: 50px;
-}
-
-@keyframes swoosh {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
 }
