@@ -6,6 +6,7 @@
     text-align: left;
     color: black;
     width: 20%;
+    max-height: 530px;
     padding: 1rem;
 }
 

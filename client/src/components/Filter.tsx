@@ -23,6 +23,7 @@ const Filter = (): React.ReactElement => {
 
   const handleClearFilters = (): void => {
     setSortBy(null)
+    setCategories([])
   }
 
   return (
@@ -36,16 +37,16 @@ const Filter = (): React.ReactElement => {
             <hr />
             <h3>Categories</h3>
             <div className='check'>
-                <input type="checkbox" id="vehicle1" name="vehicle1" value="wanted" onChange={() => { handleCategoryChange('wanted') }}/>
-                <label htmlFor="vehicle1">Items Wanted</label><br />
+                <input type="checkbox" id='wanted' name="wanted" value="wanted" onChange={() => { handleCategoryChange('wanted') }} checked={ categories.includes('wanted') }/>
+                <label htmlFor="wanted">Items Wanted</label><br />
             </div>
             <div className='check'>
-                <input type="checkbox" id="vehicle2" name="vehicle2" value="for-sale" onChange={() => { handleCategoryChange('for-sale') }}/>
-                <label htmlFor="vehicle2">Items For Sale</label><br />
+                <input type="checkbox" id='for-sale' name="for-sale" value="for-sale" onChange={() => { handleCategoryChange('for-sale') }} checked={ categories.includes('for-sale') }/>
+                <label htmlFor="for-sale">Items For Sale</label><br />
             </div>
             <div className='check'>
-                <input type="checkbox" id="vehicle3" name="vehicle3" value="academic-services" onChange={() => { handleCategoryChange('academic-services') }}/>
-                <label htmlFor="vehicle3"> Academic Services</label><br />
+                <input type="checkbox" id='academic-services' name="academic-services" value="academic-services" onChange={() => { handleCategoryChange('academic-services') }} checked={ categories.includes('academic-services') }/>
+                <label htmlFor="academic-services"> Academic Services</label><br />
             </div>
             <hr />
             <h3>Sort By</h3>
