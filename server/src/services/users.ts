@@ -1,8 +1,9 @@
 import { User } from '../entities';
 import AppDataSource from '../configs/db';
 import LOGGER from '../configs/logging';
+import { setUserMetadata } from './auth0';
 
-export const doesUserExist = async (auth0Id: string): Promise<boolean> => {
+const isUserSetup = async (auth0Id: string): Promise<boolean> => {
   const user = await AppDataSource.getRepository(User)
     .createQueryBuilder()
     .where('auth0_id = :auth0Id', { auth0Id })
@@ -11,14 +12,16 @@ export const doesUserExist = async (auth0Id: string): Promise<boolean> => {
 };
 
 export const setupUser = async (user: User): Promise<number> => {
-  const isAlreadySetup = await doesUserExist(user.auth0Id);
+  const isAlreadySetup = await isUserSetup(user.auth0Id);
   if (isAlreadySetup) {
     throw new Error(`User with auth0_id ${user.auth0Id} already exists`);
   }
 
   const result = await AppDataSource.getRepository(User)
     .insert(user);
-  return result.identifiers[0].id;
+  const userId = result.identifiers[0].id;
+  await setUserMetadata(user.auth0Id, { userId });
+  return userId;
 };
 
 export const getUser = async (auth0Id: string): Promise<User> => {
