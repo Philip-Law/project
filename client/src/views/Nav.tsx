@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useAuth0 } from '@auth0/auth0-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
 import '../style/Nav.css'
@@ -7,6 +8,7 @@ import Search from '../components/Search'
 
 const Nav = (): React.ReactElement => {
   const [isOpen, setOpen] = useState(false)
+  const { isAuthenticated } = useAuth0()
   const handleNavToggle = (): void => {
     setOpen(!isOpen)
   }
@@ -37,10 +39,15 @@ const Nav = (): React.ReactElement => {
                 </div>
             </div>
             <div id={`${isOpen ? 'show' : 'hidden'}`} className='bottom-nav'>
-                <Search />
-                <div className={`nav-user-container ${isOpen ? 'show' : ''}`}>
+                <div className='nav-user-container'>
+                    {
+                        isAuthenticated
+                          ? <p>Welcome Back!</p>
+                          : <p>Welcome!</p>
+                    }
                     <NavUser />
                 </div>
+                <Search />
             </div>
         </div>
     </div>
