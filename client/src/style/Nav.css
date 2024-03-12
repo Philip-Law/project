@@ -64,10 +64,11 @@
   top: 108px;
   left: 0;
   right: 0;
-  width: 100%;
+  max-width: 100%;
+  align-items: center;
   background-color: #00448b;
   gap: 1rem;
-  padding: 1rem;
+  padding: 1rem 2rem 1rem 2rem;
   transition: height 0.5s ease-in-out, visibility 0.5s;
   height: 0;
   border-bottom-left-radius: 10px;
@@ -84,6 +85,13 @@
 .bottom-nav#hidden {
   height: 0;
   visibility: hidden;
+}
+
+.nav-user-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
 }
 
 @media screen and (max-width: 1300px) {
