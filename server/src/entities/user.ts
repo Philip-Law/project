@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users')
-export class User {
+class User {
   constructor(id: number, auth0Id: string, phoneNumber: string, major: string, year: number) {
     this.id = id;
     this.auth0Id = auth0Id;
