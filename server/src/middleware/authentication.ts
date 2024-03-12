@@ -1,52 +1,18 @@
-import { UserInfoClient } from 'auth0';
 import { auth } from 'express-oauth2-jwt-bearer';
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 import LOGGER from '../configs/logging';
-import { Auth0User } from '../types/custom';
+import { retrieveUserInfo } from '../services/auth0';
 
-// Check that all required environment variables are set
-if (!process.env.AUTH0_DOMAIN) {
-  LOGGER.error('AUTH0_DOMAIN environment variable not set');
-  process.exit();
-}
-if (!process.env.AUTH0_CLIENT_ID) {
-  LOGGER.error('AUTH0_CLIENT_ID environment variable not set');
-  process.exit();
-}
-if (!process.env.AUTH0_CLIENT_SECRET) {
-  LOGGER.error('AUTH0_CLIENT_SECRET environment variable not set');
-  process.exit();
-}
 if (!process.env.BACKEND_AUDIENCE) {
   LOGGER.error('BACKEND_AUDIENCE environment variable not set');
   process.exit();
 }
 
-const userInfoClient = new UserInfoClient({
-  domain: process.env.AUTH0_DOMAIN!!,
-});
-
 export const checkJwt = auth({
   audience: process.env.BACKEND_AUDIENCE,
   issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
 });
-
-const retrieveUserInfo = async (accessToken: string): Promise<Auth0User> => userInfoClient
-  .getUserInfo(accessToken).then((user) => {
-    if (user.status !== 200) {
-      LOGGER.error(user.statusText);
-      throw new Error('Failed to retrieve user info');
-    }
-
-    return {
-      id: user.data.sub,
-      email: user.data.email,
-      firstName: user.data.given_name,
-      lastName: user.data.family_name,
-      picture: user.data.picture,
-    };
-  });
 
 export const requireAuth0User = asyncHandler(async (
   req: express.Request,
