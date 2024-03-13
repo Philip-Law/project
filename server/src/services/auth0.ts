@@ -1,7 +1,7 @@
 // Check that all required environment variables are set
 import { ManagementClient, UserInfoClient } from 'auth0';
 import LOGGER from '../configs/logging';
-import { Auth0User } from '../types/custom';
+import { Auth0User, APIError, Status } from '../types';
 
 if (!process.env.AUTH0_DOMAIN) {
   LOGGER.error('AUTH0_DOMAIN environment variable not set');
@@ -34,7 +34,10 @@ export const retrieveUserInfo = async (accessToken: string): Promise<Auth0User> 
   .getUserInfo(accessToken).then((user) => {
     if (user.status !== 200) {
       LOGGER.error(user.statusText);
-      throw new Error('Failed to retrieve user info');
+      throw new APIError(
+        Status.INTERNAL_SERVER_ERROR,
+        'Failed to retrieve user info',
+      );
     }
 
     return {

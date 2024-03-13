@@ -1,15 +1,16 @@
 import {
   Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn,
 } from 'typeorm';
-import DatabaseUser from './user';
+import User from './user';
+import { AdType } from '../types';
 
 @Entity('posts')
 class Post {
   constructor(
     id: number,
-    user: DatabaseUser,
+    user: User,
     title: string,
-    adType: string,
+    adType: AdType,
     description: string,
     location: string,
     categories: string[],
@@ -30,15 +31,15 @@ class Post {
   @PrimaryGeneratedColumn()
     id: number;
 
-  @ManyToOne(() => DatabaseUser)
+  @ManyToOne(() => User, (user) => user.id)
   @JoinColumn({ name: 'user_id' })
-    user: DatabaseUser;
+    user: User;
 
   @Column()
     title: string;
 
-  @Column({ length: 1 })
-    adType: string;
+  @Column({ length: 1, name: 'ad_type', type: 'varchar' })
+    adType: AdType;
 
   @Column()
     description: string;
@@ -52,7 +53,11 @@ class Post {
   @Column({ type: 'decimal' })
     price: number;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    name: 'post_date',
+  })
     postDate: Date;
 }
 

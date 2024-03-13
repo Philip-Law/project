@@ -5,3 +5,9 @@ export interface Auth0User {
   lastName?: string;
   picture?: string;
 }
+
+export enum AdType {
+  ItemWanted = 'W',
+  ItemSelling = 'S',
+  AcademicService = 'A',
+}
