@@ -27,13 +27,4 @@ conversationRoutes.get('/:conversationId/messages', requireAuth0User, asyncHandl
   res.json(messages);
 }));
 
-// Route to post a new message in a specific conversation
-conversationRoutes.post('/:conversationId/messages', requireAuth0User, asyncHandler(async (req, res) => {
-  const { conversationId } = req.params; // The conversation's ID
-  const { senderId, content } = req.body;
-  const message = await MessageService
-    .createMessage(parseInt(conversationId, 10), senderId, content);
-  res.status(201).json(message);
-}));
-
 export default conversationRoutes;
