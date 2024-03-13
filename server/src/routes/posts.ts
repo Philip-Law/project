@@ -47,7 +47,7 @@ postRoutes.post('/', checkJwt, requireAuth0User, asyncHandler(async (req, res) =
   });
 }));
 
-postRoutes.delete('/:id', requireAuth0User, asyncHandler(async (req, res) => {
+postRoutes.delete('/:id', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
   const id = postIdSchema.parse(req.params.id);
   await deletePost(req.auth0?.id!!, id);
   res.status(Status.OK);
