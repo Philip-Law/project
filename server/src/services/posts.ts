@@ -13,6 +13,13 @@ interface CreatePostRequest {
   price: number;
 }
 
+interface GetPostQuery {
+  category?: string[];
+  adType?: AdType;
+  location?: string;
+  title?: string;
+}
+
 export const createPost = async (
   auth0Id: string,
   postRequest: CreatePostRequest,
@@ -41,6 +48,15 @@ export const getPost = async (postID: number): Promise<Post> => {
   }
   return post;
 };
+
+export const getPostsByQuery = async (query: GetPostQuery): Promise<Post[]> => AppDataSource
+  .getRepository(Post)
+  .createQueryBuilder('post')
+  .where('LOWER(title) LIKE LOWER(:title)', { title: `%${query.title || ''}%` })
+  .andWhere('LOWER(location) LIKE LOWER(:location)', { location: `%${query.location || ''}%` })
+  .andWhere('ad_type LIKE :adType', { adType: `%${query.adType || ''}%` })
+  .andWhere('categories @> :categories', { categories: query.category || [] })
+  .getMany();
 
 export const deletePost = async (auth0Id: string, postID: number): Promise<void> => {
   const user = await getUser(auth0Id);
