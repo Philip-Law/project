@@ -2,6 +2,7 @@ import express from 'express';
 import { UnauthorizedError } from 'express-oauth2-jwt-bearer';
 import { ZodError } from 'zod';
 import LOGGER from '../configs/logging';
+import { APIError, Status } from '../types';
 
 const errorMiddleware = (
   err: Error,
@@ -11,16 +12,27 @@ const errorMiddleware = (
 ): void => {
   LOGGER.info(err.message, err.stack);
   if (err instanceof UnauthorizedError) {
-    res.status(401).json({ message: 'Unauthorized' });
+    res.status(Status.UNAUTHORIZED).json({
+      code: Status.UNAUTHORIZED,
+      message: `Unauthorized ${err.message}`,
+    });
     return next();
   }
   if (err instanceof ZodError) {
-    res.status(400).json({
+    res.status(Status.BAD_REQUEST).json({
+      code: Status.BAD_REQUEST,
       message: `Bad Request: ${err.errors[0].message}`,
     });
   }
+  if (err instanceof APIError) {
+    res.status(err.status).json({
+      code: err.status,
+      message: err.message,
+    });
+    return next();
+  }
 
-  res.status(500).json({ message: 'Internal Server Error' });
+  res.status(Status.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
   return next();
 };
 

@@ -2,6 +2,7 @@ import { User } from '../entities';
 import AppDataSource from '../configs/db';
 import LOGGER from '../configs/logging';
 import { setUserMetadata } from './auth0';
+import { APIError, Status } from '../types';
 
 const isUserSetup = async (auth0Id: string): Promise<boolean> => {
   const user = await AppDataSource.getRepository(User)
@@ -14,7 +15,10 @@ const isUserSetup = async (auth0Id: string): Promise<boolean> => {
 export const setupUser = async (user: User): Promise<number> => {
   const isAlreadySetup = await isUserSetup(user.auth0Id);
   if (isAlreadySetup) {
-    throw new Error(`User with auth0_id ${user.auth0Id} already exists`);
+    throw new APIError(
+      Status.BAD_REQUEST,
+      `User with auth0_id ${user.auth0Id} already exists`,
+    );
   }
 
   const result = await AppDataSource.getRepository(User)
@@ -31,7 +35,10 @@ export const getUser = async (auth0Id: string): Promise<User> => {
     .getOne();
 
   if (!user) {
-    throw new Error(`User with auth0_id ${auth0Id} does not exist`);
+    throw new APIError(
+      Status.NOT_FOUND,
+      `User with auth0_id ${auth0Id} does not exist`,
+    );
   }
   return user;
 };
@@ -45,7 +52,10 @@ export const updateUser = async (updatedUser: User): Promise<User> => {
     .where('auth0_id = :auth0Id', { auth0Id: updatedUser.auth0Id })
     .execute();
   if (result.affected !== 1) {
-    throw new Error(`Update user attempt affected ${result.affected} rows for user's auth0_id ${updatedUser.auth0Id}`);
+    throw new APIError(
+      Status.INTERNAL_SERVER_ERROR,
+      `Update user attempt affected ${result.affected} rows for user's auth0_id ${updatedUser.auth0Id}`,
+    );
   }
   return getUser(updatedUser.auth0Id);
 };

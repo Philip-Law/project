@@ -6,6 +6,7 @@ import {
   deleteUser, getUser, setupUser, updateUser,
 } from '../services/users';
 import { User } from '../entities';
+import { Status } from '../types';
 
 const userRoutes = router();
 
@@ -22,7 +23,7 @@ userRoutes.put('/setup', asyncHandler(async (req, res) => {
   const userId = await setupUser(
     new User(0, req.auth0?.id!!, parsedBody.phoneNumber, parsedBody.major, parsedBody.year),
   );
-  res.status(201).json({
+  res.status(Status.CREATED).json({
     id: userId,
     auth0Id: req.auth0?.id!!,
   });
@@ -33,12 +34,12 @@ userRoutes.post('/update', asyncHandler(async (req, res) => {
   const user = await updateUser(
     new User(0, req.auth0?.id!!, parsedBody.phoneNumber, parsedBody.major, parsedBody.year),
   );
-  res.status(200).json(user);
+  res.status(Status.OK).json(user);
 }));
 
 userRoutes.get('/:id', asyncHandler(async (req, res) => {
   const user = await getUser(req.params.id);
-  res.status(200).json({
+  res.status(Status.OK).json({
     ...req.auth0!!,
     ...user,
   });
@@ -46,7 +47,7 @@ userRoutes.get('/:id', asyncHandler(async (req, res) => {
 
 userRoutes.delete('/', asyncHandler(async (req, res) => {
   await deleteUser(req.auth0?.id!!);
-  res.status(200);
+  res.status(Status.OK);
 }));
 
 export default userRoutes;

@@ -2,7 +2,7 @@ import {
   Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn,
 } from 'typeorm';
 import User from './user';
-import { AdType } from '../types/custom';
+import { AdType } from '../types';
 
 @Entity('posts')
 class Post {

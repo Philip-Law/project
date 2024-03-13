@@ -1,7 +1,7 @@
 import { Post } from '../entities';
 import AppDataSource from '../configs/db';
 import { getUser } from './users';
-import { AdType } from '../types/custom';
+import { AdType, APIError, Status } from '../types';
 import LOGGER from '../configs/logging';
 
 interface CreatePostRequest {
@@ -34,7 +34,10 @@ export const getPost = async (postID: number): Promise<Post> => {
     .getOne();
 
   if (!post) {
-    throw new Error(`Post with id ${postID} does not exist`);
+    throw new APIError(
+      Status.NOT_FOUND,
+      `Post with id ${postID} does not exist`,
+    );
   }
   return post;
 };
@@ -44,7 +47,10 @@ export const deletePost = async (auth0Id: string, postID: number): Promise<void>
   const post = await getPost(postID);
 
   if (user.id !== post.user.id) {
-    throw new Error('User does not have permission to delete this post');
+    throw new APIError(
+      Status.FORBIDDEN,
+      'User does not have permission to delete this post',
+    );
   }
 
   const result = await AppDataSource.getRepository(Post)
