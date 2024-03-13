@@ -2,17 +2,20 @@ import router from 'express';
 import asyncHandler from 'express-async-handler';
 import { z } from 'zod';
 import { checkJwt, requireAuth0User } from '../middleware/authentication';
-import { createPost, deletePost } from '../services/posts';
+import {
+  createPost, deletePost, getPost, getPostsByQuery,
+} from '../services/posts';
 import { AdType, Status } from '../types';
 
 const postRoutes = router();
 
-postRoutes.get('/', (_req, res) => {
-  res.send('returned up to 10 posts based on query parameters');
-});
+const postIdSchema = z.number().int('ID must be an integer').gte(0);
 
-postRoutes.get('/:id', (_req, res) => {
-  res.send('get complete post details for specific post');
+const postQuerySchema = z.object({
+  category: z.string().optional().transform((value) => value?.split(',') || []),
+  adType: z.nativeEnum(AdType).optional(),
+  location: z.string().optional(),
+  title: z.string().optional(),
 });
 
 const postSchema = z.object({
@@ -24,6 +27,18 @@ const postSchema = z.object({
   price: z.number().gte(0, 'Price must be a dollar amount '),
 });
 
+postRoutes.get('/', asyncHandler(async (req, res) => {
+  const queryParams = postQuerySchema.parse(req.query);
+  const posts = await getPostsByQuery(queryParams);
+  res.status(Status.OK).json(posts);
+}));
+
+postRoutes.get('/details/:id', asyncHandler(async (req, res) => {
+  const id = postIdSchema.parse(req.params.id);
+  const post = await getPost(id);
+  res.status(Status.OK).json(post);
+}));
+
 postRoutes.post('/', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
   const postReq = postSchema.parse(req.body);
   const postId = await createPost(req.auth0?.id!!, postReq);
@@ -33,7 +48,6 @@ postRoutes.post('/', checkJwt, requireAuth0User, asyncHandler(async (req, res) =
 }));
 
 postRoutes.delete('/:id', requireAuth0User, asyncHandler(async (req, res) => {
-  const postIdSchema = z.number().int('ID must be an integer').gte(0);
   const id = postIdSchema.parse(req.params.id);
   await deletePost(req.auth0?.id!!, id);
   res.status(Status.OK);
