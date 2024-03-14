@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faBell } from '@fortawesome/free-solid-svg-icons'
 import '../style/Nav.css'
 import NavUser from '../components/NavUser'
 import Search from '../components/Search'
@@ -23,6 +23,7 @@ const Nav = (): React.ReactElement => {
                 <Search />
             </div>
             <div className='nav child right'>
+                <FontAwesomeIcon icon={faBell} className='nav-icon' />
                 <button className='nav-button'>Post Ad</button>
                 <NavUser/>
             </div>
