@@ -3,7 +3,8 @@ import '../style/Listings.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock } from '@fortawesome/free-solid-svg-icons'
 
-interface ListingProps {
+export interface ListingProps {
+  id: number
   title: string
   adType: number
   imgPath: string
