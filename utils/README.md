@@ -6,6 +6,19 @@ This package contains scripts that are useful for tasks related to handling test
 - Getting access tokens for test users
 - Getting list of test users.
 
+## Preparation
+
+Before running any of the scripts. You will need to run `npm install` to install the necessary dependencies.
+
+Also add a `.env` file to the root of the `utils` directory with the following content:
+```env
+AUTH0_DOMAIN=<your-auth0-domain>
+AUTH0_CLIENT_ID=<your-auth0-client-id>
+AUTH0_CLIENT_SECRET=<your-auth0-client-secret>
+BACKEND_AUDIENCE='http://localhost:3000'
+```
+The contents of the env file are found in the #code-bits channel.
+
 ### Populate Test Users
 
 **NOTE:** You shouldn't need to run this script unless you are setting up a new auth0 environment. Most of the time,

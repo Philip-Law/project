@@ -16,13 +16,14 @@ const getAccessToken = async (email: string) => {
     username: email,
     password: 'ComplexPassword321!',
     realm: 'Username-Password-Authentication',
+    scope: 'openid profile email read:message',
   });
 
   if (response.status !== 200) {
     console.log(`Failed to get access token: ${response.statusText}`);
     process.exit(1);
   }
-  console.log(response.data);
+  return response.data;
 };
 
 const email = argv[2];
@@ -32,4 +33,4 @@ if (!email) {
   process.exit(1);
 }
 
-getAccessToken(email);
+getAccessToken(email).then((token) => console.log(token));
