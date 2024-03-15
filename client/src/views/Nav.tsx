@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faBell } from '@fortawesome/free-solid-svg-icons'
 import '../style/Nav.css'
 import NavUser from '../components/NavUser'
+import NavPost from '../components/NavPost'
 import Search from '../components/Search'
 
 const Nav = (): React.ReactElement => {
@@ -24,7 +25,7 @@ const Nav = (): React.ReactElement => {
             </div>
             <div className='nav child right'>
                 <FontAwesomeIcon icon={faBell} className='nav-icon' />
-                <button className='nav-button'>Post Ad</button>
+                <NavPost/>
                 <NavUser/>
             </div>
         </div>

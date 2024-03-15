@@ -6,7 +6,7 @@ import '../style/Nav.css'
 const NavUser = (): React.ReactElement => {
   const { isAuthenticated, isLoading, loginWithRedirect, user, logout } = useAuth0()
   return (
-    <div className='nav-user'>
+    <div className='nav-post'>
       {
         isAuthenticated
           ? <span className='user-info'>
