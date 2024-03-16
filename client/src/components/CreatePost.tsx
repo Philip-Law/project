@@ -10,7 +10,7 @@ const CreatePost = (): React.ReactElement => {
         const form = e.target as HTMLFormElement
 
         const formData = {
-            title: form.title.valueOf,
+            title: form.adTitle.value,
             adType: form.adType.value,
             description: form.description.value,
             location: form.location.value,
@@ -21,10 +21,24 @@ const CreatePost = (): React.ReactElement => {
         let token: string
         try {
             token = await getAccessTokenSilently()
+            console.log(user?.sub)
           } catch (e) {
             console.log(e)
             return
         }
+
+        fetch(`http://localhost:8080/user/${user?.sub}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.error('User not found')
+            }
+            return response.json()
+        })
 
         fetch('http://localhost:8080/post/', {
             method: 'POST',
@@ -53,8 +67,8 @@ const CreatePost = (): React.ReactElement => {
         <div className='create-post'>
             <h2>Post An Ad</h2>
             <form id="adForm" onSubmit={handleCreatePost}>
-                <label htmlFor="title">Title:</label>
-                <input type="text" id="title" name="title" required maxLength={200} onKeyDown={handleKeyDown}/>
+                <label htmlFor="adTitle">Title:</label>
+                <input type="text" id="adTitle" name="adTitle" required maxLength={200} onKeyDown={handleKeyDown}/>
                 <br/>
 
                 <label htmlFor="adType">Ad Type:</label>
