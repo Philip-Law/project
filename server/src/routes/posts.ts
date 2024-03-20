@@ -8,7 +8,7 @@ import {
   createPost, deletePost, getPost, getPostsByQuery,
 } from '../services/posts';
 import { AdType, APIError, Status } from '../types';
-import {getImageURLs, uploadImages} from '../services/file_store';
+import { deletePostImages, getImageURLs, uploadImages } from '../services/file_store';
 
 const postRoutes = router();
 
@@ -52,8 +52,9 @@ postRoutes.post('/', checkJwt, requireAuth0User, asyncHandler(async (req, res) =
 
 postRoutes.delete('/:id', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
   const id = postIdSchema.parse(req.params.id);
+  await deletePostImages(req.auth0?.id!!, id);
   await deletePost(req.auth0?.id!!, id);
-  res.status(Status.OK);
+  res.status(Status.OK).send();
 }));
 
 postRoutes.post(
