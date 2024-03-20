@@ -1,5 +1,5 @@
-import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { S3_BUCKET_NAME, s3Client } from '../configs/s3';
+import { ListObjectsCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3_BUCKET_NAME, S3_PUBLIC_URL, s3Client } from '../configs/s3';
 import { getPost } from './posts';
 import { APIError, Status } from '../types';
 import LOGGER from '../configs/logging';
@@ -24,4 +24,15 @@ export const uploadImages = async (
   LOGGER.debug(`Uploaded ${images.length} images for post ${postId}`);
 };
 
-export default uploadImages;
+export const getImageURLs = async (postId: number): Promise<string[]> => {
+  const { Contents } = await s3Client.send(new ListObjectsCommand({
+    Bucket: S3_BUCKET_NAME,
+    Prefix: `post-${postId}/`,
+  }));
+
+  if (!Contents) {
+    return [];
+  }
+  // Construct the public URL for each image without signing
+  return Promise.all(Contents.map(async ({ Key }) => `${S3_PUBLIC_URL}/${Key}`));
+};

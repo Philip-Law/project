@@ -8,7 +8,7 @@ import {
   createPost, deletePost, getPost, getPostsByQuery,
 } from '../services/posts';
 import { AdType, APIError, Status } from '../types';
-import { uploadImages } from '../services/file_store';
+import {getImageURLs, uploadImages} from '../services/file_store';
 
 const postRoutes = router();
 
@@ -57,7 +57,7 @@ postRoutes.delete('/:id', checkJwt, requireAuth0User, asyncHandler(async (req, r
 }));
 
 postRoutes.post(
-  '/upload/:id',
+  '/image/upload/:id',
   checkJwt,
   requireAuth0User,
   multer({
@@ -81,8 +81,14 @@ postRoutes.post(
     const id = postIdSchema.parse(req.params.id);
     const images = req.files as Express.Multer.File[];
     await uploadImages(id, req.auth0?.id!!, images);
-    res.status(Status.OK);
+    res.status(Status.OK).send();
   }),
 );
+
+postRoutes.get('/image/:id', asyncHandler(async (req, res) => {
+  const id = postIdSchema.parse(req.params.id);
+  const images = await getImageURLs(id);
+  res.status(Status.OK).json(images);
+}));
 
 export default postRoutes;
