@@ -6,6 +6,7 @@ import AppDataSource from './configs/db';
 import { messageRoutes, postRoutes, userRoutes } from './routes';
 import LOGGER from './configs/logging';
 import errorHandler from './middleware/error_handler';
+import { setupBucketAndPolicy } from './configs/s3';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -26,6 +27,8 @@ AppDataSource.initialize()
     app.listen(PORT, () => {
       LOGGER.info('TMU Connect server listening on PORT 8080.');
     });
+
+    void setupBucketAndPolicy();
   })
   .catch((error) => {
     LOGGER.fatal(`Could not connect to database: ${error}`);
