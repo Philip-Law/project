@@ -1,9 +1,22 @@
 import React, { useState } from 'react'
 import '../style/Filter.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronDown, faChevronUp, faLocationDot } from '@fortawesome/free-solid-svg-icons'
 
 const Filter = (): React.ReactElement => {
   const [sortBy, setSortBy] = useState<string | null>(null)
   const [categories, setCategories] = useState<string[]>([])
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [selectedOption, setSelectedOption] = useState('Current Location')
+
+  const handleDropdownToggle = (): void => {
+    setDropdownOpen(!dropdownOpen)
+  }
+
+  const handleOptionSelect = (option: string): void => {
+    setSelectedOption(option)
+    setDropdownOpen(false)
+  }
 
   const handleCategoryChange = (categoryValue: string): void => {
     if (categories.includes(categoryValue)) {
@@ -26,12 +39,28 @@ const Filter = (): React.ReactElement => {
     setCategories([])
   }
 
+  const handleApplyFilters = (): void => {
+    console.log('Applying filters')
+    if (selectedOption === 'Current Location') {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords
+          console.log('Latitude:', latitude)
+          console.log('Longitude:', longitude)
+        },
+        (error) => {
+          console.error('Error getting location:', error.message)
+        }
+      )
+    }
+  }
+
   return (
         <div className='filters'>
             <h2>Filters</h2>
             <p className='subheading'>Specify filters to make your search easier.</p>
             <div className='btn-row'>
-                <button className='btn'>Apply Filters</button>
+                <button className='btn' onClick={handleApplyFilters}>Apply Filters</button>
                 <button className='btn' onClick={handleClearFilters}>Clear Filters</button>
             </div>
             <hr />
@@ -47,6 +76,25 @@ const Filter = (): React.ReactElement => {
             <div className='check'>
                 <input type="checkbox" id='academic-services' name="academic-services" value="academic-services" onChange={() => { handleCategoryChange('academic-services') }} checked={ categories.includes('academic-services') }/>
                 <label htmlFor="academic-services"> Academic Services</label><br />
+            </div>
+            <hr />
+            <h3>Location</h3>
+            <div className='dropdown'>
+                <div className='dropdown-text' onClick={handleDropdownToggle}>
+                        <FontAwesomeIcon icon={faLocationDot}/>
+                        <span>{selectedOption}</span>
+                        <FontAwesomeIcon icon={dropdownOpen ? faChevronDown : faChevronUp } />
+                </div>
+                <ul id='list' className={`dropdown-list ${dropdownOpen ? 'show' : ''}`}>
+                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('Current Location') }}>Current Location</li>
+                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('Toronto') }}>Toronto</li>
+                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('Vaughan') }}>Vaughan</li>
+                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('Scarborough') }}>Scarborough</li>
+                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('North York') }}>North York</li>
+                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('Barrie') }}>Barrie</li>
+                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('Aurora') }}>Aurora</li>
+
+                </ul>
             </div>
             <hr />
             <h3>Sort By</h3>

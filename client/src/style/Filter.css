@@ -6,8 +6,59 @@
     text-align: left;
     color: black;
     width: 20%;
-    max-height: 530px;
+    height: fit-content;
     padding: 1rem;
+}
+
+.filters.mobile {
+  display: none;
+}
+
+@media screen and (max-width: 1000px) {
+  .filters {
+    display: none;
+  }
+  .filters.mobile {
+    display: flex;
+    width: 100%;
+    padding: 0;
+  }
+  .toggle-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border-radius: 3px;
+  }
+
+  .filter-content {
+    display: flex;
+    flex-direction: column;
+    height: 0;
+    visibility: hidden;
+    overflow: hidden;
+    transition: height 0.5s ease-in-out, visibility 0.5s;
+  }
+
+  .filter-content#show {
+    height: 460px;
+    visibility: visible;
+  }
+
+  .filter-content#hidden {
+    height: 0;
+    visibility: hidden;
+  }
+
+  .filter-content button {
+    transition: none !important;
+  }
+  .inside {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+  }
 }
 
 .filters h2 {
@@ -66,3 +117,57 @@ hr {
     border-radius: 8px;
     background-color: #69a0da;
 }
+
+.dropdown {
+    margin-top: 0.3rem;
+    border-radius: 5px;
+    border: 1px solid white;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+  }
+  
+  .dropdown-text {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1rem;
+    font-weight: 500;
+    background-color: transparent;
+    padding: 0.4rem;
+  }
+  
+  .dropdown-list {
+    display: block;
+    margin: 0;
+    width: 83%;
+    border-radius: 0 0 15px 15px;
+    max-height: 0;
+    overflow: hidden;
+    background-color: white;
+    transition: max-height 0.5s;
+  }
+  
+  .dropdown-list-item {
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 15px;
+    padding: 1rem 0 1rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.3s ease,
+      color 0.2s ease;
+  }
+  
+  .dropdown-list-item:hover {
+    color: rgb(99, 184, 212);
+  }
+  
+  #list {
+    padding: 0;
+    overflow: auto;
+    margin: auto;
+  }
+  
+  #list.show {
+    color: black;
+    max-height: 300px;
+  }
