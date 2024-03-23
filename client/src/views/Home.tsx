@@ -10,6 +10,7 @@ const Home = (): React.ReactElement => {
     {
       id: 1,
       adType: 2,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'Electronics Sale',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et ante in libero consectetur efficitur. This is sample text and can be changed at a later date.',
@@ -21,6 +22,7 @@ const Home = (): React.ReactElement => {
     {
       id: 2,
       adType: 0,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'Furniture Clearance',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -32,6 +34,7 @@ const Home = (): React.ReactElement => {
     {
       id: 3,
       adType: 1,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'Fashion Sale',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -43,6 +46,7 @@ const Home = (): React.ReactElement => {
     {
       id: 4,
       adType: 2,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'Book Fair',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -54,6 +58,7 @@ const Home = (): React.ReactElement => {
     {
       id: 5,
       adType: 0,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'Appliance Sale',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -65,6 +70,7 @@ const Home = (): React.ReactElement => {
     {
       id: 6,
       adType: 1,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'Sports Equipment Clearance',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -76,6 +82,7 @@ const Home = (): React.ReactElement => {
     {
       id: 7,
       adType: 2,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'Art Auction',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -87,6 +94,7 @@ const Home = (): React.ReactElement => {
     {
       id: 8,
       adType: 0,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'Tool Sale',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -98,6 +106,7 @@ const Home = (): React.ReactElement => {
     {
       id: 9,
       adType: 1,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'Music Instruments Exhibition',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -109,6 +118,7 @@ const Home = (): React.ReactElement => {
     {
       id: 10,
       adType: 2,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'Outdoor Gear Clearance',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -120,6 +130,7 @@ const Home = (): React.ReactElement => {
     {
       id: 11,
       adType: 2,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'TEST Electronics Sale',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et ante in libero consectetur efficitur. This is sample text and can be changed at a later date.',
@@ -131,6 +142,7 @@ const Home = (): React.ReactElement => {
     {
       id: 12,
       adType: 0,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'TEST Furniture Clearance',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -142,6 +154,7 @@ const Home = (): React.ReactElement => {
     {
       id: 13,
       adType: 1,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'TEST Fashion Sale',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -153,6 +166,7 @@ const Home = (): React.ReactElement => {
     {
       id: 14,
       adType: 2,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'TEST Book Fair',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -164,6 +178,7 @@ const Home = (): React.ReactElement => {
     {
       id: 15,
       adType: 0,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'TEST Appliance Sale',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -175,6 +190,7 @@ const Home = (): React.ReactElement => {
     {
       id: 16,
       adType: 1,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'TEST Sports Equipment Clearance',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -186,6 +202,7 @@ const Home = (): React.ReactElement => {
     {
       id: 17,
       adType: 2,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'TEST Gear Clearance',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -197,6 +214,7 @@ const Home = (): React.ReactElement => {
     {
       id: 18,
       adType: 0,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'TEST Gear Clearance',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -208,6 +226,7 @@ const Home = (): React.ReactElement => {
     {
       id: 19,
       adType: 1,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'TEST Gear Clearance',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -219,6 +238,7 @@ const Home = (): React.ReactElement => {
     {
       id: 20,
       adType: 2,
+      userID: 1,
       imgPath: '/assets/placeholder.jpg',
       title: 'TEST Gear Clearance',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
