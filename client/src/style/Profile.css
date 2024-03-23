@@ -167,3 +167,80 @@
 .more-about-profile p {
     font-size: 1rem;
 }
+
+.edit-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.edit-profile h5 {
+  margin: 0;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.edit-profile input {
+  width: 90%;
+  padding: 0.5rem;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+}
+
+.edit-profile label {
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-right: auto;
+  margin-bottom: 0.5rem;
+}
+
+.edit-profile input[type="number"] {
+  width: 20%;
+  justify-content: left;
+  margin-right: auto;
+}
+
+.edit-profile button {
+  padding: 0.5rem 1rem;
+  background-color: #81858a;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.8rem !important;
+  transition: 0.5s ease-in-out;
+}
+
+.edit-profile button.ready {
+  background-color: #19a719;
+}
+
+.edit-profile button.ready:hover {
+  background-color: #008600;
+}
+
+.program-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.3rem;
+}
+
+@media screen and (max-width: 1300px) {
+  .content {
+    padding: 1rem 5rem 1rem 5rem;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .content {
+    padding: 1rem 3rem 1rem 3rem;
+  }
+  .content.profile {
+    flex-direction: column;
+  }
+  .container.profile {
+    width: 90%;
+  }
+}

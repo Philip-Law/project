@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import ReactPaginate from 'react-paginate'
 import Listing from './Listing'
-import type { ListingProps } from './Listing'
+import type { ListingProps } from '../views/ListingPage'
 import '../style/Listings.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
@@ -53,6 +53,7 @@ const Listings: React.FC<ListingsComponentProps> = ({ response }) => {
                 key={item.id}
                 id={item.id}
                 title={item.title}
+                userID={item.userID}
                 adType={item.adType}
                 imgPath={item.imgPath}
                 description={item.description}

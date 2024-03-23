@@ -4,11 +4,15 @@ import Home from './views/Home'
 import NotFound from './views/NotFound'
 import { Auth0Provider } from '@auth0/auth0-react'
 import Profile from './views/Profile'
+import Conversations from './views/Conversations'
+import ListingPageWrapper from './components/ListingPageWrapper'
 
 const App = (): React.ReactElement => {
   const router = createBrowserRouter([
     { path: '/', element: <Home /> },
     { path: '/profile', element: <Profile /> },
+    { path: '/conversations', element: <Conversations /> },
+    { path: '/listing', element: <ListingPageWrapper /> },
     { path: '*', element: <NotFound /> }
   ])
 
