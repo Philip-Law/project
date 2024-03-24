@@ -1,0 +1,107 @@
+import React, { useState, useEffect } from 'react'
+import Nav from '../views/Nav'
+import AuthDenied from '../components/AuthDenied'
+import '../style/Admin.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser, faList, faCog, faHome } from '@fortawesome/free-solid-svg-icons'
+import { jwtDecode } from 'jwt-decode'
+import { useAuth0 } from '@auth0/auth0-react'
+import Dashboard from '../components/Admin/Dashboard'
+import Users from '../components/Admin/Users'
+import Listings from '../components/Admin/Listings'
+import Settings from '../components/Admin/Settings'
+
+const Admin = (): React.ReactElement => {
+  const { isAuthenticated, user, getAccessTokenSilently, isLoading } = useAuth0()
+  const [permissions, setPermissions] = useState<string[]>([])
+  const [desiredView, setDesiredView] = useState<string>('dashboard')
+  const getPermissions = async (token: string): Promise<string[]> => {
+    const payload = jwtDecode<{
+      permissions?: string[]
+    }>(token)
+    return payload.permissions ?? []
+  }
+
+  useEffect(() => {
+    const fetchPermissions = async (): Promise<void> => {
+      try {
+        const token = await getAccessTokenSilently()
+        const fetchedPermissions = await getPermissions(token)
+        setPermissions(fetchedPermissions)
+      } catch (error) {
+        console.error('Error fetching permissions:', error)
+        setPermissions([])
+      }
+    }
+
+    void fetchPermissions()
+  }, [])
+
+  if (isLoading) {
+    return (
+            <div className='App'>
+                <header className='App-header'>
+                    <Nav />
+                    <div className='loading-container'>
+                        <div className='loading-content'>
+                            <span className="loader"></span>
+                        </div>
+                    </div>
+                </header>
+            </div>
+    )
+  }
+
+  return (
+        <div className='App'>
+            <header className='App-header'>
+                <Nav />
+                {
+                    isAuthenticated
+                      ? permissions.includes('admin:manage')
+                        ? <div className='admin-container'>
+                                <div className='admin-content'>
+                                    <div className='admin-sidebar'>
+                                        <div className='admin-sidebar-card'>
+                                            <img src={user?.picture} alt='profile' />
+                                            <p className='name'>{user?.name}</p>
+                                            <p className='sub'>{user?.email} (Admin)</p>
+                                            <hr></hr>
+                                            <div className='actions'>
+                                                <button id={`${desiredView === 'dashboard' ? 'active' : null}`} onClick={() => { setDesiredView('dashboard') }}><FontAwesomeIcon className='inner-icon' icon={faHome} /> Dashboard</button>
+                                                <button id={`${desiredView === 'users' ? 'active' : null}`} onClick={() => { setDesiredView('users') }}><FontAwesomeIcon className='inner-icon' icon={faUser} /> Users</button>
+                                                <button id={`${desiredView === 'listings' ? 'active' : null}`} onClick={() => { setDesiredView('listings') }}><FontAwesomeIcon className='inner-icon' icon={faList} /> Listings</button>
+                                                <button id={`${desiredView === 'settings' ? 'active' : null}`} onClick={() => { setDesiredView('settings') }}><FontAwesomeIcon className='inner-icon' icon={faCog} /> Settings</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='admin-main'>
+                                        <div className='admin-card'>
+                                            <div className='admin-card-header'>
+                                                <FontAwesomeIcon icon={desiredView === 'dashboard' ? faHome : desiredView === 'users' ? faUser : desiredView === 'listings' ? faList : faCog} />
+                                                <h2 className='current-view'>
+                                                    {desiredView === 'dashboard' && 'Dashboard'}
+                                                    {desiredView === 'users' && 'Users'}
+                                                    {desiredView === 'listings' && 'Listings'}
+                                                    {desiredView === 'settings' && 'Settings'}
+                                                </h2>
+                                            </div>
+                                            {desiredView === 'dashboard' && <Dashboard name={user?.name ?? ''} desiredView={desiredView} setDesiredView={setDesiredView} />}
+                                            {desiredView === 'users' && <Users />}
+                                            {desiredView === 'listings' && <Listings />}
+                                            {desiredView === 'settings' && <Settings />}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        : <AuthDenied message={'You don\'t have sufficient access to view this page. If you believe this is an error, please contact us.'} permissions={permissions} />
+                      : <div className='access-container'>
+                        <AuthDenied message='You need to be logged in to access this page. If you continue to see this error, please try again later.' permissions={permissions} />
+                      </div>
+                }
+            </header>
+        </div>
+  )
+}
+
+export default Admin
