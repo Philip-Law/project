@@ -6,6 +6,7 @@ import { Auth0Provider } from '@auth0/auth0-react'
 import Profile from './views/Profile'
 import Conversations from './views/Conversations'
 import ListingPageWrapper from './components/ListingPageWrapper'
+import Admin from './views/Admin'
 
 const App = (): React.ReactElement => {
   const router = createBrowserRouter([
@@ -13,6 +14,7 @@ const App = (): React.ReactElement => {
     { path: '/profile', element: <Profile /> },
     { path: '/conversations', element: <Conversations /> },
     { path: '/listing', element: <ListingPageWrapper /> },
+    { path: 'admin', element: <Admin /> },
     { path: '*', element: <NotFound /> }
   ])
 

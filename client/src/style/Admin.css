@@ -1,0 +1,231 @@
+/* Admin Dashboard Styles */
+
+.admin-container {
+    display: flex;
+    flex-direction: row;
+    padding: 1rem 15rem 1rem 15rem;
+    color: black;
+    min-height: 500px;
+}
+
+.admin-content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.admin-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    border-radius: 10px;
+    margin-right: 1rem;
+    height: fit-content;
+    background-color: white;
+}
+
+.admin-sidebar-card {
+    padding: 1rem;
+}
+
+.admin-sidebar-card img {
+    border-radius: 50%;
+}
+
+.name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0;
+    margin-top: 0.5rem;
+}
+
+.sub {
+    font-size: 0.8rem;
+    color: grey;
+    font-weight: bold;
+    margin: 0;
+}
+
+.admin-main {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    height: 100%;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.actions button {
+    width: 50%;
+    margin: auto;
+    padding: 0.5rem;
+    border: 1px solid rgb(146, 146, 146);
+    border-radius: 50px;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.1);
+    transition: 0.3s ease-in-out;
+}
+
+.actions button:hover {
+    background-color: rgb(60, 60, 160);
+    color: white;
+}
+
+#active {
+    background-color: rgb(60, 60, 160);
+    color: white;
+}
+
+.inner-icon {
+    margin-left: 0.3rem;
+    margin-right: 0.2rem;
+}
+
+.admin-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 10px;
+    gap: 1rem;
+    height: fit-content;
+}
+
+.admin-card-header {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.current-view {
+    margin: 0;
+    text-align: left;
+    font-size: 1.3rem;
+    color: rgb(146, 146, 146);
+}
+
+.admin-card-header svg {
+    color: gray;
+    font-size: 1.3rem;
+}
+
+/* Authorization and Loading Styles */
+
+.access-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+
+.authorization-denied {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 50%;
+    color: black;
+    margin: auto;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.2);
+}
+
+.authorization-denied svg {
+    color: orangered;
+    font-size: 3rem;
+}
+
+.authorization-denied h1 {
+    font-size: 2rem;
+    margin-bottom: 0;
+}
+
+.authorization-denied p {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.authorization-denied button {
+    padding: 0.5rem 1rem;
+    background-color: rgb(161, 49, 49);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+    margin: auto;
+    width: 30%;
+    transition: 0.5s ease-in-out;
+}
+
+.authorization-denied #left-text {
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding-right: 1rem;
+}
+
+.authorization-denied .button-arrow {
+    width: 20px;
+    color: white;
+    position: absolute; /* Position the SVG absolutely */
+    top: 50%; /* Align SVG vertically centered */
+    right: 1rem;
+    transform: translateY(-50%); /* Center SVG vertically */
+    transition: 0.5s ease-in-out;
+}
+
+.authorization-denied button:hover {
+    background-color: rgb(194, 61, 61);
+}
+
+.authorization-denied button:hover .button-arrow {
+    transform: translateY(-50%) translateX(5px);
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 3px solid #FFF;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+  } 
+  .loader::after {
+    content: '';  
+    box-sizing: border-box;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-bottom-color: darkblue;
+  }
+  
+  @keyframes rotation {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  } 
