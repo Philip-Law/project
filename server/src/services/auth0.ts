@@ -1,7 +1,7 @@
 // Check that all required environment variables are set
 import { ManagementClient, UserInfoClient } from 'auth0';
 import LOGGER from '../configs/logging';
-import { Auth0User, APIError, Status } from '../types';
+import { APIError, Auth0User, Status } from '../types';
 
 if (!process.env.AUTH0_DOMAIN) {
   LOGGER.error('AUTH0_DOMAIN environment variable not set');
@@ -30,7 +30,7 @@ const managementClient = new ManagementClient({
   clientId: process.env.AUTH0_CLIENT_ID,
 });
 
-export const retrieveUserInfo = async (accessToken: string): Promise<Auth0User> => userInfoClient
+export const retrieveUserInfo = async (accessToken: string) => userInfoClient
   .getUserInfo(accessToken).then((user) => {
     if (user.status !== 200) {
       LOGGER.error(user.statusText);
@@ -49,12 +49,30 @@ export const retrieveUserInfo = async (accessToken: string): Promise<Auth0User> 
     };
   });
 
-export const setUserMetadata = async (auth0Id: string, metadata: {
-  [key: string]: any;
-}) => managementClient
-  .users.update({ id: auth0Id }, {
-    user_metadata: metadata,
-  }).catch((err) => {
-    LOGGER.error(`Could not update user metadata for ${auth0Id}: ${err}`);
-    throw new Error(err);
+export const retrieveAuth0Users = async (options?: {
+  name?: string;
+  email?: string;
+}): Promise<Array<Auth0User>> => {
+  let query = options?.name ? `name:*${options.name}*` : '';
+  query += options?.email ? `email:*${options.email}*` : '';
+
+  return managementClient.users.getAll({
+    q: query,
+  }).then((users) => {
+    if (users.status !== 200) {
+      throw new APIError(
+        Status.INTERNAL_SERVER_ERROR,
+        'Failed to retrieve users',
+        users.statusText,
+      );
+    }
+
+    return users.data.map((user) => ({
+      id: user.user_id,
+      email: user.email,
+      firstName: user.given_name,
+      lastName: user.family_name,
+      picture: user.picture,
+    }));
   });
+};

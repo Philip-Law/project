@@ -42,7 +42,7 @@ postRoutes.get('/details/:id', asyncHandler(async (req, res) => {
   res.status(Status.OK).json(post);
 }));
 
-postRoutes.post('/', checkJwt, requireAuth0User(), asyncHandler(async (req, res) => {
+postRoutes.post('/', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
   const postReq = postSchema.parse(req.body);
   const postId = await createPost(req.auth0?.id!!, postReq);
   res.status(Status.CREATED).json({
@@ -50,17 +50,17 @@ postRoutes.post('/', checkJwt, requireAuth0User(), asyncHandler(async (req, res)
   });
 }));
 
-postRoutes.delete('/:id', checkJwt, requireAuth0User(), asyncHandler(async (req, res) => {
+postRoutes.delete('/:id', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
   const id = postIdSchema.parse(req.params.id);
-  await deletePostImages(req.auth0?.id!!, id);
-  await deletePost(req.auth0?.id!!, id);
+  await deletePostImages(req.auth0!!, id);
+  await deletePost(req.auth0!!, id);
   res.status(Status.OK).send();
 }));
 
 postRoutes.post(
   '/image/upload/:id',
   checkJwt,
-  requireAuth0User(),
+  requireAuth0User,
   multer({
     storage: multer.memoryStorage(),
     limits: {
