@@ -43,14 +43,14 @@ const Listings = (): React.ReactElement => {
   const currentItems = posts.slice(indexOfFirstItem, indexOfLastItem)
 
   const totalResultsText = currentPage === Math.ceil(posts.length / itemsPerPage) - 1
-    ? `Displaying ${posts.length} of ${posts.length} results.`
-    : `Displaying ${currentItems.length} of ${posts.length} results.`
+    ? `Displaying ${posts.length} of ${posts.length} results`
+    : `Displaying ${currentItems.length} of ${posts.length} results`
 
   return (
     <div className='listing-container'>
       <div className='listing-header'>
         <div className='search'>
-          <input type='text' placeholder='Search...' />
+          <input type='text' placeholder='Search category, location, adType, title...' />
           <button>Search</button>
         </div>
         <p>{totalResultsText}</p>
@@ -74,12 +74,13 @@ const Listings = (): React.ReactElement => {
               <th>Title</th>
               <th>User</th>
               <th>Category</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {
               posts.length === 0
-                ? <tr><td style={{ padding: '1rem' }} colSpan={4}>No posts available</td></tr>
+                ? <tr><td style={{ padding: '1rem' }} colSpan={5}>No posts available</td></tr>
                 : posts.map((post) => (
                     <tr key={post.id}>
                       <td>{post.id}</td>
