@@ -22,7 +22,6 @@ const FilterMobile = (): React.ReactElement => {
             }
             
             const jsonResponse = await response.json()
-            console.log(jsonResponse)
             const locationsArray = jsonResponse.map((item: { location: any }) => item.location)
             setLocations(locationsArray)
         })

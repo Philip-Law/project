@@ -4,46 +4,75 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { FaUpload } from "react-icons/fa";
 
 const CreatePost = (): React.ReactElement => {
-    const { user, getAccessTokenSilently } = useAuth0();
-    const [images, setImages] = useState<File[]>([]);
-    const [displayImages, setDisplays] = useState<string[]>([]);
-    const [imageError, setImageError] = useState<string>('');
+    const { user, getAccessTokenSilently } = useAuth0()
+    const [images, setImages] = useState<File[]>([])
+    const [displayImages, setDisplays] = useState<{ [key: string]: number }>({})
+    const [imageError, setImageError] = useState<string>('')
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     useEffect(() => {
-        const newImages: string[] = [];
+        if(Object.keys(displayImages).length === images.length) {
+            setIsLoading(false)
+        }
+    }, [displayImages])
+
+    useEffect(() => {
+        setIsLoading(true)
+        setDisplays({})
+        const newImages: { [key: string]: number } = {}
         for (let i = 0; i < images.length; i++) {
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            if (e.target?.result) {
-              newImages.push(e.target.result.toString())
-              setDisplays(newImages)
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                if (e.target?.result) {
+                    newImages[e.target.result.toString()] = i
+                    setDisplays(newImages);
+                }
             }
-          };
-          reader.readAsDataURL(images[i])
-        }
-      
-      }, [images])
+            reader.readAsDataURL(images[i])
 
-    const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files
-        if (!files) return
+        }
+        
+    }, [images])
+
+      const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+        setImageError("");
+        const files = event.target.files;
+        if (!files) return;
     
-        if (files.length + images.length > 5) {
-            setImageError('Cannot upload more than 5 images.')
-          return
-        }
-
         const filesArray = Array.from(files);
-        setImages(filesArray);
+        const maxSize = 10 * 1024 * 1024;
+        const newImages: File[] = [];
     
-      };
+        filesArray.forEach(file => {
+            if (maxSize > file.size) {
+                newImages.push(file);
+            } else {
+                setImageError("File can be a maximum of 10mb");
+            }
+        });
+    
+        if (newImages.length + images.length > 5) {
+            setImageError("Cannot upload more than 5 images.");
+            if (event.target) {
+                (event.target as HTMLInputElement).value = '';
+            }
+            return;
+        }
+    
+        setImages([...images, ...newImages]);
 
-      const handleImageDelete = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
+        if (event.target) {
+            (event.target as HTMLInputElement).value = '';
+        }
+    }
+    
+
+    const handleImageDelete = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
         event.preventDefault()
         const updatedImages = [...images]
         updatedImages.splice(index, 1)
         setImages(updatedImages)
-      }
+    }
 
     const handleCreatePost = (async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -87,66 +116,45 @@ const CreatePost = (): React.ReactElement => {
             body: JSON.stringify(formData)
         })
         .then(async response => {
-            if (!response.ok) {
-                console.log(token)
+            if (response.status !== 201) {
                 console.error('Ad could not be posted')
             } else {
                 const jsonResponse = await response.json()
-                const postID = jsonResponse.id
-                uploadImages(postID)
+                const postID = jsonResponse.postId
+                uploadImages(postID, token)
                 return jsonResponse
             }
             
         })
     })
 
-    const uploadImages = async (postID: string) => {
-        interface ImageDetails {
-            fieldname: string;
-            image: File;
-        }
+    const uploadImages = async (postID: string, token: string) => {
+        console.log(postID)
 
-        var formData = {
-            id: postID,
-            files: [] as ImageDetails[]
-        }
+        var formData = new FormData()
+        images.forEach(image => {
+            formData.append('customImage', image)
+        })
 
-        images.forEach((image: File, index: number) => {
-            const imageDetails: ImageDetails = {
-                "fieldname": "post-images",
-                "image": image
-
+        fetch(`http://localhost:8080/post/image/upload/${postID}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        })
+        .then(async response => {
+            const back = await response.json()
+            console.log(back)
+            if (response.status !== 201) {
+                console.log(postID)
+                console.error('Images could not be uploaded')
+            } else {
+                console.log(formData)
+                console.log("nice")
+                window.location.href = `/profile`
             }
-
-            formData.files.push(imageDetails);
-        });
-
-        console.log(JSON.stringify(formData))
-
-        let token: string
-        try {
-            token = await getAccessTokenSilently()
-          } catch (e) {
-            return
-        }
-
-        // fetch(`http://localhost:8080/post/image/upload/:${postID}`, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'Authorization': `Bearer ${token}`
-        //     },
-        //     body: JSON.stringify(formData)
-        // })
-        // .then(response => {
-        //     if (!response.ok) {
-        //         console.log(token)
-        //         console.error('Ad could not be posted')
-        //     } else {
-        //         window.location.href = `/ad/${postID}`
-        //     }
-            
-        // })
+        })
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -163,7 +171,7 @@ const CreatePost = (): React.ReactElement => {
                 <input type="text" id="adTitle" name="adTitle" required maxLength={200} onKeyDown={handleKeyDown}/>
                 <br/>
 
-                <label htmlFor="imageUpload" className="uploadLabel">Upload Images:</label>
+                <label htmlFor="imageUpload" className="uploadLabel">Upload Images (up to 5):</label>
                 <div id="imageUpload">
                         <div id="arrowWrapper">
                             <div id="uploadArrow"><FaUpload /></div>
@@ -173,17 +181,18 @@ const CreatePost = (): React.ReactElement => {
                 </div>
                 {imageError && <div id="imageError">{imageError}</div>}
                 <div id="imagePreview">
-                    
-                        {displayImages.map((image, index) => (
+                    {isLoading ? (
+                        <></>
+                    ) : (
+                        Object.keys(displayImages).map((key) => (
                             <div className="uploadedImages">
-                                <img key={index} src={image} />
-                                <button onClick={(event) => handleImageDelete(event, index)}>X</button>
+                                <img key={key} src={key} />
+                                <button onClick={(event) => handleImageDelete(event, displayImages[key])}>X</button>
                             </div>
-                        ))}
-                    
+                        ))
+                    )}
                 </div>
                 <br/>
-
 
                 <label htmlFor="adType">Ad Type:</label>
                 <select id="adType" name="adType" required>

@@ -28,7 +28,7 @@ AppDataSource.initialize()
       LOGGER.info('TMU Connect server listening on PORT 8080.');
     });
 
-    // void setupBucketAndPolicy();
+    void setupBucketAndPolicy();
   })
   .catch((error) => {
     LOGGER.fatal(`Could not connect to database: ${error}`);

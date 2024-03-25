@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { Link } from 'react-router-dom'
 
 const NavPost = (): React.ReactElement => {
-  const { isAuthenticated, isLoading, loginWithRedirect, user, logout, getAccessTokenSilently } = useAuth0()
+  const { isAuthenticated, isLoading, loginWithRedirect, user, getAccessTokenSilently } = useAuth0()
 
   const handleClickPost = () => {
     if (!isAuthenticated) {
