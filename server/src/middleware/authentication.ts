@@ -19,16 +19,14 @@ export const checkJwt = auth({
 
 const validateIsAdmin = (payload: JWTPayload) => {
   if (payload.permissions === undefined) {
-    throw new APIError(Status.INTERNAL_SERVER_ERROR, 'Permissions attribute not found in token payload');
+    return false;
   }
   const permissions = payload.permissions as string[];
 
-  if (!permissions?.includes(ADMIN_PERMISSION)) {
-    throw new APIError(Status.FORBIDDEN, 'You are not authorized to perform this action');
-  }
+  return !permissions?.includes(ADMIN_PERMISSION);
 };
 
-export const requireAuth0User = (options?: { isAdmin?: boolean }) => asyncHandler(async (
+export const requireAuth0User = asyncHandler(async (
   req: express.Request,
   _res: express.Response,
   next: express.NextFunction,
@@ -37,12 +35,11 @@ export const requireAuth0User = (options?: { isAdmin?: boolean }) => asyncHandle
     throw new APIError(Status.UNAUTHORIZED, 'Missing or invalid Authorization header');
   }
 
-  if (options?.isAdmin) {
-    validateIsAdmin(req.auth.payload);
-  }
-
   try {
-    req.auth0 = await retrieveUserInfo(req.auth.token); // Add the user to the request
+    req.auth0 = {
+      ...await retrieveUserInfo(req.auth.token),
+      isAdmin: validateIsAdmin(req.auth.payload),
+    }; // Add the user to the request
     next(); // Continue to the next middleware
   } catch (error) {
     throw new APIError(Status.INTERNAL_SERVER_ERROR, `Failed to retrieve user info: ${error}`);

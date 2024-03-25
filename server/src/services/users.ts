@@ -2,7 +2,7 @@ import { User } from '../entities';
 import AppDataSource from '../configs/db';
 import LOGGER from '../configs/logging';
 import { setUserMetadata } from './auth0';
-import { APIError, Status } from '../types';
+import { APIError, Auth0User, Status } from '../types';
 
 const isUserSetup = async (auth0Id: string): Promise<boolean> => {
   const user = await AppDataSource.getRepository(User)
@@ -60,7 +60,11 @@ export const updateUser = async (updatedUser: User): Promise<User> => {
   return getUser(updatedUser.auth0Id);
 };
 
-export const deleteUser = async (auth0Id: string): Promise<void> => {
+export const deleteUser = async (auth0User: Auth0User, auth0Id: string): Promise<void> => {
+  if (auth0User.id !== auth0Id && !auth0User.isAdmin) {
+    throw new APIError(Status.FORBIDDEN, 'You are not authorized to delete this user');
+  }
+
   const result = await AppDataSource.getRepository(User)
     .createQueryBuilder()
     .delete()

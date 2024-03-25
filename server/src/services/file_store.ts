@@ -3,7 +3,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { S3_BUCKET_NAME, S3_PUBLIC_URL, s3Client } from '../configs/s3';
 import { getPost } from './posts';
-import { APIError, Status } from '../types';
+import { APIError, Auth0User, Status } from '../types';
 import LOGGER from '../configs/logging';
 
 export const uploadImages = async (
@@ -39,9 +39,9 @@ export const getImageURLs = async (postId: number): Promise<string[]> => {
   return Promise.all(Contents.map(async ({ Key }) => `${S3_PUBLIC_URL}/${Key}`));
 };
 
-export const deletePostImages = async (auth0Id: string, postId: number): Promise<void> => {
+export const deletePostImages = async (auth0User: Auth0User, postId: number): Promise<void> => {
   const post = await getPost(postId);
-  if (post.user.auth0Id !== auth0Id) {
+  if (post.user.auth0Id !== auth0User.id && !auth0User.isAdmin) {
     throw new APIError(Status.FORBIDDEN, 'You are not authorized to delete images for this post');
   }
 

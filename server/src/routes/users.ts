@@ -10,7 +10,7 @@ import { Status } from '../types';
 
 const userRoutes = router();
 
-userRoutes.use(checkJwt, requireAuth0User());
+userRoutes.use(checkJwt, requireAuth0User);
 
 const userSchema = z.object({
   phoneNumber: z.string().regex(/^\+[0-9]{10,15}$/, 'Phone number must be a valid E.164 number'),
@@ -45,8 +45,8 @@ userRoutes.get('/:id', asyncHandler(async (req, res) => {
   });
 }));
 
-userRoutes.delete('/', asyncHandler(async (req, res) => {
-  await deleteUser(req.auth0?.id!!);
+userRoutes.delete('/:id', asyncHandler(async (req, res) => {
+  await deleteUser(req.auth0!!, req.params.id);
   res.status(Status.OK);
 }));
 

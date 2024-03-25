@@ -1,7 +1,7 @@
 // Check that all required environment variables are set
 import { ManagementClient, UserInfoClient } from 'auth0';
 import LOGGER from '../configs/logging';
-import { Auth0User, APIError, Status } from '../types';
+import { APIError, Status } from '../types';
 
 if (!process.env.AUTH0_DOMAIN) {
   LOGGER.error('AUTH0_DOMAIN environment variable not set');
@@ -30,7 +30,7 @@ const managementClient = new ManagementClient({
   clientId: process.env.AUTH0_CLIENT_ID,
 });
 
-export const retrieveUserInfo = async (accessToken: string): Promise<Auth0User> => userInfoClient
+export const retrieveUserInfo = async (accessToken: string) => userInfoClient
   .getUserInfo(accessToken).then((user) => {
     if (user.status !== 200) {
       LOGGER.error(user.statusText);
