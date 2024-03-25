@@ -1,10 +1,10 @@
 export interface Auth0User {
   id: string;
   email: string;
-  isAdmin: boolean;
   firstName?: string;
   lastName?: string;
   picture?: string;
+  isAdmin?: boolean;
 }
 
 export enum AdType {

@@ -1,8 +1,8 @@
 import { User } from '../entities';
 import AppDataSource from '../configs/db';
 import LOGGER from '../configs/logging';
-import { setUserMetadata } from './auth0';
 import { APIError, Auth0User, Status } from '../types';
+import { retrieveAuth0Users } from './auth0';
 
 const isUserSetup = async (auth0Id: string): Promise<boolean> => {
   const user = await AppDataSource.getRepository(User)
@@ -23,9 +23,7 @@ export const setupUser = async (user: User): Promise<number> => {
 
   const result = await AppDataSource.getRepository(User)
     .insert(user);
-  const userId = result.identifiers[0].id;
-  await setUserMetadata(user.auth0Id, { userId });
-  return userId;
+  return result.identifiers[0].id;
 };
 
 export const getUser = async (auth0Id: string): Promise<User> => {
@@ -73,4 +71,30 @@ export const deleteUser = async (auth0User: Auth0User, auth0Id: string): Promise
   if (result.affected === 0) {
     LOGGER.info(`Delete user attempt for auth0_id ${auth0Id} did not affect any rows`);
   }
+};
+
+export const retrieveUsersBy = async (options?: {
+  name?: string;
+  email?: string;
+  major?: string;
+  year?: number;
+}) => {
+  const auth0Users = await retrieveAuth0Users(options);
+  const usersQuery = AppDataSource.getRepository(User)
+    .createQueryBuilder()
+    .where('LOWER(major) LIKE LOWER(:major)', { major: `%${options?.major || ''}%` });
+  if (options?.year) {
+    usersQuery.andWhere('year = :year', { year: options.year });
+  }
+  const users = await usersQuery.getMany();
+
+  // Merge the two arrays of users based on their shared auth0_id.
+  return auth0Users.filter((auth0User) => users.some((user) => user.auth0Id === auth0User.id))
+    .map((auth0User) => {
+      const user = users.find((u) => u.auth0Id === auth0User.id);
+      return {
+        ...auth0User,
+        ...user,
+      };
+    });
 };
