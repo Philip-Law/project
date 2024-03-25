@@ -1,9 +1,49 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect, useRef, ChangeEvent } from 'react'
 import '../style/CreatePost.css'
 import { useAuth0 } from '@auth0/auth0-react';
+import { FaUpload } from "react-icons/fa";
 
 const CreatePost = (): React.ReactElement => {
-    const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+    const { user, getAccessTokenSilently } = useAuth0();
+    const [images, setImages] = useState<File[]>([]);
+    const [displayImages, setDisplays] = useState<string[]>([]);
+    const [imageError, setImageError] = useState<string>('');
+
+    useEffect(() => {
+        const newImages: string[] = [];
+        for (let i = 0; i < images.length; i++) {
+          const reader = new FileReader()
+          reader.onload = (e) => {
+            if (e.target?.result) {
+              newImages.push(e.target.result.toString())
+              setDisplays(newImages)
+            }
+          };
+          reader.readAsDataURL(images[i])
+        }
+      
+      }, [images])
+
+    const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files
+        if (!files) return
+    
+        if (files.length + images.length > 5) {
+            setImageError('Cannot upload more than 5 images.')
+          return
+        }
+
+        const filesArray = Array.from(files);
+        setImages(filesArray);
+    
+      };
+
+      const handleImageDelete = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
+        event.preventDefault()
+        const updatedImages = [...images]
+        updatedImages.splice(index, 1)
+        setImages(updatedImages)
+      }
 
     const handleCreatePost = (async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -21,9 +61,7 @@ const CreatePost = (): React.ReactElement => {
         let token: string
         try {
             token = await getAccessTokenSilently()
-            console.log(user?.sub)
           } catch (e) {
-            console.log(e)
             return
         }
 
@@ -48,14 +86,68 @@ const CreatePost = (): React.ReactElement => {
             },
             body: JSON.stringify(formData)
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
                 console.log(token)
                 console.error('Ad could not be posted')
+            } else {
+                const jsonResponse = await response.json()
+                const postID = jsonResponse.id
+                uploadImages(postID)
+                return jsonResponse
             }
-            return response.json()
+            
         })
     })
+
+    const uploadImages = async (postID: string) => {
+        interface ImageDetails {
+            fieldname: string;
+            image: File;
+        }
+
+        var formData = {
+            id: postID,
+            files: [] as ImageDetails[]
+        }
+
+        images.forEach((image: File, index: number) => {
+            const imageDetails: ImageDetails = {
+                "fieldname": "post-images",
+                "image": image
+
+            }
+
+            formData.files.push(imageDetails);
+        });
+
+        console.log(JSON.stringify(formData))
+
+        let token: string
+        try {
+            token = await getAccessTokenSilently()
+          } catch (e) {
+            return
+        }
+
+        // fetch(`http://localhost:8080/post/image/upload/:${postID}`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'Authorization': `Bearer ${token}`
+        //     },
+        //     body: JSON.stringify(formData)
+        // })
+        // .then(response => {
+        //     if (!response.ok) {
+        //         console.log(token)
+        //         console.error('Ad could not be posted')
+        //     } else {
+        //         window.location.href = `/ad/${postID}`
+        //     }
+            
+        // })
+    }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
@@ -70,6 +162,28 @@ const CreatePost = (): React.ReactElement => {
                 <label htmlFor="adTitle">Title:</label>
                 <input type="text" id="adTitle" name="adTitle" required maxLength={200} onKeyDown={handleKeyDown}/>
                 <br/>
+
+                <label htmlFor="imageUpload" className="uploadLabel">Upload Images:</label>
+                <div id="imageUpload">
+                        <div id="arrowWrapper">
+                            <div id="uploadArrow"><FaUpload /></div>
+                        </div>
+                    <input type="file" id="adImages" name="adImages" multiple onChange={handleImageUpload}
+                        accept="image/jpeg, image/jpg, image/png"/>
+                </div>
+                {imageError && <div id="imageError">{imageError}</div>}
+                <div id="imagePreview">
+                    
+                        {displayImages.map((image, index) => (
+                            <div className="uploadedImages">
+                                <img key={index} src={image} />
+                                <button onClick={(event) => handleImageDelete(event, index)}>X</button>
+                            </div>
+                        ))}
+                    
+                </div>
+                <br/>
+
 
                 <label htmlFor="adType">Ad Type:</label>
                 <select id="adType" name="adType" required>

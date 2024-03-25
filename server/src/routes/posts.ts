@@ -1,15 +1,18 @@
 import router from 'express';
 import asyncHandler from 'express-async-handler';
 import { z } from 'zod';
+import multer from 'multer';
+import path from 'node:path';
 import { checkJwt, requireAuth0User } from '../middleware/authentication';
 import {
-  createPost, deletePost, getPost, getPostsByQuery,
+  createPost, deletePost, getPost, getPostsByQuery, getLocations
 } from '../services/posts';
-import { AdType, Status } from '../types';
+import { AdType, APIError, Status } from '../types';
+import { deletePostImages, getImageURLs, uploadImages } from '../services/file_store';
 
 const postRoutes = router();
 
-const postIdSchema = z.number().int('ID must be an integer').gte(0);
+const postIdSchema = z.coerce.number().int().min(1, 'Post ID must be a positive integer');
 
 const postQuerySchema = z.object({
   category: z.string().optional().transform((value) => value?.split(',') || []),
@@ -39,7 +42,12 @@ postRoutes.get('/details/:id', asyncHandler(async (req, res) => {
   res.status(Status.OK).json(post);
 }));
 
-postRoutes.post('/', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
+postRoutes.get('/locations', asyncHandler(async (req, res) => {
+  const posts = await getLocations();
+  res.status(Status.OK).json(posts);
+}));
+
+postRoutes.post('/', checkJwt, requireAuth0User(), asyncHandler(async (req, res) => {
   const postReq = postSchema.parse(req.body);
   const postId = await createPost(req.auth0?.id!!, postReq);
   res.status(Status.CREATED).json({
@@ -47,10 +55,44 @@ postRoutes.post('/', checkJwt, requireAuth0User, asyncHandler(async (req, res) =
   });
 }));
 
-postRoutes.delete('/:id', requireAuth0User, asyncHandler(async (req, res) => {
+postRoutes.delete('/:id', checkJwt, requireAuth0User(), asyncHandler(async (req, res) => {
   const id = postIdSchema.parse(req.params.id);
+  await deletePostImages(req.auth0?.id!!, id);
   await deletePost(req.auth0?.id!!, id);
-  res.status(Status.OK);
+  res.status(Status.OK).send();
+}));
+
+postRoutes.post(
+  '/image/upload/:id',
+  checkJwt,
+  requireAuth0User(),
+  multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 1024 * 1024 * 10, // 10MB
+    },
+    fileFilter: (req, file, callback) => {
+      const filetypes = /jpeg|jpg|png/;
+      const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+      if (!extname) {
+        callback(new APIError(Status.BAD_REQUEST, 'Only images (jpeg, jpg, png) are allowed.'));
+      } else {
+        callback(null, true);
+      }
+    },
+  }).array('post-images', 5),
+  asyncHandler(async (req, res) => {
+    const id = postIdSchema.parse(req.params.id);
+    const images = req.files as Express.Multer.File[];
+    await uploadImages(id, req.auth0?.id!!, images);
+    res.status(Status.OK).send();
+  }),
+);
+
+postRoutes.get('/image/:id', asyncHandler(async (req, res) => {
+  const id = postIdSchema.parse(req.params.id);
+  const images = await getImageURLs(id);
+  res.status(Status.OK).json(images);
 }));
 
 export default postRoutes;

@@ -36,9 +36,7 @@ export const createPost = async (
 
 export const getPost = async (postID: number): Promise<Post> => {
   const post = await AppDataSource.getRepository(Post)
-    .createQueryBuilder()
-    .where('id = :id', { id: postID })
-    .getOne();
+    .findOneBy({ id: postID });
 
   if (!post) {
     throw new APIError(
@@ -57,6 +55,13 @@ export const getPostsByQuery = async (query: GetPostQuery): Promise<Post[]> => A
   .andWhere('ad_type LIKE :adType', { adType: `%${query.adType || ''}%` })
   .andWhere('categories @> :categories', { categories: query.category || [] })
   .getMany();
+
+export const getLocations = async (): Promise<Post[]> => AppDataSource
+  .getRepository(Post)
+  .createQueryBuilder('post')
+  .select('location')
+  .distinct(true)
+  .getRawMany();
 
 export const deletePost = async (auth0Id: string, postID: number): Promise<void> => {
   const user = await getUser(auth0Id);

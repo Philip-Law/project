@@ -173,8 +173,8 @@ li, .next {
     }
 
     .img-container, .ad-content {
-        justify-content: center;
-        max-width: 100%;
+        justify-content: center !important;
+        max-width: 100% !important;
     }
 
     .ad-content #description {

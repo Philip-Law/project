@@ -1,19 +1,9 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import '../style/Listings.css'
+import type { ListingProps } from '../views/ListingPage'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock } from '@fortawesome/free-solid-svg-icons'
-
-export interface ListingProps {
-  id: number
-  title: string
-  adType: number
-  imgPath: string
-  description: string
-  location: string
-  categories: string
-  price: number
-  postDate: string
-}
 
 function calculateDaysAgo (dateString: string): number {
   const currentDate = new Date()
@@ -33,11 +23,15 @@ function calculateDaysAgo (dateString: string): number {
   return daysAgo
 }
 
-const Listing: React.FC<ListingProps> = ({ title, adType, imgPath, description, location, categories, price, postDate }): React.ReactElement => {
-  const daysAgo = calculateDaysAgo(postDate)
+const Listing: React.FC<ListingProps> = ({ title, adType, userID, imgPath, description, location, categories, price, postDate }): React.ReactElement => {
+  const navigate = useNavigate()
+  const daysAgo = calculateDaysAgo(postDate).toString()
+  const handleListingClick = (): void => {
+    navigate('/listing', { state: { title, adType, userID, imgPath, description, location, categories, price, daysAgo } })
+  }
   return (
-      <div className='listing'>
-        <div className='img-container'>
+      <div className='listing' onClick={handleListingClick}>
+        <div id='img-container'>
             <img src={`${imgPath}`} alt='ad' />
         </div>
         <div className='ad-content'>
@@ -53,7 +47,7 @@ const Listing: React.FC<ListingProps> = ({ title, adType, imgPath, description, 
             </div>
             <div className='post-info'>
                 <FontAwesomeIcon icon={faClock} />
-                <p>{daysAgo} {daysAgo > 1 ? 'days' : 'day'} ago</p>
+                <p>{parseInt(daysAgo)} {parseInt(daysAgo) > 1 ? 'days' : 'day'} ago</p>
                 <p>|</p>
                 <p>{adType === 1 ? 'For Sale' : 'For Rent'}</p>
             </div>

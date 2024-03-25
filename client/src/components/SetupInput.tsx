@@ -3,7 +3,7 @@ import '../style/Home.css'
 import { useAuth0 } from '@auth0/auth0-react';
 
 const SetupInput = (): React.ReactElement => {
-    const { user, getAccessTokenSilently } = useAuth0();
+    const { getAccessTokenSilently } = useAuth0();
 
     const handleSetupUser = (async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()

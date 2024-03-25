@@ -4,6 +4,7 @@ import Home from './views/Home'
 import NotFound from './views/NotFound'
 import { Auth0Provider } from '@auth0/auth0-react'
 import Profile from './views/Profile'
+import Conversations from './views/Conversations'
 import PostAd from './views/PostAd'
 import SetupUser from './views/SetupUser'
 
@@ -13,6 +14,7 @@ const App = (): React.ReactElement => {
     { path: '/profile', element: <Profile /> },
     { path: '/postad', element: <PostAd /> },
     { path: '/setup', element: <SetupUser /> },
+    { path: '/conversations', element: <Conversations /> },
     { path: '*', element: <NotFound /> }
   ])
 

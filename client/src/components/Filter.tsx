@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import '../style/Filter.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp, faLocationDot } from '@fortawesome/free-solid-svg-icons'
@@ -8,6 +8,27 @@ const Filter = (): React.ReactElement => {
   const [categories, setCategories] = useState<string[]>([])
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [selectedOption, setSelectedOption] = useState('Current Location')
+  const [locations, setLocations] = useState<string[]>([])
+
+  useEffect(() =>  {
+    const getLocations = async () => {
+      await fetch(`http://localhost:8080/post/locations`, {
+            method: 'GET',
+        })
+        .then(async response => {
+            if (!response.ok) {
+                console.error('Locations not found')
+            }
+            
+            const jsonResponse = await response.json()
+            console.log(jsonResponse)
+            const locationsArray = jsonResponse.map((item: { location: any }) => item.location)
+            setLocations(locationsArray)
+        })
+    }
+
+    getLocations()
+  }, [])
 
   const handleDropdownToggle = (): void => {
     setDropdownOpen(!dropdownOpen)
@@ -86,14 +107,9 @@ const Filter = (): React.ReactElement => {
                         <FontAwesomeIcon icon={dropdownOpen ? faChevronDown : faChevronUp } />
                 </div>
                 <ul id='list' className={`dropdown-list ${dropdownOpen ? 'show' : ''}`}>
-                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('Current Location') }}>Current Location</li>
-                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('Toronto') }}>Toronto</li>
-                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('Vaughan') }}>Vaughan</li>
-                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('Scarborough') }}>Scarborough</li>
-                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('North York') }}>North York</li>
-                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('Barrie') }}>Barrie</li>
-                        <li className='dropdown-list-item' onClick={() => { handleOptionSelect('Aurora') }}>Aurora</li>
-
+                        {locations.map((location) => (
+                          <li className='dropdown-list-item' onClick={() => { handleOptionSelect(location) }}>{location}</li>
+                        ))}
                 </ul>
             </div>
             <hr />
