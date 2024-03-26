@@ -52,8 +52,8 @@ postRoutes.post('/', checkJwt, requireAuth0User, asyncHandler(async (req, res) =
 
 postRoutes.delete('/:id', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
   const id = postIdSchema.parse(req.params.id);
-  await deletePostImages(req.auth0?.id!!, id);
-  await deletePost(req.auth0?.id!!, id);
+  await deletePostImages(req.auth0!!, id);
+  await deletePost(req.auth0!!, id);
   res.status(Status.OK).send();
 }));
 
@@ -76,8 +76,6 @@ postRoutes.post(
       }
     },
   }).array('post-images', 5),
-  checkJwt,
-  requireAuth0User,
   asyncHandler(async (req, res) => {
     const id = postIdSchema.parse(req.params.id);
     const images = req.files as Express.Multer.File[];

@@ -4,11 +4,17 @@ import Home from './views/Home'
 import NotFound from './views/NotFound'
 import { Auth0Provider } from '@auth0/auth0-react'
 import Profile from './views/Profile'
+import Conversations from './views/Conversations'
+import ListingPageWrapper from './components/ListingPageWrapper'
+import Admin from './views/Admin'
 
 const App = (): React.ReactElement => {
   const router = createBrowserRouter([
     { path: '/', element: <Home /> },
     { path: '/profile', element: <Profile /> },
+    { path: '/conversations', element: <Conversations /> },
+    { path: '/listing', element: <ListingPageWrapper /> },
+    { path: 'admin', element: <Admin /> },
     { path: '*', element: <NotFound /> }
   ])
 
@@ -20,7 +26,7 @@ const App = (): React.ReactElement => {
           domain={domain}
           clientId={clientId}
           authorizationParams={{
-            redirect_uri: window.location.origin,
+            redirect_uri: 'http://localhost:3000/profile',
             scope: 'openid profile email read:message',
             audience: process.env.REACT_APP_BACKEND_AUDIENCE
           }}
