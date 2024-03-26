@@ -4,17 +4,19 @@
   "description": "utility scripts for setting up projects",
   "main": "index.ts",
   "scripts": {
-    "populate": "ts-node ./scripts/populate.ts",
+    "create_users": "ts-node scripts/create_users.ts",
     "delete": "ts-node ./scripts/delete.ts",
     "get_users": "ts-node ./scripts/get_users.ts",
     "credentials": "ts-node ./scripts/access_credentials.ts",
-    "assign_admin": "ts-node ./scripts/assign_admin_role.ts"
+    "assign_admin": "ts-node ./scripts/assign_admin_role.ts",
+    "populate_db": "ts-node ./scripts/populate_database.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "auth0": "^4.3.1",
     "dotenv": "^16.4.5",
+    "pg-promise": "^11.5.5",
     "reflect-metadata": "^0.2.1"
   },
   "devDependencies": {
