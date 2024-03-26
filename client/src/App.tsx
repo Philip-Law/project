@@ -7,6 +7,8 @@ import Profile from './views/Profile'
 import Conversations from './views/Conversations'
 import PostAd from './views/PostAd'
 import SetupUser from './views/SetupUser'
+import ListingPageWrapper from './components/ListingPageWrapper'
+import Admin from './views/Admin'
 
 const App = (): React.ReactElement => {
   const router = createBrowserRouter([
@@ -15,6 +17,8 @@ const App = (): React.ReactElement => {
     { path: '/postad', element: <PostAd /> },
     { path: '/setup', element: <SetupUser /> },
     { path: '/conversations', element: <Conversations /> },
+    { path: '/listing/:id', element: <ListingPageWrapper /> },
+    { path: 'admin', element: <Admin /> },
     { path: '*', element: <NotFound /> }
   ])
 

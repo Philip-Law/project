@@ -23,16 +23,16 @@ function calculateDaysAgo (dateString: string): number {
   return daysAgo
 }
 
-const Listing: React.FC<ListingProps> = ({ title, adType, userID, imgPath, description, location, categories, price, postDate }): React.ReactElement => {
+const Listing: React.FC<ListingProps> = ({ title, adType, userID, imgPaths, description, location, categories, price, postDate }): React.ReactElement => {
   const navigate = useNavigate()
   const daysAgo = calculateDaysAgo(postDate).toString()
   const handleListingClick = (): void => {
-    navigate('/listing', { state: { title, adType, userID, imgPath, description, location, categories, price, daysAgo } })
+    navigate('/listing', { state: { title, adType, userID, imgPaths, description, location, categories, price, daysAgo } })
   }
   return (
       <div className='listing' onClick={handleListingClick}>
         <div id='img-container'>
-            <img src={`${imgPath}`} alt='ad' />
+            <img src={`${imgPaths}`} alt='ad' />
         </div>
         <div className='ad-content'>
             <div className='top'>

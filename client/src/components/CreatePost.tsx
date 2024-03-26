@@ -58,11 +58,10 @@ const CreatePost = (): React.ReactElement => {
             }
             return;
         }
-    
         setImages([...images, ...newImages]);
 
         if (event.target) {
-            (event.target as HTMLInputElement).value = '';
+            (event.target as HTMLInputElement).value = ''
         }
     }
     
@@ -133,7 +132,7 @@ const CreatePost = (): React.ReactElement => {
 
         var formData = new FormData()
         images.forEach(image => {
-            formData.append('customImage', image)
+            formData.append('post-images', image)
         })
 
         fetch(`http://localhost:8080/post/image/upload/${postID}`, {
@@ -144,15 +143,10 @@ const CreatePost = (): React.ReactElement => {
             body: formData
         })
         .then(async response => {
-            const back = await response.json()
-            console.log(back)
-            if (response.status !== 201) {
-                console.log(postID)
+            if (!response.ok) {
                 console.error('Images could not be uploaded')
             } else {
-                console.log(formData)
-                console.log("nice")
-                window.location.href = `/profile`
+                window.location.href = `/listing/${postID}`
             }
         })
     }
