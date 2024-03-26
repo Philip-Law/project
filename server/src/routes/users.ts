@@ -27,19 +27,15 @@ const userQuerySchema = z.object({
 
 userRoutes.put('/setup', asyncHandler(async (req, res) => {
   const parsedBody = userSchema.parse(req.body);
-  const userId = await setupUser(
-    new User(0, req.auth0?.id!!, parsedBody.phoneNumber, parsedBody.major, parsedBody.year),
-  );
-  res.status(Status.CREATED).json({
-    id: userId,
-    auth0Id: req.auth0?.id!!,
-  });
+  const user = new User(req.auth0?.id!!, parsedBody.phoneNumber, parsedBody.major, parsedBody.year);
+  await setupUser(user);
+  res.status(Status.CREATED).json(user);
 }));
 
 userRoutes.post('/update', asyncHandler(async (req, res) => {
   const parsedBody = userSchema.parse(req.body);
   const user = await updateUser(
-    new User(0, req.auth0?.id!!, parsedBody.phoneNumber, parsedBody.major, parsedBody.year),
+    new User(req.auth0?.id!!, parsedBody.phoneNumber, parsedBody.major, parsedBody.year),
   );
   res.status(Status.OK).json(user);
 }));

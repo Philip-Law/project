@@ -12,7 +12,7 @@ export const uploadImages = async (
   images: Express.Multer.File[],
 ): Promise<void> => {
   const post = await getPost(postId);
-  if (post.user.auth0Id !== auth0Id) {
+  if (post.user.id !== auth0Id) {
     throw new APIError(Status.FORBIDDEN, 'You are not authorized to upload images for this post');
   }
 
@@ -41,7 +41,7 @@ export const getImageURLs = async (postId: number): Promise<string[]> => {
 
 export const deletePostImages = async (auth0User: Auth0User, postId: number): Promise<void> => {
   const post = await getPost(postId);
-  if (post.user.auth0Id !== auth0User.id && !auth0User.isAdmin) {
+  if (post.user.id !== auth0User.id && !auth0User.isAdmin) {
     throw new APIError(Status.FORBIDDEN, 'You are not authorized to delete images for this post');
   }
 
