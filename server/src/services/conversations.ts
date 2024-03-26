@@ -19,16 +19,19 @@ export const createConversation = async (
   const post = await getPost(postId);
   if (!post) {
     LOGGER.info(`Post with id ${postId} not found`);
+    throw new APIError(Status.BAD_REQUEST, `Post with id ${postId} not found`);
   }
 
   const seller = await getUser(sellerId);
   if (!seller) {
     LOGGER.info(`Seller with id ${sellerId} not found`);
+    throw new APIError(Status.BAD_REQUEST, `Seller with id ${sellerId} not found`);
   }
 
   const buyer = await getUser(buyerId);
   if (!buyer) {
     LOGGER.info(`Buyer with id ${buyerId} not found`);
+    throw new APIError(Status.BAD_REQUEST, `Buyer with id ${buyerId} not found`);
   }
 
   const conversation = conversationRepository.create({
