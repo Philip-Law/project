@@ -1,20 +1,18 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column, Entity, PrimaryColumn,
+} from 'typeorm';
 
 @Entity('users')
 class User {
-  constructor(id: number, auth0Id: string, phoneNumber: string, major: string, year: number) {
-    this.id = id;
-    this.auth0Id = auth0Id;
+  constructor(auth0Id: string, phoneNumber: string, major: string, year: number) {
+    this.id = auth0Id;
     this.major = major;
     this.year = year;
     this.phoneNumber = phoneNumber;
   }
 
-  @PrimaryGeneratedColumn()
-    id: number;
-
-  @Column({ unique: true, name: 'auth0_id' })
-    auth0Id: string;
+  @PrimaryColumn({ name: 'id' })
+    id: string;
 
   @Column({ name: 'phone_number', length: 15 })
     phoneNumber: string;
