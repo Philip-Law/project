@@ -7,6 +7,7 @@ import { messageRoutes, postRoutes, userRoutes } from './routes';
 import LOGGER from './configs/logging';
 import errorHandler from './middleware/error_handler';
 import { setupBucketAndPolicy } from './configs/s3';
+import conversationRoutes from './routes/conversations';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -18,6 +19,7 @@ app.use('/user', userRoutes);
 app.use('/post', postRoutes);
 
 app.use('/message', messageRoutes);
+app.use('/conversation', conversationRoutes);
 app.use(errorHandler);
 
 AppDataSource.initialize()
