@@ -23,12 +23,20 @@ class Message {
   @PrimaryGeneratedColumn()
     id: number;
 
-  @ManyToOne(() => Conversation)
-  @JoinColumn({ name: 'conversation_id' })
+  @ManyToOne(
+    () => Conversation,
+    (conversation) => conversation.id,
+    { eager: true, onDelete: 'CASCADE' },
+  )
+  @JoinColumn({ name: 'conversation_id', referencedColumnName: 'id' })
     conversation: Conversation;
 
-  @ManyToOne(() => User, (user) => user.id)
-  @JoinColumn({ name: 'sender_id' })
+  @ManyToOne(
+    () => User,
+    (user) => user.id,
+    { eager: true, onDelete: 'CASCADE' },
+  )
+  @JoinColumn({ name: 'sender_id', referencedColumnName: 'id' })
     sender: User;
 
   @Column()
