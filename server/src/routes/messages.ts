@@ -10,7 +10,7 @@ const messageRoutes = router();
 const conversationIdSchema = z.number().int('Conversation ID must be an integer').gte(0);
 
 const messageSchema = z.object({
-  senderId: z.number().int('Sender ID must be an integer').gte(0),
+  senderId: z.string(),
   content: z.string({ description: 'Content must be a string' }).max(1000, 'Content must be no more than 1000 characters'),
 });
 

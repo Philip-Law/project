@@ -4,7 +4,7 @@ import { APIError, Status } from '../types';
 
 export const createMessage = async (
   conversationId: number,
-  senderId: number,
+  senderId: string, // this is an auth0 id string
   content: string,
 ): Promise<Message> => {
   const messageRepository = AppDataSource.getRepository(Message);
