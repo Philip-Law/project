@@ -14,10 +14,6 @@ const messageSchema = z.object({
   content: z.string(),
 });
 
-messageRoutes.get('/:conversation_id', checkJwt, requireAuth0User, (req, res) => {
-  res.send('all messages associated to a conversation');
-});
-
 // Post a new message to a specific conversation
 messageRoutes.post('/:conversationId', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
   const conversationId = conversationIdSchema.parse(parseInt(req.params.conversationId, 10));
