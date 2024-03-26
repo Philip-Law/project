@@ -11,7 +11,7 @@ const conversationIdSchema = z.number().int('Conversation ID must be an integer'
 
 const messageSchema = z.object({
   senderId: z.string(),
-  content: z.string({ description: 'Content must be a string' }).max(1000, 'Content must be no more than 1000 characters'),
+  content: z.string(),
 });
 
 messageRoutes.get('/:conversation_id', checkJwt, requireAuth0User, (req, res) => {

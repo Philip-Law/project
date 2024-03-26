@@ -1,33 +1,34 @@
-import { Conversation, User, Post } from '../entities';
+import { Conversation } from '../entities';
 import AppDataSource from '../configs/db';
 import { APIError, Status } from '../types';
+import { getUser } from './users';
+import { getPost } from './posts';
+import LOGGER from '../configs/logging';
 
 export const createConversation = async (
   postId: number,
-  sellerId: number,
-  buyerId: number,
+  sellerId: string, // auth0 id
+  buyerId: string, // auth0 id
 ): Promise<Conversation> => {
   if (sellerId === buyerId) {
     throw new APIError(Status.BAD_REQUEST, 'Seller and buyer cannot be the same user');
   }
 
   const conversationRepository = AppDataSource.getRepository(Conversation);
-  const postRepository = AppDataSource.getRepository(Post);
-  const userRepository = AppDataSource.getRepository(User);
 
-  const post = await postRepository.findOneBy({ id: postId });
+  const post = await getPost(postId);
   if (!post) {
-    throw new APIError(Status.NOT_FOUND, `Post with id ${postId} not found`);
+    LOGGER.info(`Post with id ${postId} not found`);
   }
 
-  const seller = await userRepository.findOneBy({ id: sellerId });
+  const seller = await getUser(sellerId);
   if (!seller) {
-    throw new APIError(Status.NOT_FOUND, `Seller with id ${sellerId} not found`);
+    LOGGER.info(`Seller with id ${sellerId} not found`);
   }
 
-  const buyer = await userRepository.findOneBy({ id: buyerId });
+  const buyer = await getUser(buyerId);
   if (!buyer) {
-    throw new APIError(Status.NOT_FOUND, `Buyer with id ${buyerId} not found`);
+    LOGGER.info(`Buyer with id ${buyerId} not found`);
   }
 
   const conversation = conversationRepository.create({
@@ -40,7 +41,7 @@ export const createConversation = async (
   return conversation;
 };
 
-export const getUserConversations = async (userId: number): Promise<Conversation[]> => {
+export const getUserConversations = async (userId: string): Promise<Conversation[]> => {
   const conversationRepository = AppDataSource.getRepository(Conversation);
 
   // Fetch conversations where the user is either the seller or the buyer
@@ -53,6 +54,15 @@ export const getUserConversations = async (userId: number): Promise<Conversation
     .getMany();
 
   return conversations;
+};
+
+export const getConversationById = async (conversationId: number): Promise<Conversation> => {
+  const conversationRepository = AppDataSource.getRepository(Conversation);
+  const conversation = await conversationRepository.findOneBy({ id: conversationId });
+  if (!conversation) {
+    throw new APIError(Status.NOT_FOUND, `Conversation with ID ${conversationId} not found`);
+  }
+  return conversation;
 };
 
 export const getConversationsByPost = async (postId: number): Promise<Conversation[]> => {

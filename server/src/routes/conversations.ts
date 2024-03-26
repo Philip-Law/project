@@ -16,7 +16,7 @@ conversationRoutes.post('/', requireAuth0User, asyncHandler(async (req, res) => 
 // Route to get all conversations for a user
 conversationRoutes.get('/user/:userId', requireAuth0User, asyncHandler(async (req, res) => {
   const { userId } = req.params; // Assuming the user's ID is provided in the URL
-  const conversations = await ConversationService.getUserConversations(parseInt(userId, 10));
+  const conversations = await ConversationService.getUserConversations(userId);
   res.json(conversations);
 }));
 

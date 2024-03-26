@@ -1,6 +1,7 @@
-import { Message, Conversation, User } from '../entities';
+import { Message, Conversation } from '../entities';
 import AppDataSource from '../configs/db';
 import { APIError, Status } from '../types';
+import { getUser } from './users';
 
 export const createMessage = async (
   conversationId: number,
@@ -9,7 +10,6 @@ export const createMessage = async (
 ): Promise<Message> => {
   const messageRepository = AppDataSource.getRepository(Message);
   const conversationRepository = AppDataSource.getRepository(Conversation);
-  const userRepository = AppDataSource.getRepository(User);
 
   // Validate if the conversation exists
   const conversation = await conversationRepository.findOneBy({ id: conversationId });
@@ -18,7 +18,7 @@ export const createMessage = async (
   }
 
   // Validate if the sender exists
-  const sender = await userRepository.findOneBy({ id: senderId });
+  const sender = await getUser(senderId);
   if (!sender) {
     throw new APIError(Status.NOT_FOUND, `User with ID ${senderId} not found`);
   }
