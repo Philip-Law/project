@@ -80,7 +80,7 @@ postRoutes.post(
         callback(null, true);
       }
     },
-  }).array('post-images', 5),
+  }).array('post-images', 4),
   asyncHandler(async (req, res) => {
     const id = postIdSchema.parse(req.params.id);
     const images = req.files as Express.Multer.File[];

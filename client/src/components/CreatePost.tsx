@@ -51,8 +51,8 @@ const CreatePost = (): React.ReactElement => {
             }
         });
     
-        if (newImages.length + images.length > 5) {
-            setImageError("Cannot upload more than 5 images.");
+        if (newImages.length + images.length > 4) {
+            setImageError("Cannot upload more than 4 images.");
             if (event.target) {
                 (event.target as HTMLInputElement).value = '';
             }
@@ -165,7 +165,7 @@ const CreatePost = (): React.ReactElement => {
                 <input type="text" id="adTitle" name="adTitle" required maxLength={200} onKeyDown={handleKeyDown}/>
                 <br/>
 
-                <label htmlFor="imageUpload" className="uploadLabel">Upload Images (up to 5):</label>
+                <label htmlFor="imageUpload" className="uploadLabel">Upload Images (up to 4):</label>
                 <div id="imageUpload">
                         <div id="arrowWrapper">
                             <div id="uploadArrow"><FaUpload /></div>
