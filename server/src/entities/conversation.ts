@@ -1,12 +1,12 @@
 import {
   Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn,
 } from 'typeorm';
-import DatabaseUser from './user';
 import Post from './post';
+import User from './user';
 
 @Entity('conversations')
 class Conversation {
-  constructor(id: number, post: Post, author: DatabaseUser, buyer: DatabaseUser) {
+  constructor(id: number, post: Post, author: User, buyer: User) {
     this.id = id;
     this.post = post;
     this.seller = author;
@@ -16,17 +16,29 @@ class Conversation {
   @PrimaryGeneratedColumn()
     id: number;
 
-  @ManyToOne(() => Post)
+  @ManyToOne(
+    () => Post,
+    (post) => post.id,
+    { onDelete: 'CASCADE' },
+  )
   @JoinColumn({ name: 'post_id' })
     post: Post;
 
-  @ManyToOne(() => DatabaseUser)
-  @JoinColumn({ name: 'seller_id' })
-    seller: DatabaseUser;
+  @ManyToOne(
+    () => User,
+    (user) => user.id,
+    { eager: true, onDelete: 'CASCADE' },
+  )
+  @JoinColumn({ name: 'seller_id', referencedColumnName: 'id' })
+    seller: User;
 
-  @ManyToOne(() => DatabaseUser)
-  @JoinColumn({ name: 'buyer_id' })
-    buyer: DatabaseUser;
+  @ManyToOne(
+    () => User,
+    (user) => user.id,
+    { eager: true, onDelete: 'CASCADE' },
+  )
+  @JoinColumn({ name: 'buyer_id', referencedColumnName: 'id' })
+    buyer: User;
 }
 
 export default Conversation;

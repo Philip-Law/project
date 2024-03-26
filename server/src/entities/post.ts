@@ -31,7 +31,11 @@ class Post {
   @PrimaryGeneratedColumn()
     id: number;
 
-  @ManyToOne(() => User, (user) => user.id, { eager: true })
+  @ManyToOne(
+    () => User,
+    (user) => user.id,
+    { eager: true, onDelete: 'CASCADE' },
+  )
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
     user: User;
 
