@@ -28,13 +28,11 @@ const ListingPageWrapper: React.FC = () => {
     try {
       const response = await fetch(`http://localhost:8080/post/details/${id}`, {
         method: 'GET',
-      });
-
+      })
       if (!response.ok) {
         console.error('Details not found')
         return;
       }
-
       const jsonResponse = await response.json()
       return jsonResponse
     } catch (error) {
@@ -69,10 +67,9 @@ const ListingPageWrapper: React.FC = () => {
       const listingD = await getDetails()
       const imageD = await getImages()
 
-      const adType = await convertType(listingD.adType)
       const listingInfo = {
         title: listingD.title,
-        adType: adType,
+        adType: await convertType(listingD.adType),
         imgPaths: imageD,
         userID: listingD.user.id,
         description: listingD.description,
@@ -80,7 +77,7 @@ const ListingPageWrapper: React.FC = () => {
         categories: Array.from(listingD.categories),
         price: listingD.price,
         postDate: listingD.postDate,
-        daysAgo: getDaysAgo(listingD.postDate)
+        daysAgo: await getDaysAgo(listingD.postDate)
       }
       setDetails(listingInfo)
     }
