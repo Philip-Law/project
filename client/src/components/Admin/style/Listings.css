@@ -20,6 +20,7 @@
     display: flex;
     flex-direction: row;
     justify-content: right;
+    align-items: center;
     gap: 0.5rem;
 }
 
@@ -30,6 +31,10 @@
     border: 1px solid #dddddd;
     padding: 0.5rem;
     font-size: 1rem;
+}
+
+input.disabled {
+    display: none;
 }
 
 .search button {
@@ -46,6 +51,31 @@
 .search button:hover {
     background-color: rgb(60, 60, 160);
     color: white;
+}
+
+.search select {
+    width: 10rem;
+    border-radius: 5px;
+    border: 1px solid #dddddd;
+    padding: 0.5rem;
+    font-size: 1rem;
+}
+
+.clear-search {
+    width: 10%;
+    margin-top: 1rem;
+    margin-left: auto;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: none;
+    color: white;
+    background-color: rgb(60, 60, 160);
+    transition: 0.3s ease-in-out;
+}
+
+.clear-search:hover {
+    background-color: rgb(226, 88, 38);
 }
 
 .listing-header p {
@@ -85,4 +115,15 @@ tr {
 tbody {
     background-color: #f1f1f1;
     border: 1px solid #dddddd;
+}
+
+td {
+    padding: 0.5rem;
+    border: 1px solid #dddddd;
+}
+
+td svg {
+    cursor: pointer;
+    color: red;
+    transition: 0.3s ease-in-out;
 }
