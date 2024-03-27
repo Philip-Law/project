@@ -76,12 +76,3 @@ export const getConversationByPost = async (
   }
   return conversation;
 };
-
-export const getConversationById = async (conversationId: number): Promise<Conversation> => {
-  const conversationRepository = AppDataSource.getRepository(Conversation);
-  const conversation = await conversationRepository.findOneBy({ id: conversationId });
-  if (!conversation) {
-    throw new APIError(Status.NOT_FOUND, `Conversation with ID ${conversationId} not found`);
-  }
-  return conversation;
-};
