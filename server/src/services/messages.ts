@@ -21,10 +21,15 @@ export const createMessage = async (
     throw new APIError(Status.NOT_FOUND, `User with ID ${senderId} not found`);
   }
 
+  // Validate that the sender is part of the conversation.
+  if (conversation.buyer.id !== senderId && conversation.seller.id !== senderId) {
+    throw new APIError(Status.FORBIDDEN, 'You are not part of this conversation');
+  }
+
   // Create the message
   const messageRepository = AppDataSource.getRepository(Message);
   const message = messageRepository.create({
-    conversation, // Use the retrieved conversation entity
+    conversation,
     sender, // Use the retrieved sender (user) entity
     content,
   });

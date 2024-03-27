@@ -5,10 +5,19 @@ import { getUser } from './users';
 import { getPost } from './posts';
 import LOGGER from '../configs/logging';
 
+const hasConversation = async (postId: number, userId: string): Promise<boolean> => {
+  const conversationRepository = AppDataSource.getRepository(Conversation);
+  return conversationRepository.existsBy({ post: { id: postId }, buyer: { id: userId } });
+};
+
 export const createConversation = async (
   postId: number,
   buyerId: string, // auth0 id
 ): Promise<Conversation> => {
+  if (await hasConversation(postId, buyerId)) {
+    throw new APIError(Status.BAD_REQUEST, 'Conversation already exists for this post and user');
+  }
+
   const post = await getPost(postId);
   if (!post) {
     LOGGER.info(`Post with id ${postId} not found`);
