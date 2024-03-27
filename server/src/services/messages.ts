@@ -8,10 +8,8 @@ export const createMessage = async (
   senderId: string, // this is an auth0 id string
   content: string,
 ): Promise<Message> => {
-  const messageRepository = AppDataSource.getRepository(Message);
-  const conversationRepository = AppDataSource.getRepository(Conversation);
-
   // Validate if the conversation exists
+  const conversationRepository = AppDataSource.getRepository(Conversation);
   const conversation = await conversationRepository.findOneBy({ id: conversationId });
   if (!conversation) {
     throw new APIError(Status.NOT_FOUND, `Conversation with ID ${conversationId} not found`);
@@ -24,6 +22,7 @@ export const createMessage = async (
   }
 
   // Create the message
+  const messageRepository = AppDataSource.getRepository(Message);
   const message = messageRepository.create({
     conversation, // Use the retrieved conversation entity
     sender, // Use the retrieved sender (user) entity

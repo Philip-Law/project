@@ -38,7 +38,10 @@ export const createPost = async (
 
 export const getPost = async (postID: number): Promise<Post> => {
   const post = await AppDataSource.getRepository(Post)
-    .findOneBy({ id: postID });
+    .findOne({
+      where: { id: postID },
+      relations: ['user'],
+    });
 
   if (!post) {
     throw new APIError(

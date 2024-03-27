@@ -7,19 +7,22 @@ import LOGGER from '../configs/logging';
 
 export const createConversation = async (
   postId: number,
-  sellerId: string, // auth0 id
   buyerId: string, // auth0 id
 ): Promise<Conversation> => {
-  if (sellerId === buyerId) {
-    throw new APIError(Status.BAD_REQUEST, 'Seller and buyer cannot be the same user');
-  }
-
-  const conversationRepository = AppDataSource.getRepository(Conversation);
-
   const post = await getPost(postId);
   if (!post) {
     LOGGER.info(`Post with id ${postId} not found`);
     throw new APIError(Status.BAD_REQUEST, `Post with id ${postId} not found`);
+  }
+  const sellerId = post.user.id;
+
+  if (sellerId === buyerId) {
+    throw new APIError(Status.BAD_REQUEST, 'Seller and buyer cannot be the same user');
+  }
+
+  if (post.user.id !== sellerId) {
+    LOGGER.info(`Seller with id ${sellerId} is not the seller of post with id ${postId}`);
+    throw new APIError(Status.BAD_REQUEST, `Seller with id ${sellerId} is not the seller of post with id ${postId}`);
   }
 
   const seller = await getUser(sellerId);
@@ -34,6 +37,7 @@ export const createConversation = async (
     throw new APIError(Status.BAD_REQUEST, `Buyer with id ${buyerId} not found`);
   }
 
+  const conversationRepository = AppDataSource.getRepository(Conversation);
   const conversation = conversationRepository.create({
     post,
     seller,
@@ -48,15 +52,29 @@ export const getUserConversations = async (userId: string): Promise<Conversation
   const conversationRepository = AppDataSource.getRepository(Conversation);
 
   // Fetch conversations where the user is either the seller or the buyer
-  const conversations = await conversationRepository
+  return conversationRepository
     .createQueryBuilder('conversation')
     .leftJoinAndSelect('conversation.post', 'post')
     .leftJoinAndSelect('conversation.seller', 'seller')
     .leftJoinAndSelect('conversation.buyer', 'buyer')
     .where('conversation.seller = :userId OR conversation.buyer = :userId', { userId })
     .getMany();
+};
 
-  return conversations;
+export const getConversationByPost = async (
+  postId: number,
+  userId: string,
+): Promise<Conversation> => {
+  const conversationRepository = AppDataSource.getRepository(Conversation);
+  const conversation = await conversationRepository.findOne({
+    where: { post: { id: postId }, buyer: { id: userId } },
+    relations: ['post', 'seller', 'buyer'], // Load relations if necessary
+  });
+
+  if (!conversation) {
+    throw new APIError(Status.NOT_FOUND, `Conversation for post with ID ${postId} not found`);
+  }
+  return conversation;
 };
 
 export const getConversationById = async (conversationId: number): Promise<Conversation> => {
@@ -66,13 +84,4 @@ export const getConversationById = async (conversationId: number): Promise<Conve
     throw new APIError(Status.NOT_FOUND, `Conversation with ID ${conversationId} not found`);
   }
   return conversation;
-};
-
-export const getConversationsByPost = async (postId: number): Promise<Conversation[]> => {
-  const conversationRepository = AppDataSource.getRepository(Conversation);
-  const conversations = await conversationRepository.find({
-    where: { post: { id: postId } }, // Update the where condition to match the post relation
-    relations: ['post', 'seller', 'buyer'], // Load relations if necessary
-  });
-  return conversations;
 };
