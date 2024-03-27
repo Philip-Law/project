@@ -15,9 +15,9 @@ const Profile = (): React.ReactElement => {
     major: '',
     year: 1
   })
-
   const validateProfile = (): boolean => {
-    return profileInfo.phoneNumber.length === 11 &&
+    console.log(profileInfo.phoneNumber.length)
+    return profileInfo.phoneNumber.length === 12 &&
     profileInfo.major.length > 0 &&
     /^\+[0-9]{10,15}$/.test(profileInfo.phoneNumber)
   }
@@ -48,6 +48,7 @@ const Profile = (): React.ReactElement => {
       })
       if (response.status === 200) {
         setIsEditing(false)
+        window.location.reload()
       }
     } else if (isEditing && !isFirstTime) {
       const response = await fetch('http://localhost:8080/user/update', {
@@ -60,6 +61,7 @@ const Profile = (): React.ReactElement => {
       })
       if (response.status === 200) {
         setIsEditing(false)
+        window.location.reload()
       }
     } else {
       setIsEditing(true)
@@ -193,7 +195,11 @@ const Profile = (): React.ReactElement => {
                     </div>
                     : <div className='profile-info'>
                         <div className='program-row'>
-                          <p><strong>{profileInfo.year}{profileInfo.year > 1 ? 'nd' : 'st'} Year</strong>:</p>
+                            {
+                            isFirstTime
+                              ? <p>Click the <strong>prompt</strong> above to setup your account.</p>
+                              : <p><strong>{profileInfo.year}{profileInfo.year > 1 ? 'nd' : 'st'} Year</strong>:</p>
+                            }
                           <p>{profileInfo.major}</p>
                         </div>
                         <p>{formatPhoneNumber(profileInfo.phoneNumber)}</p>
