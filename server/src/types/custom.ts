@@ -4,6 +4,7 @@ export interface Auth0User {
   firstName?: string;
   lastName?: string;
   picture?: string;
+  isAdmin?: boolean;
 }
 
 export enum AdType {

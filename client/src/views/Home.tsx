@@ -61,26 +61,27 @@ const Home = (): React.ReactElement => {
     const renderPosts = async (): Promise<any> => {
       const posts = await getListings()
 
-      const newListings = await Promise.all(posts.map(async (post: any) => {
-        const img = await getImage(post.id as string)
-        if (img !== undefined) {
-          const listingInfo = {
-            id: post.id,
-            title: post.title,
-            adType: await convertType(post.adType as string),
-            imgPaths: img,
-            description: post.description,
-            location: post.location,
-            categories: Array.from(post.categories as string),
-            price: post.price,
-            postDate: post.postDate
+      if (posts !== undefined) {
+        const newListings = await Promise.all(posts.map(async (post: any) => {
+          const img = await getImage(post.id as string)
+          if (img !== undefined) {
+            const listingInfo = {
+              id: post.id,
+              title: post.title,
+              adType: await convertType(post.adType as string),
+              imgPaths: img,
+              description: post.description,
+              location: post.location,
+              categories: Array.from(post.categories as string),
+              price: post.price,
+              postDate: post.postDate
+            }
+
+            return listingInfo
           }
-
-          return listingInfo
-        }
-      }))
-
-      setListings(newListings)
+        }))
+        setListings(newListings)
+      }
     }
     void renderPosts()
   }, [])

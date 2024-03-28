@@ -1,7 +1,9 @@
 import { Post } from '../entities';
 import AppDataSource from '../configs/db';
 import { getUser } from './users';
-import { AdType, APIError, Status } from '../types';
+import {
+  AdType, APIError, Auth0User, Status,
+} from '../types';
 import LOGGER from '../configs/logging';
 
 interface CreatePostRequest {
@@ -36,7 +38,10 @@ export const createPost = async (
 
 export const getPost = async (postID: number): Promise<Post> => {
   const post = await AppDataSource.getRepository(Post)
-    .findOneBy({ id: postID });
+    .findOne({
+      where: { id: postID },
+      relations: ['user'],
+    });
 
   if (!post) {
     throw new APIError(
@@ -63,11 +68,11 @@ export const getLocations = async (): Promise<Post[]> => AppDataSource
   .distinct(true)
   .getRawMany();
 
-export const deletePost = async (auth0Id: string, postID: number): Promise<void> => {
-  const user = await getUser(auth0Id);
+export const deletePost = async (auth0User: Auth0User, postID: number): Promise<void> => {
+  const user = await getUser(auth0User.id);
   const post = await getPost(postID);
 
-  if (user.id !== post.user.id) {
+  if (user.id !== post.user.id && !auth0User.isAdmin) {
     throw new APIError(
       Status.FORBIDDEN,
       'User does not have permission to delete this post',
