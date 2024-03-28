@@ -12,7 +12,7 @@ export interface ListingProps {
   id: number
   title: string
   userID: number
-  adType: number
+  adType: string
   imgPaths: string[]
   description: string
   location: string
@@ -41,7 +41,7 @@ const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, imgPaths, 
                             <FontAwesomeIcon icon={faLocationDot} />
                         </div>
                         <div className='content-listing-child-icon-container right'>
-                            <p id='date'>{parseInt(daysAgo ?? '0')} {parseInt(daysAgo ?? '0') != 1 ? 'days' : 'day'} ago ({adType})</p>
+                            <p id='date'>{parseInt(daysAgo ?? '0')} {parseInt(daysAgo ?? '0') !== 1 ? 'days' : 'day'} ago ({adType})</p>
                             <p id='location'>
                                 {location}
                                 <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`} target="_blank" rel="noopener noreferrer" className='map'>
@@ -54,15 +54,19 @@ const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, imgPaths, 
                 <div className='content-listing-child-information'>
                     <div className='content-listing-child left'>
                         <div className='img-container'>
-                            {imgPaths[0] ? (<img id='main' src={imgPaths[0]} alt='ad' />) :
-                            (<img id='main' src={PLACEHOLDER_IMAGE} alt='ad' />)}
+                            {(imgPaths[0] !== undefined)
+                              ? (<img id='main' src={imgPaths[0]} alt='ad' />)
+                              : (<img id='main' src={PLACEHOLDER_IMAGE} alt='ad' />)}
                             <div className='other-images'>
-                                {imgPaths[1] ? (<img src={imgPaths[3]} alt='ad' />) :
-                                (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
-                                {imgPaths[2] ? (<img src={imgPaths[3]} alt='ad' />) :
-                                (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
-                                {imgPaths[3] ? (<img src={imgPaths[3]} alt='ad' />) :
-                                (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
+                                {(imgPaths[1] !== undefined)
+                                  ? (<img src={imgPaths[3]} alt='ad' />)
+                                  : (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
+                                {(imgPaths[2] !== undefined)
+                                  ? (<img src={imgPaths[3]} alt='ad' />)
+                                  : (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
+                                {(imgPaths[3] !== undefined)
+                                  ? (<img src={imgPaths[3]} alt='ad' />)
+                                  : (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
                             </div>
 
                         </div>

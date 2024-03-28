@@ -11,23 +11,23 @@ const FilterMobile = (): React.ReactElement => {
   const [isOpen, setOpen] = useState(false)
   const [locations, setLocations] = useState<string[]>([])
 
-  useEffect(() =>  {
-    const getLocations = async () => {
-      await fetch(`http://localhost:8080/post/locations`, {
-            method: 'GET',
-        })
+  useEffect(() => {
+    const getLocations = async (): Promise<void> => {
+      await fetch('http://localhost:8080/post/locations', {
+        method: 'GET'
+      })
         .then(async response => {
-            if (!response.ok) {
-                console.error('Locations not found')
-            }
-            
-            const jsonResponse = await response.json()
-            const locationsArray = jsonResponse.map((item: { location: any }) => item.location)
-            setLocations(locationsArray)
+          if (!response.ok) {
+            console.error('Locations not found')
+          }
+
+          const jsonResponse = await response.json()
+          const locationsArray = jsonResponse.map((item: { location: any }) => item.location)
+          setLocations(locationsArray as string[])
         })
     }
 
-    getLocations()
+    void getLocations()
   }, [])
 
   const handleOpen = (): void => {
@@ -121,7 +121,7 @@ const FilterMobile = (): React.ReactElement => {
                         </div>
                         <ul id='list' className={`dropdown-list ${dropdownOpen ? 'show' : ''}`}>
                                 {locations.map((location) => (
-                                  <li className='dropdown-list-item' onClick={() => { handleOptionSelect(location) }}>{location}</li>
+                                  <li key={location} className='dropdown-list-item' onClick={() => { handleOptionSelect(location) }}>{location}</li>
                                 ))}
 
                         </ul>

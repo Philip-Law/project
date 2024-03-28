@@ -1,10 +1,37 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import ListingPage from '../views/ListingPage'
 
+interface ListingInfo {
+  id: number
+  title: string
+  adType: string
+  imgPaths: string[]
+  userID: number
+  description: string
+  location: string
+  categories: string[]
+  price: number
+  postDate: string
+  daysAgo: string
+}
+
 const ListingPageWrapper: React.FC = () => {
-  const [listingDetails, setDetails] = useState<any>({})
-  const { id } = useParams<{ id: string }>();
+  const initialListingInfo: ListingInfo = {
+    id: 0,
+    title: '',
+    adType: '',
+    imgPaths: [],
+    userID: 0,
+    description: '',
+    location: '',
+    categories: [],
+    price: 0,
+    postDate: '',
+    daysAgo: ''
+  }
+  const [listingDetails, setDetails] = useState<ListingInfo>(initialListingInfo)
+  const { id } = useParams<{ id: string }>()
 
   const convertType = async (input: string): Promise<string> => {
     if (input === 'W') {
@@ -16,22 +43,22 @@ const ListingPageWrapper: React.FC = () => {
     }
   }
 
-  const getDaysAgo = async(dateString: string) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const diffTime = today.getTime() - date.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+  const getDaysAgo = async (dateString: string): Promise<string> => {
+    const date = new Date(dateString)
+    const today = new Date()
+    const diffTime = today.getTime() - date.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays.toString()
   }
 
-  const getDetails = async () => {
+  const getDetails = async (): Promise<any> => {
     try {
       const response = await fetch(`http://localhost:8080/post/details/${id}`, {
-        method: 'GET',
+        method: 'GET'
       })
       if (!response.ok) {
         console.error('Details not found')
-        return;
+        return
       }
       const jsonResponse = await response.json()
       return jsonResponse
@@ -40,15 +67,15 @@ const ListingPageWrapper: React.FC = () => {
     }
   }
 
-  const getImages = async () => {
+  const getImages = async (): Promise<any> => {
     try {
       const response = await fetch(`http://localhost:8080/post/image/${id}`, {
-        method: 'GET',
-      });
+        method: 'GET'
+      })
 
       if (!response.ok) {
         console.error('Images not found')
-        return;
+        return
       }
       const jsonResponse = await response.json()
       return jsonResponse
@@ -62,32 +89,32 @@ const ListingPageWrapper: React.FC = () => {
   }, [listingDetails])
 
   useEffect(() => {
-    
-    const fillDetails = async() => {
+    const fillDetails = async (): Promise<void> => {
       const listingD = await getDetails()
       const imageD = await getImages()
 
       const listingInfo = {
+        id: listingD.id,
         title: listingD.title,
-        adType: await convertType(listingD.adType),
+        adType: await convertType(listingD.adType as string),
         imgPaths: imageD,
         userID: listingD.user.id,
         description: listingD.description,
         location: listingD.location,
-        categories: Array.from(listingD.categories),
+        categories: Array.from(listingD.categories as string),
         price: listingD.price,
         postDate: listingD.postDate,
-        daysAgo: await getDaysAgo(listingD.postDate)
+        daysAgo: await getDaysAgo(listingD.postDate as string)
       }
       setDetails(listingInfo)
     }
-    fillDetails()
+    void fillDetails()
   }, [])
 
   if (Object.keys(listingDetails).length === 0) {
     return <div>No listing details provided.</div>
   }
   return <ListingPage {...listingDetails} />
-};
+}
 
-export default ListingPageWrapper;
+export default ListingPageWrapper

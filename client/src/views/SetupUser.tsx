@@ -3,7 +3,7 @@ import '../style/Home.css'
 import Nav from './Nav'
 import SetupInput from '../components/SetupInput'
 
-const PostAd = (): React.ReactElement => {
+const SetupUser = (): React.ReactElement => {
   return (
         <div className="App">
             <header className="App-header">
@@ -16,4 +16,4 @@ const PostAd = (): React.ReactElement => {
   )
 }
 
-export default PostAd
+export default SetupUser
