@@ -43,7 +43,7 @@ const ListingPage: React.FC<ListingProps> = ({ id, title, adType, userID, imgPat
       if (!response.ok) {
         console.log('Response error status: ', response.status)
       }
-      navigate('/conversation')
+      navigate('/conversations', { state: { userID } })
     } catch (error) {
       console.log(error)
     }

@@ -10,9 +10,9 @@ export interface Messages {
 
 export interface Conversation {
   id: number
-  post_id: number
-  seller_id: number
-  buyer_id: number
+  postId: number
+  sellerId: string
+  buyerId: string
   messages: Messages[]
 }
 
@@ -20,7 +20,7 @@ const ViewConversation: React.FC<Conversation> = (props: Conversation): React.Re
   return (
         <div className='conversation'>
         <div className='conversation-header'>
-            <h2>Conversation with {props.buyer_id}</h2>
+            <h2>Conversation with {props.buyerId}</h2>
         </div>
         <div className='conversation-messages'>
             {props.messages.map((message: Messages) => (

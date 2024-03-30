@@ -13,7 +13,7 @@ const postIdSchema = z.coerce.number().int().min(1, 'Post ID must be a positive 
 const toConversationResponse = (conversation: Conversation) => ({
   id: conversation.id,
   postId: conversation.post.id,
-  boyerId: conversation.buyer.id,
+  buyerId: conversation.buyer.id,
   sellerId: conversation.seller.id,
 });
 
