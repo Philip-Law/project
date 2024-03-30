@@ -27,7 +27,7 @@ const Listing: React.FC<ListingProps> = ({ id, title, adType, userID, imgPaths, 
         </div>
         <div className='ad-content'>
             <div className='top'>
-                <p id='price'>${price % 1 !== 0 ? price.toFixed(2) : price + '.00'}</p>
+                <p id='price'>${price % 1 !== 0 ? Math.round(price * 100) / 100 : price + '.00'}</p>
                 <h3>{title}</h3>
                 <div className='sub-info'>
                     <p>{location}</p>
