@@ -80,7 +80,6 @@ const ListingPageWrapper: React.FC = () => {
         return
       }
       const jsonResponse = await response.json()
-      console.log(jsonResponse)
       return jsonResponse
     } catch (error) {
       console.error('Error fetching images:', error)

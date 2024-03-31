@@ -13,7 +13,8 @@ const Home = (): React.ReactElement => {
   const [p] = useSearchParams()
   const [filters, setFilters] = useState<any>({
     location: '',
-    adType: []
+    adType: [],
+    sort: ''
   })
 
   const convertType = async (input: string): Promise<string> => {
@@ -52,6 +53,7 @@ const Home = (): React.ReactElement => {
       const title = p.get('title') !== null ? p.get('title') : ''
       const location = filters.location.trim()
       const adTypes = filters.adType
+      const sortBy = filters.sort
 
       let url: string = 'http://localhost:8080/post?'
       if (title !== '') {
@@ -63,8 +65,10 @@ const Home = (): React.ReactElement => {
       if (adTypes.length > 0) {
         url += `&adType=${adTypes}`
       }
+      if (sortBy !== '') {
+        url += `&sort=${sortBy}`
+      }
 
-      console.log(url)
       const response = await fetch(url, {
         method: 'GET'
       })
@@ -73,7 +77,6 @@ const Home = (): React.ReactElement => {
         return {}
       }
       const jsonResponse = await response.json()
-      console.log(jsonResponse)
       return jsonResponse
     } catch (error) {
       console.error('Error fetching details:', error)
@@ -118,7 +121,7 @@ const Home = (): React.ReactElement => {
                 <Nav/>
                 <div className='content'>
                   <Filter setFilters={setFilters}/>
-                  <FilterMobile/>
+                  <FilterMobile setFilters={setFilters}/>
                   <Listings response={listings}/>
                 </div>
             </header>

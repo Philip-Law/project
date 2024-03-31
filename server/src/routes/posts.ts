@@ -20,6 +20,7 @@ const postQuerySchema = z.object({
   adType: z.string().optional().transform((value) => value?.split(',') || []),
   location: z.string().optional(),
   title: z.string().optional(),
+  sort: z.string().optional(),
 });
 
 const postSchema = z.object({

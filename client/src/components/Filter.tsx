@@ -4,14 +4,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp, faLocationDot } from '@fortawesome/free-solid-svg-icons'
 
 interface FilterProps {
-  setFilters: React.Dispatch<React.SetStateAction<{ location?: string, adType?: string[] }>>
+  setFilters: React.Dispatch<React.SetStateAction<{ location?: string, adType?: string[], sort: string }>>
 }
 
 const Filter: React.FC<FilterProps> = ({ setFilters }): React.ReactElement => {
-  const [sortBy, setSortBy] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState<string>('')
   const [categories, setCategories] = useState<string[]>([])
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [selectedOption, setSelectedOption] = useState('Current Location')
+  const [selectedOption, setSelectedOption] = useState('Select a Location')
   const [locations, setLocations] = useState<string[]>([])
 
   useEffect(() => {
@@ -52,43 +52,33 @@ const Filter: React.FC<FilterProps> = ({ setFilters }): React.ReactElement => {
 
   const handleSortByChange = (sortByValue: string): void => {
     if (sortBy === sortByValue) {
-      setSortBy(null)
+      setSortBy('')
     } else {
       setSortBy(sortByValue)
     }
   }
 
   const handleClearFilters = (): void => {
-    setSortBy(null)
+    setSortBy('')
     setCategories([])
-    setSelectedOption('Current Location')
+    setSelectedOption('Select a Location')
 
     setFilters(prevFilters => ({
       ...prevFilters,
       location: '',
-      adType: []
+      adType: [],
+      sort: ''
     }))
   }
 
   const handleApplyFilters = (): void => {
     console.log('Applying filters')
-    if (selectedOption === 'Current Location') {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords
-          console.log('Latitude:', latitude)
-          console.log('Longitude:', longitude)
-        },
-        (error) => {
-          console.error('Error getting location:', error.message)
-        }
-      )
-    }
 
     setFilters(prevFilters => ({
       ...prevFilters,
-      location: selectedOption !== 'Current Location' ? selectedOption : ' ',
-      adType: categories
+      location: selectedOption !== 'Select a Location' ? selectedOption : ' ',
+      adType: categories,
+      sort: sortBy
     }))
   }
 
@@ -131,19 +121,19 @@ const Filter: React.FC<FilterProps> = ({ setFilters }): React.ReactElement => {
             <hr />
             <h3>Sort By</h3>
             <div className='check'>
-                <input type="radio" id="lowToHigh" name="sortBy" value="lowToHigh" onChange={() => { handleSortByChange('lowToHigh') }} checked={sortBy === 'lowToHigh'} />
+                <input type="radio" id="lowToHigh" name="sortBy" value="price|ASC" onChange={() => { handleSortByChange('price|ASC') }} checked={sortBy === 'price|ASC'} />
                 <label htmlFor="lowToHigh"><strong>Price:</strong> Low to High</label><br />
             </div>
             <div className='check'>
-                <input type="radio" id="highToLow" name="sortBy" value="highToLow" onChange={() => { handleSortByChange('highToLow') }} checked={sortBy === 'highToLow'} />
+                <input type="radio" id="highToLow" name="sortBy" value="price|DESC" onChange={() => { handleSortByChange('price|DESC') }} checked={sortBy === 'price|DESC'} />
                 <label htmlFor="highToLow"><strong>Price:</strong> High to Low</label><br />
             </div>
             <div className='check'>
-                <input type="radio" id="newestToOldest" name="sortBy" value="newestToOldest" onChange={() => { handleSortByChange('newestToOldest') }} checked={sortBy === 'newestToOldest'} />
+                <input type="radio" id="newestToOldest" name="sortBy" value="post_date|DESC" onChange={() => { handleSortByChange('post_date|DESC') }} checked={sortBy === 'post_date|DESC'} />
                 <label htmlFor="newestToOldest"><strong>Date:</strong> Newest to Oldest</label><br />
             </div>
             <div className='check'>
-                <input type="radio" id="oldestToNewest" name="sortBy" value="oldestToNewest" onChange={() => { handleSortByChange('oldestToNewest') }} checked={sortBy === 'oldestToNewest'} />
+                <input type="radio" id="oldestToNewest" name="sortBy" value="post_date|ASC" onChange={() => { handleSortByChange('post_date|ASC') }} checked={sortBy === 'post_date|ASC'} />
                 <label htmlFor="oldestToNewest"><strong>Date:</strong> Oldest to Newest</label><br />
             </div>
         </div>

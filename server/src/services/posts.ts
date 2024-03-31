@@ -5,6 +5,7 @@ import {
   AdType, APIError, Auth0User, Status,
 } from '../types';
 import LOGGER from '../configs/logging';
+import { Sort } from 'typeorm';
 
 interface CreatePostRequest {
   title: string;
@@ -20,6 +21,7 @@ interface GetPostQuery {
   adType?: string[];
   location?: string;
   title?: string;
+  sort?: string;
 }
 
 export const createPost = async (
@@ -62,6 +64,14 @@ export const getPostsByQuery = async (query: GetPostQuery): Promise<Post[]> => {
 
     if (query.adType && query.adType.length > 0) {
       queryBuilder = queryBuilder.andWhere('ad_type = ANY(:adTypes)', { adTypes: query.adType })
+    }
+    if (query.sort && query.sort !== '') {
+      const [field, order] = query.sort.split('|');
+      if (order === 'DESC') {
+        queryBuilder = queryBuilder.orderBy(field, 'DESC');
+      } else {
+        queryBuilder = queryBuilder.orderBy(field, 'ASC');
+      }
     }
     
     return queryBuilder.getMany();
