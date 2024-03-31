@@ -119,8 +119,6 @@ const CreatePost = (): React.ReactElement => {
           const jsonResponse = await response.json()
           const postID = jsonResponse.postId
           void uploadImages(postID as string, token)
-          console.log(jsonResponse)
-          // return jsonResponse
         }
       })
   }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import '../style/Home.css'
 import Nav from './Nav'
 import Filter from '../components/Filter'
@@ -9,6 +10,11 @@ const PLACEHOLDER_IMAGE = '/assets/placeholder.jpg'
 
 const Home = (): React.ReactElement => {
   const [listings, setListings] = useState<any>([])
+  const [p] = useSearchParams()
+  const [filters, setFilters] = useState<any>({
+    location: '',
+    adType: []
+  })
 
   const convertType = async (input: string): Promise<string> => {
     if (input === 'W') {
@@ -43,7 +49,27 @@ const Home = (): React.ReactElement => {
 
   const getListings = async (): Promise<any> => {
     try {
-      const response = await fetch('http://localhost:8080/post', {
+      const title = p.get('title') !== null ? p.get('title') : ''
+      const location = filters.location
+      const adTypes = filters.adType
+
+      let url: string = 'http://localhost:8080/post'
+      if (title !== '' || location !== '') {
+        url += '?'
+      }
+      if (title !== '') {
+        url += `&title=${title}`
+      }
+      if (location !== '') {
+        url += `&location=${location}`
+      }
+      if (adTypes.length > 0) {
+        url += `&adType=${adTypes.join(',')}`
+      }
+
+      console.log(url)
+
+      const response = await fetch(url, {
         method: 'GET'
       })
       if (!response.ok) {
@@ -51,6 +77,7 @@ const Home = (): React.ReactElement => {
         return {}
       }
       const jsonResponse = await response.json()
+      console.log(jsonResponse)
       return jsonResponse
     } catch (error) {
       console.error('Error fetching details:', error)
@@ -62,36 +89,39 @@ const Home = (): React.ReactElement => {
       const posts = await getListings()
 
       if (posts !== undefined) {
-        const newListings = await Promise.all(posts.map(async (post: any) => {
-          const img = await getImage(post.id as string)
-          if (img !== undefined) {
-            const listingInfo = {
-              id: post.id,
-              title: post.title,
-              adType: await convertType(post.adType as string),
-              imgPaths: img,
-              description: post.description,
-              location: post.location,
-              categories: Array.from(post.categories as string),
-              price: post.price,
-              postDate: post.postDate
-            }
+        try {
+          const newListings = await Promise.all(posts.map(async (post: any) => {
+            const img = await getImage(post.id as string)
+            if (img !== undefined) {
+              const listingInfo = {
+                id: post.id,
+                title: post.title,
+                adType: await convertType(post.adType as string),
+                imgPaths: img,
+                description: post.description,
+                location: post.location,
+                categories: Array.from(post.categories as string),
+                price: parseFloat(post.price as string),
+                postDate: post.postDate
+              }
 
-            return listingInfo
-          }
-        }))
-        setListings(newListings)
+              return listingInfo
+            }
+          }))
+          setListings(newListings)
+        } catch {
+        }
       }
     }
     void renderPosts()
-  }, [])
+  }, [filters, p])
 
   return (
         <div className="App">
             <header className="App-header">
                 <Nav/>
                 <div className='content'>
-                  <Filter/>
+                  <Filter setFilters={setFilters}/>
                   <FilterMobile/>
                   <Listings response={listings}/>
                 </div>

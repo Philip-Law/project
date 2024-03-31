@@ -16,7 +16,6 @@ const Profile = (): React.ReactElement => {
     year: 1
   })
   const validateProfile = (): boolean => {
-    console.log(profileInfo.phoneNumber.length)
     return profileInfo.phoneNumber.length === 12 &&
     profileInfo.major.length > 0 &&
     /^\+[0-9]{10,15}$/.test(profileInfo.phoneNumber)

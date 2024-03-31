@@ -12,6 +12,7 @@ export interface ListingProps {
   id: number
   title: string
   userID: number
+  userName: string
   adType: string
   imgPaths: string[]
   description: string
@@ -22,7 +23,7 @@ export interface ListingProps {
   daysAgo?: string
 }
 
-const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, imgPaths, description, location, categories, price, postDate, daysAgo }): React.ReactElement => {
+const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, userName, imgPaths, description, location, categories, price, postDate, daysAgo }): React.ReactElement => {
   const { isAuthenticated } = useAuth0()
 
   return (
@@ -75,7 +76,7 @@ const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, imgPaths, 
                     </div>
                     <div className='content-listing-child right'>
                         <div className='inner-content'>
-                            <p id='contact-name'>Contact {userID}</p>
+                            <p id='contact-name'>Contact {userName}</p>
                             <button id='contact'>
                                 {
                                     isAuthenticated

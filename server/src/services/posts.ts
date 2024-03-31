@@ -52,14 +52,20 @@ export const getPost = async (postID: number): Promise<Post> => {
   return post;
 };
 
-export const getPostsByQuery = async (query: GetPostQuery): Promise<Post[]> => AppDataSource
-  .getRepository(Post)
-  .createQueryBuilder('post')
-  .where('LOWER(title) LIKE LOWER(:title)', { title: `%${query.title || ''}%` })
-  .andWhere('LOWER(location) LIKE LOWER(:location)', { location: `%${query.location || ''}%` })
-  .andWhere('ad_type LIKE :adType', { adType: `%${query.adType || ''}%` })
-  .andWhere('categories @> :categories', { categories: query.category || [] })
-  .getMany();
+export const getPostsByQuery = async (query: GetPostQuery): Promise<Post[]> => {
+  let queryBuilder = AppDataSource
+    .getRepository(Post)
+    .createQueryBuilder('post')
+    .where('LOWER(title) LIKE LOWER(:title)', { title: `%${query.title || ''}%` })
+    .andWhere('LOWER(location) LIKE LOWER(:location)', { location: `%${query.location || ''}%` })
+    .andWhere('categories @> :categories', { categories: query.category || [] });
+
+  if (query.adType && query.adType.length > 0) {
+    queryBuilder = queryBuilder.andWhere('ad_type IN (:adType)', { adType: query.adType });
+  }
+
+  return queryBuilder.getMany();
+};
 
 export const getLocations = async (): Promise<Post[]> => AppDataSource
   .getRepository(Post)

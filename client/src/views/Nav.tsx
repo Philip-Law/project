@@ -22,7 +22,7 @@ const Nav = (): React.ReactElement => {
                 <h2>TMU Connect</h2>
             </Link>
             <div className='nav child'>
-                <Search />
+                <Search/>
             </div>
             <div className='nav child right'>
               {

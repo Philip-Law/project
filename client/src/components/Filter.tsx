@@ -3,7 +3,11 @@ import '../style/Filter.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp, faLocationDot } from '@fortawesome/free-solid-svg-icons'
 
-const Filter = (): React.ReactElement => {
+interface FilterProps {
+  setFilters: React.Dispatch<React.SetStateAction<{ location?: string, adType?: string }>>
+}
+
+const Filter: React.FC<FilterProps> = ({ setFilters }): React.ReactElement => {
   const [sortBy, setSortBy] = useState<string | null>(null)
   const [categories, setCategories] = useState<string[]>([])
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -57,6 +61,12 @@ const Filter = (): React.ReactElement => {
   const handleClearFilters = (): void => {
     setSortBy(null)
     setCategories([])
+    setSelectedOption('Current Location')
+
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      location: ''
+    }))
   }
 
   const handleApplyFilters = (): void => {
@@ -73,6 +83,11 @@ const Filter = (): React.ReactElement => {
         }
       )
     }
+
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      location: selectedOption !== 'Current Location' ? selectedOption : ' '
+    }))
   }
 
   return (
@@ -86,15 +101,15 @@ const Filter = (): React.ReactElement => {
             <hr />
             <h3>Categories</h3>
             <div className='check'>
-                <input type="checkbox" id='wanted' name="wanted" value="wanted" onChange={() => { handleCategoryChange('wanted') }} checked={ categories.includes('wanted') }/>
+                <input type="checkbox" id='wanted' name="wanted" value="W" onChange={() => { handleCategoryChange('W') }} checked={ categories.includes('wanted') }/>
                 <label htmlFor="wanted">Items Wanted</label><br />
             </div>
             <div className='check'>
-                <input type="checkbox" id='for-sale' name="for-sale" value="for-sale" onChange={() => { handleCategoryChange('for-sale') }} checked={ categories.includes('for-sale') }/>
+                <input type="checkbox" id='for-sale' name="for-sale" value="S" onChange={() => { handleCategoryChange('S') }} checked={ categories.includes('for-sale') }/>
                 <label htmlFor="for-sale">Items For Sale</label><br />
             </div>
             <div className='check'>
-                <input type="checkbox" id='academic-services' name="academic-services" value="academic-services" onChange={() => { handleCategoryChange('academic-services') }} checked={ categories.includes('academic-services') }/>
+                <input type="checkbox" id='academic-services' name="academic-services" value="A" onChange={() => { handleCategoryChange('A') }} checked={ categories.includes('academic-services') }/>
                 <label htmlFor="academic-services"> Academic Services</label><br />
             </div>
             <hr />

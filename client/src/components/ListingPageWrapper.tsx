@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ListingPage from '../views/ListingPage'
+import { useAuth0 } from '@auth0/auth0-react'
 
 interface ListingInfo {
   id: number
@@ -8,6 +9,7 @@ interface ListingInfo {
   adType: string
   imgPaths: string[]
   userID: number
+  userName: string
   description: string
   location: string
   categories: string[]
@@ -23,6 +25,7 @@ const ListingPageWrapper: React.FC = () => {
     adType: '',
     imgPaths: [],
     userID: 0,
+    userName: '',
     description: '',
     location: '',
     categories: [],
@@ -32,6 +35,12 @@ const ListingPageWrapper: React.FC = () => {
   }
   const [listingDetails, setDetails] = useState<ListingInfo>(initialListingInfo)
   const { id } = useParams<{ id: string }>()
+
+  const { getAccessTokenSilently } = useAuth0()
+
+  const getToken = async (): Promise<string> => {
+    return await getAccessTokenSilently()
+  }
 
   const convertType = async (input: string): Promise<string> => {
     if (input === 'W') {
@@ -84,9 +93,26 @@ const ListingPageWrapper: React.FC = () => {
     }
   }
 
-  useEffect(() => {
-    console.log(listingDetails)
-  }, [listingDetails])
+  const getUserName = async (userID: string): Promise<any> => {
+    try {
+      const accessToken = await getToken()
+      const response = await fetch(`http://localhost:8080/user/name/${userID}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+
+      if (!response.ok) {
+        console.error('User not found')
+        return
+      }
+      const jsonResponse = await response.json()
+      return jsonResponse.user
+    } catch (error) {
+      console.error('Error fetching user:', error)
+    }
+  }
 
   useEffect(() => {
     const fillDetails = async (): Promise<void> => {
@@ -99,6 +125,7 @@ const ListingPageWrapper: React.FC = () => {
         adType: await convertType(listingD.adType as string),
         imgPaths: imageD,
         userID: listingD.user.id,
+        userName: await getUserName(listingD.user.id as string),
         description: listingD.description,
         location: listingD.location,
         categories: Array.from(listingD.categories as string),
