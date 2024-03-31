@@ -67,12 +67,26 @@ export const getPostsByQuery = async (query: GetPostQuery): Promise<Post[]> => {
   return queryBuilder.getMany();
 };
 
-export const getLocations = async (): Promise<Post[]> => AppDataSource
-  .getRepository(Post)
-  .createQueryBuilder('post')
-  .select('location')
-  .distinct(true)
-  .getRawMany();
+export const getUserPosts = async (userID: string): Promise<Post[]> => {
+  let queryBuilder = AppDataSource
+    .getRepository(Post)
+    .createQueryBuilder('post')
+    .where('user = :user', { user: userID })
+    .getRawMany();
+
+  return queryBuilder
+};
+
+export const getLocations = async (): Promise<Post[]> => {
+  let queryBuilder = AppDataSource
+    .getRepository(Post)
+    .createQueryBuilder('post')
+    .select('location')
+    .distinct(true)
+    .getRawMany();
+
+  return queryBuilder
+};
 
 export const deletePost = async (auth0User: Auth0User, postID: number): Promise<void> => {
   const user = await getUser(auth0User.id);

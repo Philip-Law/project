@@ -6,26 +6,59 @@ import { FaUpload } from 'react-icons/fa'
 const CreatePost = (): React.ReactElement => {
   const { getAccessTokenSilently } = useAuth0()
   const [images, setImages] = useState<File[]>([])
-  const [displayImages, setDisplays] = useState<Record<string, number>>({})
+  const [displayImages, setDisplays] = useState<Record<number, string>>({})
   const [imageError, setImageError] = useState<string>('')
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  // const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  // Define the processImage function outside of the useEffect hook
+  // const processImage = (index: number): void => {
+  //   const reader = new FileReader()
+  //   reader.onload = (e) => {
+  //     if (e.target?.result != null && typeof e.target.result === 'string') {
+  //       const curTime = new Date().toISOString()
+  //       const urlString = e.target.result.toString()
+  //       setImages(prevState => ({
+  //         ...prevState,
+  //         [`${urlString}_${curTime}`]: index
+  //       }))
+  //       // newImages[`${e.target.result.toString()}_${curTime}`] = index
+  //       // if (Object.keys(newImages).length === totalImages) {
+  //       //   setDisplays(newImages)
+  //       //   setIsLoading(false)
+  //       // }
+  //     }
+  //   }
+  //   reader.readAsDataURL(images[index])
+  // }
+
+  // // Inside the component
+  // useEffect(() => {
+  //   // setIsLoading(true)
+  //   setDisplays({})
+  //   // const newImages: Record<string, number> = {}
+  //   const totalImages = images.length
+
+  //   for (let i = 0; i < totalImages; i++) {
+  //     processImage(i) // Call the processImage function for each image
+  //   }
+  // }, [images])
 
   useEffect(() => {
-    if (Object.keys(displayImages).length === images.length) {
-      setIsLoading(false)
-    }
-  }, [displayImages])
-
-  useEffect(() => {
-    setIsLoading(true)
+    // setIsLoading(true)
     setDisplays({})
-    const newImages: Record<string, number> = {}
-    for (let i = 0; i < images.length; i++) {
+    const newImages: Record<number, string> = {}
+    const totalImages = images.length
+    let imagesProcessed = 0
+    for (let i: number = 0; i < images.length; i++) {
       const reader = new FileReader()
       reader.onload = (e) => {
         if (e.target?.result != null && typeof e.target.result === 'string') {
-          newImages[e.target.result.toString()] = i
-          setDisplays(newImages)
+          newImages[i] = e.target.result.toString()
+          imagesProcessed++
+          if (imagesProcessed === totalImages) {
+            setDisplays(newImages)
+            // setIsLoading(false)
+          }
         }
       }
       reader.readAsDataURL(images[i])
@@ -38,24 +71,36 @@ const CreatePost = (): React.ReactElement => {
     if (files != null) {
       const filesArray = Array.from(files)
       const maxSize = 10 * 1024 * 1024
-      const newImages: File[] = []
+      // const newImages: File[] = []
 
-      filesArray.forEach((file: File) => {
-        if (maxSize > file.size) {
-          newImages.push(file)
-        } else {
-          setImageError('File can be a maximum of 10mb')
-        }
-      })
-
-      if (newImages.length + images.length > 4) {
+      if (filesArray.length + images.length > 4) {
         setImageError('Cannot upload more than 4 images.')
         if (event.target != null) {
           (event.target as HTMLInputElement).value = ''
         }
         return
       }
-      setImages([...images, ...newImages])
+
+      filesArray.forEach((file: File) => {
+        if (maxSize > file.size) {
+          const reader = new FileReader()
+          let fileURL: string = ''
+          reader.onload = (e) => {
+            if (e.target?.result != null && typeof e.target.result === 'string') {
+              fileURL = e.target.result.toString()
+
+              if (!Object.values(displayImages).includes(fileURL)) {
+                setImages((images) => [...images, file])
+              } else {
+                setImageError('No duplicate files')
+              }
+            }
+          }
+          reader.readAsDataURL(file)
+        } else {
+          setImageError('File can be a maximum of 10mb')
+        }
+      })
 
       if (event.target !== undefined) {
         (event.target as HTMLInputElement).value = ''
@@ -71,7 +116,6 @@ const CreatePost = (): React.ReactElement => {
   }
 
   const handleCreatePost = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    console.log('something')
     e.preventDefault()
     const form = e.target as HTMLFormElement
 
@@ -90,19 +134,6 @@ const CreatePost = (): React.ReactElement => {
     } catch (e) {
       return
     }
-
-    // void fetch(`http://localhost:8080/user/${user?.sub}`, {
-    //   method: 'GET',
-    //   headers: {
-    //     Authorization: `Bearer ${token}`
-    //   }
-    // })
-    //   .then(async response => {
-    //     if (!response.ok) {
-    //       console.error('User not found')
-    //     }
-    //     // return await response.json()
-    //   })
 
     void fetch('http://localhost:8080/post/', {
       method: 'POST',
@@ -169,18 +200,14 @@ const CreatePost = (): React.ReactElement => {
                 </div>
                 {(imageError !== '') && <div id="imageError">{imageError}</div>}
                 <div id="imagePreview">
-                    {isLoading
-                      ? (
-                        <></>
-                        )
-                      : (
-                          Object.keys(displayImages).map((key) => (
-                            <div key={key} className="uploadedImages">
-                                <img key={key} src={key} />
-                                <button onClick={(event) => { handleImageDelete(event, displayImages[key]) }}>X</button>
-                            </div>
-                          ))
-                        )}
+
+                  {Object.entries(displayImages).map(([key, value]) => (
+                      <div key={key} className="uploadedImages">
+                          <img key={key} src={value} />
+                          <button onClick={(event) => { handleImageDelete(event, Number(key)) }}>X</button>
+                      </div>
+                  ))}
+
                 </div>
                 <br/>
 

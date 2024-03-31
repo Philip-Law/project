@@ -5,7 +5,7 @@ import multer from 'multer';
 import path from 'node:path';
 import { checkJwt, requireAuth0User } from '../middleware/authentication';
 import {
-  createPost, deletePost, getPost, getPostsByQuery, getLocations
+  createPost, deletePost, getPost, getPostsByQuery, getLocations, getUserPosts
 } from '../services/posts';
 import { AdType, APIError, Status } from '../types';
 import { deletePostImages, getImageURLs, uploadImages } from '../services/file_store';
@@ -45,6 +45,12 @@ postRoutes.get('/details/:id', asyncHandler(async (req, res) => {
 postRoutes.get('/locations', asyncHandler(async (req, res) => {
   const posts = await getLocations();
   res.status(Status.OK).json(posts);
+}));
+
+postRoutes.get('/user', asyncHandler(async (req, res) => {
+  const id = postIdSchema.parse(req.params.id);
+  const post = await getUserPosts(req.auth0?.id!!);
+  res.status(Status.OK).json(post);
 }));
 
 postRoutes.post('/', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {

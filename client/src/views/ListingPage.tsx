@@ -25,12 +25,13 @@ export interface ListingProps {
 
 const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, userName, imgPaths, description, location, categories, price, postDate, daysAgo }): React.ReactElement => {
   const { isAuthenticated } = useAuth0()
+  const categoriesString = categories.join(', ')
 
   return (
     <div className='App'>
         <header className='App-header'>
             <Nav />
-            <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> {categories} <FontAwesomeIcon icon={faChevronRight} /> {title}</p>
+            <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> {categoriesString} <FontAwesomeIcon icon={faChevronRight} /> {title}</p>
             <div className='content-listing'>
                 <div className='content-listing-child top'>
                     <div className='content-listing-child top-left'>
@@ -60,10 +61,10 @@ const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, userName, 
                               : (<img id='main' src={PLACEHOLDER_IMAGE} alt='ad' />)}
                             <div className='other-images'>
                                 {(imgPaths[1] !== undefined)
-                                  ? (<img src={imgPaths[3]} alt='ad' />)
+                                  ? (<img src={imgPaths[1]} alt='ad' />)
                                   : (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
                                 {(imgPaths[2] !== undefined)
-                                  ? (<img src={imgPaths[3]} alt='ad' />)
+                                  ? (<img src={imgPaths[2]} alt='ad' />)
                                   : (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
                                 {(imgPaths[3] !== undefined)
                                   ? (<img src={imgPaths[3]} alt='ad' />)
@@ -84,6 +85,10 @@ const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, userName, 
                                       : 'Log In to Message'
                                 }
                             </button>
+                        </div>
+                        <div className='inner-content'>
+                            <h4 style={{ margin: '0', textDecoration: 'underline' }}>Categories</h4>
+                            <p>{categoriesString}</p>
                         </div>
                     </div>
                 </div>

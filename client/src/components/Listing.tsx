@@ -16,6 +16,7 @@ function calculateDaysAgo (dateString: string): string {
 const Listing: React.FC<ListingProps> = ({ id, title, adType, userID, imgPaths, description, location, categories, price, postDate }): React.ReactElement => {
   const navigate = useNavigate()
   const daysAgo = calculateDaysAgo(postDate).toString()
+  const categoriesString = categories.join(', ')
   const handleListingClick = (): void => {
     navigate(`/listing/${id}`)
   }
@@ -32,7 +33,7 @@ const Listing: React.FC<ListingProps> = ({ id, title, adType, userID, imgPaths, 
                 <div className='sub-info'>
                     <p>{location}</p>
                     <p>|</p>
-                    <p>{categories}</p>
+                    <p>{categoriesString}</p>
                 </div>
                 <p id='description'>{description}</p>
             </div>
