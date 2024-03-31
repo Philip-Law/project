@@ -50,13 +50,10 @@ const Home = (): React.ReactElement => {
   const getListings = async (): Promise<any> => {
     try {
       const title = p.get('title') !== null ? p.get('title') : ''
-      const location = filters.location
+      const location = filters.location.trim()
       const adTypes = filters.adType
 
-      let url: string = 'http://localhost:8080/post'
-      if (title !== '' || location !== '') {
-        url += '?'
-      }
+      let url: string = 'http://localhost:8080/post?'
       if (title !== '') {
         url += `&title=${title}`
       }
@@ -64,11 +61,10 @@ const Home = (): React.ReactElement => {
         url += `&location=${location}`
       }
       if (adTypes.length > 0) {
-        url += `&adType=${adTypes.join(',')}`
+        url += `&adType=${adTypes}`
       }
 
       console.log(url)
-
       const response = await fetch(url, {
         method: 'GET'
       })

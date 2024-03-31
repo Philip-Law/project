@@ -17,7 +17,7 @@ interface CreatePostRequest {
 
 interface GetPostQuery {
   category?: string[];
-  adType?: AdType;
+  adType?: string[];
   location?: string;
   title?: string;
 }
@@ -60,19 +60,20 @@ export const getPostsByQuery = async (query: GetPostQuery): Promise<Post[]> => {
     .andWhere('LOWER(location) LIKE LOWER(:location)', { location: `%${query.location || ''}%` })
     .andWhere('categories @> :categories', { categories: query.category || [] });
 
-  if (query.adType && query.adType.length > 0) {
-    queryBuilder = queryBuilder.andWhere('ad_type IN (:adType)', { adType: query.adType });
-  }
+    if (query.adType && query.adType.length > 0) {
+      queryBuilder = queryBuilder.andWhere('ad_type = ANY(:adTypes)', { adTypes: query.adType })
+    }
+    
+    return queryBuilder.getMany();
 
-  return queryBuilder.getMany();
 };
 
 export const getUserPosts = async (userID: string): Promise<Post[]> => {
   let queryBuilder = AppDataSource
     .getRepository(Post)
-    .createQueryBuilder('post')
-    .where('user = :user', { user: userID })
-    .getRawMany();
+    .createQueryBuilder()
+    .where('user_id = :userId', { userId: userID })
+    .getMany();
 
   return queryBuilder
 };
