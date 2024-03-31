@@ -8,43 +8,8 @@ const CreatePost = (): React.ReactElement => {
   const [images, setImages] = useState<File[]>([])
   const [displayImages, setDisplays] = useState<Record<number, string>>({})
   const [imageError, setImageError] = useState<string>('')
-  // const [isLoading, setIsLoading] = useState<boolean>(false)
-
-  // Define the processImage function outside of the useEffect hook
-  // const processImage = (index: number): void => {
-  //   const reader = new FileReader()
-  //   reader.onload = (e) => {
-  //     if (e.target?.result != null && typeof e.target.result === 'string') {
-  //       const curTime = new Date().toISOString()
-  //       const urlString = e.target.result.toString()
-  //       setImages(prevState => ({
-  //         ...prevState,
-  //         [`${urlString}_${curTime}`]: index
-  //       }))
-  //       // newImages[`${e.target.result.toString()}_${curTime}`] = index
-  //       // if (Object.keys(newImages).length === totalImages) {
-  //       //   setDisplays(newImages)
-  //       //   setIsLoading(false)
-  //       // }
-  //     }
-  //   }
-  //   reader.readAsDataURL(images[index])
-  // }
-
-  // // Inside the component
-  // useEffect(() => {
-  //   // setIsLoading(true)
-  //   setDisplays({})
-  //   // const newImages: Record<string, number> = {}
-  //   const totalImages = images.length
-
-  //   for (let i = 0; i < totalImages; i++) {
-  //     processImage(i) // Call the processImage function for each image
-  //   }
-  // }, [images])
 
   useEffect(() => {
-    // setIsLoading(true)
     setDisplays({})
     const newImages: Record<number, string> = {}
     const totalImages = images.length
@@ -57,7 +22,6 @@ const CreatePost = (): React.ReactElement => {
           imagesProcessed++
           if (imagesProcessed === totalImages) {
             setDisplays(newImages)
-            // setIsLoading(false)
           }
         }
       }
@@ -71,7 +35,6 @@ const CreatePost = (): React.ReactElement => {
     if (files != null) {
       const filesArray = Array.from(files)
       const maxSize = 10 * 1024 * 1024
-      // const newImages: File[] = []
 
       if (filesArray.length + images.length > 4) {
         setImageError('Cannot upload more than 4 images.')
