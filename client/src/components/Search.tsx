@@ -12,7 +12,7 @@ const Search = (): React.ReactElement => {
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault()
-    window.location.href = `?title=${searchValue}`
+    window.location.href = `/?title=${searchValue}`
   }
   return (
         <div className='search-container'>

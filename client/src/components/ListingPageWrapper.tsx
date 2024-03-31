@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ListingPage from '../views/ListingPage'
-import { useAuth0 } from '@auth0/auth0-react'
 
 interface ListingInfo {
   id: number
@@ -35,12 +34,6 @@ const ListingPageWrapper: React.FC = () => {
   }
   const [listingDetails, setDetails] = useState<ListingInfo>(initialListingInfo)
   const { id } = useParams<{ id: string }>()
-
-  const { getAccessTokenSilently } = useAuth0()
-
-  const getToken = async (): Promise<string> => {
-    return await getAccessTokenSilently()
-  }
 
   const convertType = async (input: string): Promise<string> => {
     if (input === 'W') {
@@ -95,12 +88,8 @@ const ListingPageWrapper: React.FC = () => {
 
   const getUserName = async (userID: string): Promise<any> => {
     try {
-      const accessToken = await getToken()
       const response = await fetch(`http://localhost:8080/user/name/${userID}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
+        method: 'GET'
       })
 
       if (!response.ok) {
