@@ -26,6 +26,7 @@ export interface ListingProps {
 const ListingPage: React.FC<ListingProps> = ({ id, title, adType, userID, imgPaths, description, location, categories, price, postDate, daysAgo }): React.ReactElement => {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0()
   const navigate = useNavigate()
+  const categoriesString = categories.join(', ')
 
   const handleContact = async (): Promise<void> => {
     if (!isAuthenticated) {
@@ -102,7 +103,6 @@ const ListingPage: React.FC<ListingProps> = ({ id, title, adType, userID, imgPat
                         <div className='inner-content'>
                             <p id='contact-name'>Contact {userID}</p>
                             <button id='contact' onClick={() => { handleContact().catch(error => { console.log(error) }) }}>
-           
                                 {
                                     isAuthenticated
                                       ? 'Send Message'
