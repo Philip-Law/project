@@ -77,7 +77,7 @@ export const retrieveAuth0Users = async (options?: {
   });
 };
 
-export const retrieveAuth0UserFirstName = async (id: string): Promise<string> => managementClient
+export const retrieveAuth0User = async (id: string): Promise<Auth0User> => managementClient
   .users.get({ id }).then((user) => {
     if (user.status !== 200) {
       throw new APIError(
@@ -86,5 +86,11 @@ export const retrieveAuth0UserFirstName = async (id: string): Promise<string> =>
         user.statusText,
       );
     }
-    return user.data.given_name;
+    return {
+      id: user.data.user_id,
+      email: user.data.email,
+      firstName: user.data.given_name,
+      lastName: user.data.family_name,
+      picture: user.data.picture,
+    };
   });
