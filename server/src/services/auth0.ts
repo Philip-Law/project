@@ -2,6 +2,7 @@
 import { ManagementClient, UserInfoClient } from 'auth0';
 import LOGGER from '../configs/logging';
 import { APIError, Auth0User, Status } from '../types';
+import redisClient from '../configs/cache';
 
 if (!process.env.AUTH0_DOMAIN) {
   LOGGER.error('AUTH0_DOMAIN environment variable not set');
@@ -30,24 +31,35 @@ const managementClient = new ManagementClient({
   clientId: process.env.AUTH0_CLIENT_ID,
 });
 
-export const retrieveUserInfo = async (accessToken: string) => userInfoClient
-  .getUserInfo(accessToken).then((user) => {
-    if (user.status !== 200) {
-      LOGGER.error(user.statusText);
-      throw new APIError(
-        Status.INTERNAL_SERVER_ERROR,
-        'Failed to retrieve user info',
-      );
-    }
+export const retrieveUserInfo = async (accessToken: string, id: string) => {
+  const cachedUser = await redisClient.get(id) as Auth0User | null;
+  if (cachedUser !== null) {
+    return cachedUser;
+  }
 
-    return {
-      id: user.data.sub,
-      email: user.data.email,
-      firstName: user.data.given_name,
-      lastName: user.data.family_name,
-      picture: user.data.picture,
-    };
-  });
+  const user = await userInfoClient
+    .getUserInfo(accessToken).then((u) => {
+      if (u.status !== 200) {
+        LOGGER.error(u.statusText);
+        throw new APIError(
+          Status.INTERNAL_SERVER_ERROR,
+          'Failed to retrieve user info',
+        );
+      }
+
+      return {
+        id: u.data.sub,
+        email: u.data.email,
+        firstName: u.data.given_name,
+        lastName: u.data.family_name,
+        picture: u.data.picture,
+      };
+    });
+
+  // set user in cache for 5 min
+  await redisClient.setEx(id, 300, JSON.stringify(user));
+  return user;
+};
 
 export const retrieveAuth0Users = async (options?: {
   name?: string;
@@ -77,20 +89,30 @@ export const retrieveAuth0Users = async (options?: {
   });
 };
 
-export const retrieveAuth0User = async (id: string): Promise<Auth0User> => managementClient
-  .users.get({ id }).then((user) => {
-    if (user.status !== 200) {
-      throw new APIError(
-        Status.INTERNAL_SERVER_ERROR,
-        'Failed to retrieve user',
-        user.statusText,
-      );
-    }
-    return {
-      id: user.data.user_id,
-      email: user.data.email,
-      firstName: user.data.given_name,
-      lastName: user.data.family_name,
-      picture: user.data.picture,
-    };
-  });
+export const retrieveAuth0User = async (id: string): Promise<Auth0User> => {
+  const cachedUser = await redisClient.get(id) as Auth0User | null;
+  if (cachedUser !== null) {
+    return cachedUser;
+  }
+
+  const user = managementClient
+    .users.get({ id }).then((u) => {
+      if (u.status !== 200) {
+        throw new APIError(
+          Status.INTERNAL_SERVER_ERROR,
+          'Failed to retrieve user',
+          u.statusText,
+        );
+      }
+      return {
+        id: u.data.user_id,
+        email: u.data.email,
+        firstName: u.data.given_name,
+        lastName: u.data.family_name,
+        picture: u.data.picture,
+      };
+    });
+
+  await redisClient.set(id, JSON.stringify(user));
+  return user;
+};
