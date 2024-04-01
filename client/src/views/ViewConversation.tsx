@@ -26,28 +26,6 @@ const ViewConversation = (): React.ReactElement => {
   const inputRef = useRef<any>()
   const conversationId = conversation.id
 
-  useEffect(() => {
-    const getConversation = async (): Promise<any> => {
-      try {
-        const token = await getAccessTokenSilently()
-        const response = await fetch(`http://localhost:8080/conversation/post/${conversation.postId}`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        if (!response.ok) {
-          console.error(`Conversations not found for user ${user?.sub}`)
-        }
-        const jsonResponse = await response.json()
-        return jsonResponse
-      } catch (error) {
-        console.error('Error fetching conversations', error)
-      }
-    }
-    void getConversation()
-  }, [])
-
   const getMessages = async (): Promise<any> => {
     try {
       const token = await getAccessTokenSilently()
@@ -87,8 +65,8 @@ const ViewConversation = (): React.ReactElement => {
       }
       const jsonResponse = await response.json()
       const newMessages = await getMessages()
-      if (messages !== newMessages) setMessages(newMessages)
-      inputRef.current.value = null
+      if (response.ok) setMessages(newMessages)
+      if (inputRef.current.value !== null) inputRef.current.value = null
       return jsonResponse
     } catch (error) {
       console.error('Error with message send fetch request: ', error)
@@ -98,7 +76,7 @@ const ViewConversation = (): React.ReactElement => {
   useEffect(() => {
     const renderMessages = async (): Promise<any> => {
       const newMessages = await getMessages()
-      if (messages !== newMessages) {
+      if (Array.isArray(newMessages) && messages !== newMessages) {
         setMessages(newMessages)
       }
     }
@@ -108,6 +86,7 @@ const ViewConversation = (): React.ReactElement => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') {
       e.preventDefault()
+      handleSendMessage().catch(error => { console.log(error) })
     }
   }
 
@@ -117,7 +96,7 @@ const ViewConversation = (): React.ReactElement => {
             <h2>Conversation with SOMEONE?!?!?!?</h2>
         </div>
         <div className='conversation-messages'>
-            { messages !== null
+            { (Array.isArray(messages) && messages.length > 0)
               ? (
                   messages.map((message: Message) => (
                   <div key={message.id} className='message'>
@@ -126,9 +105,13 @@ const ViewConversation = (): React.ReactElement => {
                   </div>
                   ))
                 )
-              : (
-              <div>No messages</div>
-                )}
+              : (Array.isArray(messages) && messages.length === 0)
+                  ? (
+                      <div>No messages</div>
+                    )
+                  : (
+                <div>Error retrieving messages. Please wait a few moments and then refresh the page.</div>
+                    )}
         </div>
         <div>
           <input type='text' ref={inputRef} onKeyDown={handleKeyDown}/>
