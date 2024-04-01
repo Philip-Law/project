@@ -40,7 +40,7 @@ userRoutes.post('/update', checkJwt, requireAuth0User, asyncHandler(async (req, 
 
 userRoutes.get('/name/:id', asyncHandler(async (req, res) => {
   const user = await getName(req.params.id);
-  res.status(Status.OK).json({user});
+  res.status(Status.OK).json({ user });
 }));
 
 userRoutes.get('/:id', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {

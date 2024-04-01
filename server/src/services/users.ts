@@ -32,7 +32,7 @@ export const setupUser = async (user: User) => {
   }
 };
 
-export const getName = async (id: string): Promise<any> => {
+export const getName = async (id: string): Promise<string> => {
   const userName = await retrieveAuth0UserFirstName(id);
 
   if (!userName) {

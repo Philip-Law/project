@@ -77,8 +77,8 @@ export const retrieveAuth0Users = async (options?: {
   });
 };
 
-export const retrieveAuth0UserFirstName = async (id: string): Promise<string> => {
-  return managementClient.users.get({ id }).then((user) => {
+export const retrieveAuth0UserFirstName = async (id: string): Promise<string> => managementClient
+  .users.get({ id }).then((user) => {
     if (user.status !== 200) {
       throw new APIError(
         Status.INTERNAL_SERVER_ERROR,
@@ -88,4 +88,3 @@ export const retrieveAuth0UserFirstName = async (id: string): Promise<string> =>
     }
     return user.data.given_name;
   });
-};

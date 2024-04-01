@@ -23,8 +23,12 @@ export interface ListingProps {
   daysAgo?: string
 }
 
-const ListingPage: React.FC<ListingProps> = ({ id, title, adType, userID, imgPaths, description, location, categories, price, postDate, daysAgo }): React.ReactElement => {
+const ListingPage: React.FC<ListingProps> = ({
+  id, title, adType, userID, userName, imgPaths, description,
+  location, categories, price, daysAgo
+}: ListingProps): React.ReactElement => {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0()
+  const categoriesString = categories.join(', ')
   const navigate = useNavigate()
 
   const handleContact = async (): Promise<void> => {
@@ -100,9 +104,8 @@ const ListingPage: React.FC<ListingProps> = ({ id, title, adType, userID, imgPat
                     </div>
                     <div className='content-listing-child right'>
                         <div className='inner-content'>
-                            <p id='contact-name'>Contact {userID}</p>
+                            <p id='contact-name'>Contact {userName}</p>
                             <button id='contact' onClick={() => { handleContact().catch(error => { console.log(error) }) }}>
-           
                                 {
                                     isAuthenticated
                                       ? 'Send Message'
