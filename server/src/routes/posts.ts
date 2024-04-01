@@ -5,7 +5,7 @@ import multer from 'multer';
 import path from 'node:path';
 import { checkJwt, requireAuth0User } from '../middleware/authentication';
 import {
-  createPost, deletePost, getPost, getPostsByQuery,
+  createPost, deletePost, getPost, getPostsByQuery, getLocations, getUserPosts
 } from '../services/posts';
 import { AdType, APIError, Status } from '../types';
 import { deletePostImages, getImageURLs, uploadImages } from '../services/file_store';
@@ -16,9 +16,11 @@ const postIdSchema = z.coerce.number().int().min(1, 'Post ID must be a positive 
 
 const postQuerySchema = z.object({
   category: z.string().optional().transform((value) => value?.split(',') || []),
-  adType: z.nativeEnum(AdType).optional(),
+  // adType: z.nativeEnum(AdType).optional(),
+  adType: z.string().optional().transform((value) => value?.split(',') || []),
   location: z.string().optional(),
   title: z.string().optional(),
+  sort: z.string().optional(),
 });
 
 const postSchema = z.object({
@@ -39,6 +41,16 @@ postRoutes.get('/', asyncHandler(async (req, res) => {
 postRoutes.get('/details/:id', asyncHandler(async (req, res) => {
   const id = postIdSchema.parse(req.params.id);
   const post = await getPost(id);
+  res.status(Status.OK).json(post);
+}));
+
+postRoutes.get('/locations', asyncHandler(async (req, res) => {
+  const posts = await getLocations();
+  res.status(Status.OK).json(posts);
+}));
+
+postRoutes.get('/user', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
+  const post = await getUserPosts(req.auth0?.id!!);
   res.status(Status.OK).json(post);
 }));
 
@@ -75,7 +87,7 @@ postRoutes.post(
         callback(null, true);
       }
     },
-  }).array('post-images', 5),
+  }).array('post-images', 4),
   asyncHandler(async (req, res) => {
     const id = postIdSchema.parse(req.params.id);
     const images = req.files as Express.Multer.File[];

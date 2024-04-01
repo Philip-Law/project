@@ -6,27 +6,32 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLocationDot, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import '../style/ListingPage.css'
 
+const PLACEHOLDER_IMAGE = '/assets/placeholder.jpg'
+
 export interface ListingProps {
   id: number
   title: string
   userID: number
-  adType: number
-  imgPath: string
+  userName: string
+  adType: string
+  imgPaths: string[]
   description: string
   location: string
-  categories: string
+  categories: string[]
   price: number
   postDate: string
   daysAgo?: string
 }
 
-const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, imgPath, description, location, categories, price, postDate, daysAgo }): React.ReactElement => {
+const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, userName, imgPaths, description, location, categories, price, postDate, daysAgo }): React.ReactElement => {
   const { isAuthenticated } = useAuth0()
+  const categoriesString = categories.join(', ')
+
   return (
     <div className='App'>
         <header className='App-header'>
             <Nav />
-            <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> {categories} <FontAwesomeIcon icon={faChevronRight} /> {title}</p>
+            <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> {adType} <FontAwesomeIcon icon={faChevronRight} /> {title}</p>
             <div className='content-listing'>
                 <div className='content-listing-child top'>
                     <div className='content-listing-child top-left'>
@@ -38,7 +43,7 @@ const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, imgPath, d
                             <FontAwesomeIcon icon={faLocationDot} />
                         </div>
                         <div className='content-listing-child-icon-container right'>
-                            <p id='date'>{parseInt(daysAgo ?? '0')} {parseInt(daysAgo ?? '0') > 1 ? 'days' : 'day'} ago ({adType})</p>
+                            <p id='date'>{parseInt(daysAgo ?? '0')} {parseInt(daysAgo ?? '0') !== 1 ? 'days' : 'day'} ago ({adType})</p>
                             <p id='location'>
                                 {location}
                                 <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`} target="_blank" rel="noopener noreferrer" className='map'>
@@ -51,19 +56,28 @@ const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, imgPath, d
                 <div className='content-listing-child-information'>
                     <div className='content-listing-child left'>
                         <div className='img-container'>
-                            <img id='main' src={`${imgPath}`} alt='ad' />
+                            {(imgPaths[0] !== undefined)
+                              ? (<img id='main' src={imgPaths[0]} alt='ad' />)
+                              : (<img id='main' src={PLACEHOLDER_IMAGE} alt='ad' />)}
                             <div className='other-images'>
-                                <img src={`${imgPath}`} alt='ad' />
-                                <img src={`${imgPath}`} alt='ad' />
-                                <img src={`${imgPath}`} alt='ad' />
+                                {(imgPaths[1] !== undefined)
+                                  ? (<img src={imgPaths[1]} alt='ad' />)
+                                  : (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
+                                {(imgPaths[2] !== undefined)
+                                  ? (<img src={imgPaths[2]} alt='ad' />)
+                                  : (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
+                                {(imgPaths[3] !== undefined)
+                                  ? (<img src={imgPaths[3]} alt='ad' />)
+                                  : (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
                             </div>
+
                         </div>
                         <h3>Description</h3>
                         <p id='description'>{description}</p>
                     </div>
                     <div className='content-listing-child right'>
                         <div className='inner-content'>
-                            <p id='contact-name'>Contact {userID}</p>
+                            <p id='contact-name'>Contact {userName}</p>
                             <button id='contact'>
                                 {
                                     isAuthenticated
@@ -71,6 +85,10 @@ const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, imgPath, d
                                       : 'Log In to Message'
                                 }
                             </button>
+                        </div>
+                        <div className='inner-content'>
+                            <h4 style={{ margin: '0', textDecoration: 'underline' }}>Categories</h4>
+                            <p>{categoriesString}</p>
                         </div>
                     </div>
                 </div>
