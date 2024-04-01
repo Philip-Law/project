@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Nav from './Nav'
 import '../style/Conversations.css'
 import type { Conversation } from './ViewConversation'
@@ -11,7 +12,7 @@ interface ConversationsProps {
 const Conversations: React.FC<ConversationsProps> = (props: ConversationsProps): React.ReactElement => {
   const [conversations, setConversations] = useState<any>([])
   const { user, getAccessTokenSilently } = useAuth0()
-  const userId = user?.sub
+  const navigate = useNavigate()
 
   const getConversations = async (): Promise<any> => {
     try {
@@ -23,7 +24,7 @@ const Conversations: React.FC<ConversationsProps> = (props: ConversationsProps):
         }
       })
       if (!response.ok) {
-        console.error(`Conversations not found for user ${userId}`)
+        console.error(`Conversations not found for user ${user?.sub}`)
       }
       const jsonResponse = await response.json()
       console.log('Conversations response: ', jsonResponse)
@@ -31,6 +32,10 @@ const Conversations: React.FC<ConversationsProps> = (props: ConversationsProps):
     } catch (error) {
       console.error('Error fetching conversations', error)
     }
+  }
+
+  const handleClick = (conversation: Conversation): void => {
+    navigate('/viewconversation', { state: { conversation } })
   }
 
   useEffect(() => {
@@ -57,7 +62,7 @@ const Conversations: React.FC<ConversationsProps> = (props: ConversationsProps):
               ? (
                   conversations.map((conversation: Conversation) => (
                 <div key={conversation.id} className='conversation'>
-                  <div className='conversation-header'>
+                  <div className='conversation-header' onClick={() => { handleClick(conversation) }}>
                     <h2>Conversation with {conversation.buyerId === user?.sub ? conversation.sellerId : conversation.buyerId}</h2>
                   </div>
                   <div className='conversation-messages'>
