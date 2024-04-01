@@ -40,7 +40,6 @@ const ViewConversation = (): React.ReactElement => {
           console.error(`Conversations not found for user ${user?.sub}`)
         }
         const jsonResponse = await response.json()
-        console.log('Conversations response: ', jsonResponse)
         return jsonResponse
       } catch (error) {
         console.error('Error fetching conversations', error)
@@ -62,7 +61,6 @@ const ViewConversation = (): React.ReactElement => {
         console.error(`Messages not found for conversation ${conversationId}`)
       }
       const jsonResponse = await response.json()
-      console.log('getMessages response: ', jsonResponse)
       return jsonResponse
     } catch (error) {
       console.error('Error fetching messages', error)
@@ -70,15 +68,8 @@ const ViewConversation = (): React.ReactElement => {
   }
 
   const handleSendMessage = async (): Promise<any> => {
-    const formData = {
-      conversationId: conversation.id,
-      senderId: user?.sub,
-      content: inputRef.current.value
-    }
-
     try {
       const token = await getAccessTokenSilently()
-      console.log(`form data: ${JSON.stringify(formData)}}`)
       const response = await fetch(`http://localhost:8080/message/${conversationId}`, {
         method: 'POST',
         headers: {
@@ -95,9 +86,9 @@ const ViewConversation = (): React.ReactElement => {
         console.error(`Error posting message to conversation ${conversationId}`)
       }
       const jsonResponse = await response.json()
-      console.log('Messages response: ', jsonResponse)
       const newMessages = await getMessages()
       if (messages !== newMessages) setMessages(newMessages)
+      inputRef.current.value = null
       return jsonResponse
     } catch (error) {
       console.error('Error with message send fetch request: ', error)
