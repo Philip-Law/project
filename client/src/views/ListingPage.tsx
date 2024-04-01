@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Nav from './Nav'
 import { useAuth0 } from '@auth0/auth0-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -23,9 +23,32 @@ export interface ListingProps {
   daysAgo?: string
 }
 
-const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, userName, imgPaths, description, location, categories, price, postDate, daysAgo }): React.ReactElement => {
-  const { isAuthenticated } = useAuth0()
-  const categoriesString = categories.join(', ')
+const ListingPage: React.FC<ListingProps> = ({ id, title, adType, userID, imgPaths, description, location, categories, price, postDate, daysAgo }): React.ReactElement => {
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0()
+  const navigate = useNavigate()
+
+  const handleContact = async (): Promise<void> => {
+    if (!isAuthenticated) {
+      console.log('Please log in to message another user.')
+    }
+    try {
+      const token = await getAccessTokenSilently()
+      const response = await fetch(`http://localhost:8080/conversation/${id}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      if (!response.ok) {
+        console.log('Response error status: ', response.status)
+      }
+      navigate('/conversations', { state: { userID } })
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <div className='App'>
@@ -77,8 +100,9 @@ const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, userName, 
                     </div>
                     <div className='content-listing-child right'>
                         <div className='inner-content'>
-                            <p id='contact-name'>Contact {userName}</p>
-                            <button id='contact'>
+                            <p id='contact-name'>Contact {userID}</p>
+                            <button id='contact' onClick={() => { handleContact().catch(error => { console.log(error) }) }}>
+           
                                 {
                                     isAuthenticated
                                       ? 'Send Message'
