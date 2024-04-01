@@ -8,6 +8,7 @@ interface ListingInfo {
   adType: string
   imgPaths: string[]
   userID: number
+  userName: string
   description: string
   location: string
   categories: string[]
@@ -23,6 +24,7 @@ const ListingPageWrapper: React.FC = () => {
     adType: '',
     imgPaths: [],
     userID: 0,
+    userName: '',
     description: '',
     location: '',
     categories: [],
@@ -84,9 +86,22 @@ const ListingPageWrapper: React.FC = () => {
     }
   }
 
-  useEffect(() => {
-    console.log(listingDetails)
-  }, [listingDetails])
+  const getUserName = async (userID: string): Promise<any> => {
+    try {
+      const response = await fetch(`http://localhost:8080/user/name/${userID}`, {
+        method: 'GET'
+      })
+
+      if (!response.ok) {
+        console.error('User not found')
+        return
+      }
+      const jsonResponse = await response.json()
+      return jsonResponse.user
+    } catch (error) {
+      console.error('Error fetching user:', error)
+    }
+  }
 
   useEffect(() => {
     const fillDetails = async (): Promise<void> => {
@@ -99,6 +114,7 @@ const ListingPageWrapper: React.FC = () => {
         adType: await convertType(listingD.adType as string),
         imgPaths: imageD,
         userID: listingD.user.id,
+        userName: await getUserName(listingD.user.id as string),
         description: listingD.description,
         location: listingD.location,
         categories: Array.from(listingD.categories as string),

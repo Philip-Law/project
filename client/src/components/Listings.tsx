@@ -54,6 +54,7 @@ const Listings: React.FC<ListingsComponentProps> = ({ response }) => {
                 id={item.id}
                 title={item.title}
                 userID={item.userID}
+                userName={item.userName}
                 adType={item.adType}
                 imgPaths={item.imgPaths}
                 description={item.description}

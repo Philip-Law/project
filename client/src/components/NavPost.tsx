@@ -38,7 +38,7 @@ const NavPost = (): React.ReactElement => {
           if (response.status === 200) {
             window.location.href = '/postad'
           } else {
-            window.location.href = '/setup'
+            window.location.href = '/profile'
           }
         })
     } catch (error) {

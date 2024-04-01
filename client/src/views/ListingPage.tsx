@@ -12,6 +12,7 @@ export interface ListingProps {
   id: number
   title: string
   userID: number
+  userName: string
   adType: string
   imgPaths: string[]
   description: string
@@ -53,7 +54,7 @@ const ListingPage: React.FC<ListingProps> = ({ id, title, adType, userID, imgPat
     <div className='App'>
         <header className='App-header'>
             <Nav />
-            <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> {categories} <FontAwesomeIcon icon={faChevronRight} /> {title}</p>
+            <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> {adType} <FontAwesomeIcon icon={faChevronRight} /> {title}</p>
             <div className='content-listing'>
                 <div className='content-listing-child top'>
                     <div className='content-listing-child top-left'>
@@ -83,10 +84,10 @@ const ListingPage: React.FC<ListingProps> = ({ id, title, adType, userID, imgPat
                               : (<img id='main' src={PLACEHOLDER_IMAGE} alt='ad' />)}
                             <div className='other-images'>
                                 {(imgPaths[1] !== undefined)
-                                  ? (<img src={imgPaths[3]} alt='ad' />)
+                                  ? (<img src={imgPaths[1]} alt='ad' />)
                                   : (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
                                 {(imgPaths[2] !== undefined)
-                                  ? (<img src={imgPaths[3]} alt='ad' />)
+                                  ? (<img src={imgPaths[2]} alt='ad' />)
                                   : (<img src={PLACEHOLDER_IMAGE} alt='ad' />)}
                                 {(imgPaths[3] !== undefined)
                                   ? (<img src={imgPaths[3]} alt='ad' />)
@@ -101,12 +102,17 @@ const ListingPage: React.FC<ListingProps> = ({ id, title, adType, userID, imgPat
                         <div className='inner-content'>
                             <p id='contact-name'>Contact {userID}</p>
                             <button id='contact' onClick={() => { handleContact().catch(error => { console.log(error) }) }}>
+           
                                 {
                                     isAuthenticated
                                       ? 'Send Message'
                                       : 'Log In to Message'
                                 }
                             </button>
+                        </div>
+                        <div className='inner-content'>
+                            <h4 style={{ margin: '0', textDecoration: 'underline' }}>Categories</h4>
+                            <p>{categoriesString}</p>
                         </div>
                     </div>
                 </div>
