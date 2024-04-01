@@ -105,9 +105,11 @@ const ViewConversation = (): React.ReactElement => {
     void renderMessages()
   }, [])
 
-  useEffect(() => {
-    console.log(`Conversation: ${conversationId}`)
-  }, [])
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+    }
+  }
 
   return (
         <div className='conversation'>
@@ -129,7 +131,7 @@ const ViewConversation = (): React.ReactElement => {
                 )}
         </div>
         <div>
-          <input type='text' ref={inputRef}/>
+          <input type='text' ref={inputRef} onKeyDown={handleKeyDown}/>
           <button onClick={() => { handleSendMessage().catch(error => { console.log(error) }) }}>Send Message</button>
         </div>
         </div>
