@@ -96,6 +96,8 @@ const ViewConversation = (): React.ReactElement => {
       }
       const jsonResponse = await response.json()
       console.log('Messages response: ', jsonResponse)
+      const newMessages = await getMessages()
+      if (messages !== newMessages) setMessages(newMessages)
       return jsonResponse
     } catch (error) {
       console.error('Error with message send fetch request: ', error)
