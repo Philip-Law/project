@@ -12,7 +12,7 @@ const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   synchronize: false,
-  logging: true,
+  logging: ['warn', 'error'],
   entities: [User, Post, Conversation, Message],
   subscribers: [],
   migrations: [],
