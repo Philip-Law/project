@@ -30,7 +30,6 @@ const ListingPage: React.FC<ListingProps> = ({
   const { isAuthenticated, getAccessTokenSilently } = useAuth0()
   const categoriesString = categories.join(', ')
   const navigate = useNavigate()
-  const categoriesString = categories.join(', ')
 
   const handleContact = async (): Promise<void> => {
     if (!isAuthenticated) {
