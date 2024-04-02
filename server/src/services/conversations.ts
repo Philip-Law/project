@@ -85,3 +85,34 @@ export const getConversationByPost = async (
   }
   return conversation;
 };
+
+export const deleteConversation = async (
+  postId: number,
+  userId: string,
+): Promise<void> => {
+  const conversationRepository = AppDataSource.getRepository(Conversation);
+  const conversation = await conversationRepository.findOne({
+    where: [
+            { post: { id: postId }, buyer: { id: userId } },
+            { post: { id: postId }, seller: { id: userId } }
+        ]
+  });
+  
+  if (!conversation) {
+    throw new APIError(Status.NOT_FOUND, `Conversation for post with ID ${postId} not found`);
+  }
+
+  if (conversation?.buyer.id !== userId && conversation.seller.id !== userId) {
+    throw new APIError(Status.NOT_FOUND, `User is not a part of this conversation.`);
+  }
+
+  const result = await AppDataSource.getRepository(Conversation)
+    .createQueryBuilder()
+    .delete()
+    .where('id = :id', { id: conversation.id })
+    .execute();
+  
+  if (result.affected === 0) {
+    LOGGER.info(`Delete conversation failed for id ${conversation.id} because no rows were deleted`);
+  }
+};
