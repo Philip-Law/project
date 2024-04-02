@@ -5,6 +5,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLocationDot, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import '../style/ListingPage.css'
+import { useApi } from '../context/APIContext'
 
 const PLACEHOLDER_IMAGE = '/assets/placeholder.jpg'
 
@@ -23,32 +24,39 @@ export interface ListingProps {
   daysAgo?: string
 }
 
+interface ConversationInfo {
+  id: number
+  postId: string
+  buyerId: string
+  sellerId: string
+}
+
 const ListingPage: React.FC<ListingProps> = ({
-  id, title, adType, userID, userName, imgPaths, description,
+  id, title, adType, userName, imgPaths, description,
   location, categories, price, daysAgo
 }: ListingProps): React.ReactElement => {
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0()
+  const { isAuthenticated } = useAuth0()
   const categoriesString = categories.join(', ')
   const navigate = useNavigate()
+  const { sendRequest } = useApi()
 
   const handleContact = async (): Promise<void> => {
     if (!isAuthenticated) {
       console.log('Please log in to message another user.')
+      return
     }
+
     try {
-      const token = await getAccessTokenSilently()
-      const response = await fetch(`http://localhost:8080/conversation/${id}/`, {
+      const { status, response } = await sendRequest<ConversationInfo>({
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        }
+        endpoint: `conversation/${id}`
       })
 
-      if (!response.ok) {
-        console.log('Response error status: ', response.status)
+      if (status !== 201) {
+        console.log('Response error status: ', status)
+        return
       }
-      navigate('/conversations', { state: { userID } })
+      navigate('/viewconversation', { state: { conversation: response } })
     } catch (error) {
       console.log(error)
     }

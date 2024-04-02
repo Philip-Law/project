@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import '../style/Filter.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp, faLocationDot } from '@fortawesome/free-solid-svg-icons'
+import { useApi } from '../context/APIContext'
 
 interface FilterProps {
   setFilters: React.Dispatch<React.SetStateAction<{ location?: string, adType?: string[], sort: string }>>
@@ -14,21 +15,19 @@ const FilterMobile: React.FC<FilterProps> = ({ setFilters }): React.ReactElement
   const [selectedOption, setSelectedOption] = useState('Select a Location')
   const [isOpen, setOpen] = useState(false)
   const [locations, setLocations] = useState<string[]>([])
+  const { sendRequest } = useApi()
 
   useEffect(() => {
     const getLocations = async (): Promise<void> => {
-      await fetch('http://localhost:8080/post/locations', {
-        method: 'GET'
+      const { status, response, error } = await sendRequest<string[]>({
+        method: 'GET',
+        endpoint: 'post/locations'
       })
-        .then(async response => {
-          if (!response.ok) {
-            console.error('Locations not found')
-          }
-
-          const jsonResponse = await response.json()
-          const locationsArray = jsonResponse.map((item: { location: any }) => item.location)
-          setLocations(locationsArray as string[])
-        })
+      if (status !== 200) {
+        console.log(`Failed to get locations: ${error}`)
+        return
+      }
+      setLocations(response)
     }
 
     void getLocations()

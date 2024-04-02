@@ -7,7 +7,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { useApi } from '../context/APIContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
-// You can add Messages to this import statement so you can retrieve latest message for each conversation.
+// You can add Messages to this import statement, so you can retrieve latest message for each conversation.
 interface ConversationsProps {
   conversations?: Conversation[]
 }

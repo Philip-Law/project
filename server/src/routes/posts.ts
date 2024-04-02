@@ -44,9 +44,9 @@ postRoutes.get('/details/:id', asyncHandler(async (req, res) => {
   res.status(Status.OK).json(post);
 }));
 
-postRoutes.get('/locations', asyncHandler(async (req, res) => {
+postRoutes.get('/locations', asyncHandler(async (_req, res) => {
   const posts = await getLocations();
-  res.status(Status.OK).json(posts);
+  res.status(Status.OK).json(posts.map((post) => post.location));
 }));
 
 postRoutes.get('/user', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {

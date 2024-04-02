@@ -4,12 +4,16 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faChevronRight, faTrashCan } from '@fortawesome/free-solid-svg-icons'
+import { useApi } from '../context/APIContext'
+import { useNavigate } from 'react-router-dom'
 
 const CreatePost = (): React.ReactElement => {
   const { getAccessTokenSilently } = useAuth0()
   const [images, setImages] = useState<File[]>([])
   const [displayImages, setDisplays] = useState<Record<number, string>>({})
   const [imageError, setImageError] = useState<string>('')
+  const navigate = useNavigate()
+  const { sendRequest } = useApi()
 
   useEffect(() => {
     setDisplays({})
@@ -93,33 +97,30 @@ const CreatePost = (): React.ReactElement => {
       price: parseFloat(form.price.value as string)
     }
 
+    const { status, response, error } = await sendRequest<{
+      postId: number
+    }>({
+      method: 'POST',
+      endpoint: 'post/',
+      body: formData
+    })
+
+    if (status !== 201) {
+      console.log(`Could not create post: ${error}`)
+      return
+    }
+
+    void uploadImages(response.postId.toString())
+  }
+
+  const uploadImages = async (postID: string): Promise<void> => {
     let token: string
     try {
       token = await getAccessTokenSilently()
     } catch (e) {
       return
     }
-    console.log(JSON.stringify(formData))
-    void fetch('http://localhost:8080/post/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(formData)
-    })
-      .then(async response => {
-        if (response.status !== 201) {
-          console.error('Ad could not be posted')
-        } else {
-          const jsonResponse = await response.json()
-          const postID = jsonResponse.postId
-          void uploadImages(postID as string, token)
-        }
-      })
-  }
 
-  const uploadImages = async (postID: string, token: string): Promise<void> => {
     const formData = new FormData()
     images.forEach(image => {
       formData.append('post-images', image)
@@ -131,14 +132,13 @@ const CreatePost = (): React.ReactElement => {
         Authorization: `Bearer ${token}`
       },
       body: formData
+    }).then(async response => {
+      if (!response.ok) {
+        console.error('Images could not be uploaded')
+      } else {
+        navigate(`/listing/${postID}`)
+      }
     })
-      .then(async response => {
-        if (!response.ok) {
-          console.error('Images could not be uploaded')
-        } else {
-          window.location.href = `/listing/${postID}`
-        }
-      })
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {

@@ -26,7 +26,6 @@ export interface Conversation {
   buyerId: string
   postName: string
   postPrice: number
-  messages: Message[]
 }
 
 const ViewConversation = (): React.ReactElement => {
