@@ -6,7 +6,7 @@ import type { Conversation } from './ViewConversation'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useApi } from '../context/APIContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faChevronRight, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { type ListingInfo } from '../types/listings'
 import { type UserInfo } from '../types/user'
 
@@ -17,11 +17,13 @@ interface ConversationsProps {
 
 const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
   const [conversations, setConversations] = useState<Conversation[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const { user } = useAuth0()
   const { sendRequest } = useApi()
   const navigate = useNavigate()
 
   const getConversations = async (): Promise<Conversation[]> => {
+    setIsLoading(true)
     try {
       const { status, response } = await sendRequest<Conversation[]>({
         method: 'GET',
@@ -53,6 +55,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
 
           const userDetails = userResponse.response
           const postDetails = postResponse.response
+          setIsLoading(false)
           return {
             ...conversation,
             senderName: userDetails.firstName + ' ' + userDetails.lastName,
