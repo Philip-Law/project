@@ -12,7 +12,7 @@ const PLACEHOLDER_IMAGE = '/assets/placeholder.jpg'
 export interface ListingProps {
   id: number
   title: string
-  userID: number
+  userID: string
   userName: string
   adType: string
   imgPaths: string[]

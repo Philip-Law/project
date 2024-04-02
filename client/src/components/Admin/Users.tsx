@@ -4,19 +4,10 @@ import './style/Listings.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faArrowLeft, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { useApi } from '../../context/APIContext'
-
-interface User {
-  id: number
-  name: string
-  email: string
-  year: number
-  major: string
-  firstName?: string
-  lastName?: string
-}
+import { type UserInfo } from '../../types/user'
 
 const Users = (): React.ReactElement => {
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<UserInfo[]>([])
   const [currentPage, setCurrentPage] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [inputText, setInputText] = useState('')
@@ -36,7 +27,7 @@ const Users = (): React.ReactElement => {
 
   const fetchUsers = async (): Promise<void> => {
     try {
-      const { status, response, error } = await sendRequest<User[]>({
+      const { status, response, error } = await sendRequest<UserInfo[]>({
         method: 'GET',
         endpoint: `user${query}`
       })
@@ -45,7 +36,7 @@ const Users = (): React.ReactElement => {
         console.log(`Failed to filter users: ${error}`)
       }
 
-      const users = response.map((user: any) => ({
+      const users = response.map((user) => ({
         ...user,
         name: user.firstName + ' ' + user.lastName
       }))

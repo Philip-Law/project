@@ -1,11 +1,10 @@
 import React, { useState, useEffect, type ChangeEvent } from 'react'
 import '../style/CreatePost.css'
 import { useAuth0 } from '@auth0/auth0-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faChevronRight, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { useApi } from '../context/APIContext'
-import { useNavigate } from 'react-router-dom'
 
 const CreatePost = (): React.ReactElement => {
   const { getAccessTokenSilently } = useAuth0()

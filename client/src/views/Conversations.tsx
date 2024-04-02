@@ -7,6 +7,9 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { useApi } from '../context/APIContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { type ListingInfo } from '../types/listings'
+import { type UserInfo } from '../types/user'
+
 // You can add Messages to this import statement, so you can retrieve latest message for each conversation.
 interface ConversationsProps {
   conversations?: Conversation[]
@@ -30,10 +33,10 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
         return []
       }
       return await Promise.all(
-        conversations.map(async (conversation: any) => {
+        response.map(async (conversation: any) => {
           const currentUserId = user?.sub
-          const isBuyer = currentUserId === conversation.buyerId;
-          const userResponse = await sendRequest({
+          const isBuyer = currentUserId === conversation.buyerId
+          const userResponse = await sendRequest<UserInfo>({
             method: 'GET',
             endpoint: `user/${isBuyer ? conversation.sellerId : conversation.buyerId}`
           })
@@ -43,7 +46,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
             return conversation
           }
 
-          const postResponse = await sendRequest({
+          const postResponse = await sendRequest<ListingInfo>({
             method: 'GET',
             endpoint: `post/details/${conversation.postId}`
           })

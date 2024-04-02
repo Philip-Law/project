@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom'
 import { useApi } from '../context/APIContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
+import { type DetailedListing, type UserInfo } from '../types/user'
 
 export interface Message {
   id: number
@@ -30,12 +31,12 @@ export interface Conversation {
 }
 
 const ViewConversation = (): React.ReactElement => {
-  const { user, getAccessTokenSilently } = useAuth0()
+  const { user } = useAuth0()
   const { sendRequest } = useApi()
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const location = useLocation()
-  const conversation = location.state.conversation
+  const conversation = location.state.conversation as Conversation
   const inputRef = useRef<any>()
   const conversationId = conversation.id
 
@@ -53,19 +54,19 @@ const ViewConversation = (): React.ReactElement => {
       }
 
       const enrichedMessages = await Promise.all(response.map(async (message) => {
-        const userDetails = await getUser(message.senderId as string)
-        const postDetails = await getPost(conversation.postId as number)
+        const userDetails = await getUser(message.senderId)
+        const postDetails = await getPost(conversation.postId)
         return {
           ...message,
           senderName: userDetails.firstName + ' ' + userDetails.lastName,
           senderImage: userDetails.picture,
           postName: postDetails.title,
-          postPrice: postDetails.price
+          postPrice: parseFloat(postDetails.price)
         }
       }))
 
-      enrichedMessages.sort((a: any, b: any) => {
-        return new Date(a.sentAt as string).getTime() - new Date(b.sentAt as string).getTime()
+      enrichedMessages.sort((a, b) => {
+        return new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()
       }).reverse()
       setIsLoading(false)
       return enrichedMessages
@@ -75,53 +76,29 @@ const ViewConversation = (): React.ReactElement => {
     }
   }
 
-  async function getUser (senderId: string): Promise<any> {
-    try {
-      const token = await getAccessTokenSilently()
-      const response = await fetch(`http://localhost:8080/user/${senderId}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+  async function getUser (senderId: string): Promise<UserInfo> {
+    const { status, response, error } = await sendRequest<UserInfo>({
+      method: 'GET',
+      endpoint: `user/${senderId}`
+    })
 
-      })
-
-      if (!response.ok) {
-        // Handle response errors
-        console.error(`User not found for ID ${senderId}`)
-        throw new Error(`User not found for ID ${senderId}`)
-      }
-
-      const userDetails = await response.json()
-      return userDetails
-    } catch (error) {
-      console.error('Error fetching user details', error)
-      throw error // Propagate error to be handled by caller
+    if (status !== 200) {
+      // Handle response errors
+      throw new Error(`User not found for ID ${senderId}: ${error}`)
     }
+    return response
   }
 
-  const getPost = async (postId: number): Promise<any> => {
-    try {
-      const token = await getAccessTokenSilently()
-      const response = await fetch(`http://localhost:8080/post/details/${postId}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+  const getPost = async (postId: number): Promise<DetailedListing> => {
+    const { status, response, error } = await sendRequest<DetailedListing>({
+      method: 'GET',
+      endpoint: `post/details/${postId}`
+    })
 
-      if (!response.ok) {
-        console.error(`Post not found for ID ${postId}`)
-        return {}
-      }
-
-      const postDetails = await response.json()
-      return postDetails
-    } catch (error) {
-      console.error('Error fetching post details', error)
-      return {}
+    if (status !== 200) {
+      throw new Error(`Post not found for ID ${postId}: ${error}`)
     }
+    return response
   }
 
   const handleSendMessage = async (): Promise<any> => {
@@ -134,7 +111,7 @@ const ViewConversation = (): React.ReactElement => {
         }
       })
 
-      if (status !== 200) {
+      if (status !== 201) {
         console.error(`Error posting message to conversation ${conversationId}: ${error}`)
         return
       }
