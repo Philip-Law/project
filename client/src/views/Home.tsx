@@ -5,6 +5,8 @@ import Nav from './Nav'
 import Filter from '../components/Filter'
 import Listings from '../components/Listings'
 import FilterMobile from '../components/FilterMobile'
+import { useApi } from '../context/APIContext'
+import { convertType, type ListingInfo } from '../types/listings'
 
 const PLACEHOLDER_IMAGE = '/assets/placeholder.jpg'
 
@@ -16,46 +18,38 @@ const Home = (): React.ReactElement => {
     adType: [],
     sort: ''
   })
+  const { sendRequest } = useApi()
 
-  const convertType = async (input: string): Promise<string> => {
-    if (input === 'W') {
-      return 'Wanted'
-    } else if (input === 'A') {
-      return 'Academic Service'
-    } else {
-      return 'Selling'
-    }
-  }
-
-  const getImage = async (id: string): Promise<any> => {
+  const getImage = async (id: string): Promise<string[]> => {
     try {
-      const response = await fetch(`http://localhost:8080/post/image/${id}`, {
-        method: 'GET'
+      const { status, response } = await sendRequest<string[]>({
+        method: 'GET',
+        endpoint: `post/image/${id}`
       })
 
-      if (!response.ok) {
+      if (status !== 200) {
         console.error('Images not found')
-        return
+        return []
       }
-      const jsonResponse = await response.json()
-      if (jsonResponse.length === 0) {
+      if (response.length === 0) {
         return [PLACEHOLDER_IMAGE]
       } else {
-        return jsonResponse
+        return response
       }
     } catch (error) {
       console.error('Error fetching images:', error)
+      return []
     }
   }
 
-  const getListings = async (): Promise<any> => {
+  const getListings = async (): Promise<ListingInfo[]> => {
     try {
       const title = p.get('title') !== null ? p.get('title') : ''
       const location = filters.location.trim()
       const adTypes = filters.adType
       const sortBy = filters.sort
 
-      let url: string = 'http://localhost:8080/post?'
+      let url: string = 'post?'
       if (title !== '') {
         url += `&title=${title}`
       }
@@ -69,17 +63,18 @@ const Home = (): React.ReactElement => {
         url += `&sort=${sortBy}`
       }
 
-      const response = await fetch(url, {
-        method: 'GET'
+      const { status, response } = await sendRequest<ListingInfo[]>({
+        method: 'GET',
+        endpoint: url
       })
-      if (!response.ok) {
+      if (status !== 200) {
         console.error('Details not found')
-        return {}
+        return []
       }
-      const jsonResponse = await response.json()
-      return jsonResponse
+      return response
     } catch (error) {
       console.error('Error fetching details:', error)
+      return []
     }
   }
 
@@ -89,22 +84,20 @@ const Home = (): React.ReactElement => {
 
       if (posts !== undefined) {
         try {
-          const newListings = await Promise.all(posts.map(async (post: any) => {
-            const img = await getImage(post.id as string)
+          const newListings = await Promise.all(posts.map(async (post: ListingInfo) => {
+            const img = await getImage(post.id.toString())
             if (img !== undefined) {
-              const listingInfo = {
+              return {
                 id: post.id,
                 title: post.title,
-                adType: await convertType(post.adType as string),
+                adType: await convertType(post.adType),
                 imgPaths: img,
                 description: post.description,
                 location: post.location,
-                categories: Array.from(post.categories as string),
-                price: parseFloat(post.price as string),
+                categories: post.categories,
+                price: parseFloat(post.price),
                 postDate: post.postDate
               }
-
-              return listingInfo
             }
           }))
           setListings(newListings)
@@ -116,16 +109,16 @@ const Home = (): React.ReactElement => {
   }, [filters, p])
 
   return (
-        <div className="App">
-            <header className="App-header">
-                <Nav/>
-                <div className='content'>
-                  <Filter setFilters={setFilters}/>
-                  <FilterMobile setFilters={setFilters}/>
-                  <Listings response={listings}/>
-                </div>
-            </header>
+    <div className="App">
+      <header className="App-header">
+        <Nav/>
+        <div className='content'>
+          <Filter setFilters={setFilters}/>
+          <FilterMobile setFilters={setFilters}/>
+          <Listings response={listings}/>
         </div>
+      </header>
+    </div>
   )
 }
 

@@ -22,8 +22,7 @@ const validateIsAdmin = (payload: JWTPayload) => {
     return false;
   }
   const permissions = payload.permissions as string[];
-
-  return !permissions?.includes(ADMIN_PERMISSION);
+  return permissions?.includes(ADMIN_PERMISSION);
 };
 
 export const requireAuth0User = asyncHandler(async (

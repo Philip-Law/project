@@ -3,6 +3,8 @@ import ReactPaginate from 'react-paginate'
 import './style/Listings.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faArrowLeft, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { useApi } from '../../context/APIContext'
+import { type ListingInfo } from '../../types/listings'
 
 interface Post {
   id: number
@@ -23,6 +25,7 @@ const Listings = (): React.ReactElement => {
   const [filter, setFilter] = useState('')
   const [query, setQuery] = useState('')
   const [queryActive, setQueryActive] = useState(false)
+  const { sendRequest } = useApi()
   const itemsPerPage = 10
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
@@ -35,29 +38,31 @@ const Listings = (): React.ReactElement => {
 
   const fetchPosts = async (): Promise<void> => {
     try {
-      const response = await fetch(`http://localhost:8080/post${query}`, {
-        method: 'GET'
+      const { status, response, error } = await sendRequest<ListingInfo[]>({
+        method: 'GET',
+        endpoint: `post${query}`
       })
-      const data = await response.json()
-      if (Array.isArray(data)) {
-        const posts = data.map((post: any) => ({
-          id: post.id,
-          title: post.title,
-          location: post.location,
-          category: post.categories,
-          price: post.price,
-          description: post.description,
-          adType: post.adType,
-          postDate: post.postDate
-        }))
-        setPosts(posts)
-        if (query !== '') {
-          setQueryActive(true)
-        }
-        setIsLoading(false)
-      } else {
-        setPosts([])
+
+      if (status !== 200) {
+        console.log(`Could not retrieve posts: ${error}`)
+        return
       }
+
+      const posts = response.map((post) => ({
+        id: post.id,
+        title: post.title,
+        location: post.location,
+        category: post.categories,
+        price: post.price,
+        description: post.description,
+        adType: post.adType,
+        postDate: post.postDate
+      }))
+      setPosts(posts)
+      if (query !== '') {
+        setQueryActive(true)
+      }
+      setIsLoading(false)
     } catch (error) {
       console.error(error)
     }
@@ -101,7 +106,7 @@ const Listings = (): React.ReactElement => {
             <option value='' selected disabled hidden>Filter by...</option>
             <option value='category'>Category</option>
             <option value='location'>Location</option>
-            <option value='ad-type'>Ad Type</option>
+            <option value='adType'>Ad Type</option>
             <option value='title'>Title</option>
           </select>
           <input className={`${filter === '' ? 'disabled' : null}`} name='search-query' onChange={handleInputChange} type='text' placeholder={`Search by ${filter}...`} />
