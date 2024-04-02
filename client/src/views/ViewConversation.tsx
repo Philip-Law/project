@@ -4,7 +4,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { useLocation } from 'react-router-dom'
 import { useApi } from '../context/APIContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
+import { faComments, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { type DetailedListing, type UserInfo } from '../types/user'
 
 export interface Message {
@@ -31,17 +31,17 @@ export interface Conversation {
 }
 
 const ViewConversation = (): React.ReactElement => {
-  const { user } = useAuth0()
+  const { user, isLoading } = useAuth0()
   const { sendRequest } = useApi()
   const [messages, setMessages] = useState<Message[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isFetching, setIsFetching] = useState(true)
   const location = useLocation()
   const conversation = location.state.conversation as Conversation
   const inputRef = useRef<any>()
   const conversationId = conversation.id
 
   const getMessages = async (): Promise<Message[]> => {
-    setIsLoading(true)
+    setIsFetching(true)
     try {
       const { status, response, error } = await sendRequest<Message[]>({
         method: 'GET',
@@ -68,7 +68,7 @@ const ViewConversation = (): React.ReactElement => {
       enrichedMessages.sort((a, b) => {
         return new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()
       }).reverse()
-      setIsLoading(false)
+      setIsFetching(false)
       return enrichedMessages
     } catch (error) {
       console.error('Error fetching messages', error)
@@ -126,14 +126,17 @@ const ViewConversation = (): React.ReactElement => {
   }
 
   useEffect(() => {
-    const renderMessages = async (): Promise<any> => {
-      const newMessages = await getMessages()
-      if (messages !== newMessages) {
-        setMessages(newMessages)
+    const renderMessages = async (): Promise<void> => {
+      console.log('rendering messages')
+      if (!isLoading) {
+        const newMessages = await getMessages()
+        if (messages !== newMessages) {
+          setMessages(newMessages)
+        }
       }
     }
     void renderMessages()
-  }, [])
+  }, [isLoading])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') {
@@ -152,7 +155,7 @@ const ViewConversation = (): React.ReactElement => {
     return `${formattedDate} at ${formattedTime}`
   }
 
-  if (isLoading) {
+  if (isFetching) {
     return (
       <div className='App'>
         <header className='App-header'>
@@ -166,7 +169,7 @@ const ViewConversation = (): React.ReactElement => {
               </div>
             </div>
             <div className='conversation-messages'>
-              <div className='loading-content'>
+              <div className='loading-content' id='message-load'>
                 <span className="loader"></span>
               </div>
             </div>
@@ -230,7 +233,11 @@ const ViewConversation = (): React.ReactElement => {
                       )
                     : (Array.isArray(messages) && messages.length === 0)
                         ? (
-                            <div>No messages</div>
+                            <div className='no-messages'>
+                              <FontAwesomeIcon icon={faComments} />
+                              <h2>No Messages</h2>
+                              <p>Send a message to start the conversation!</p>
+                            </div>
                           )
                         : (
                       <div>Error retrieving messages. Please wait a few moments and then refresh the page.</div>
