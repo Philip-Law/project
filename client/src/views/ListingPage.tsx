@@ -68,7 +68,16 @@ const ListingPage: React.FC<ListingProps> = ({
         console.log('Response error status: ', status)
         return
       }
-      navigate('/viewconversation', { state: { conversation: response } })
+      navigate('/viewconversation', {
+        state: {
+          conversation: {
+            ...response,
+            senderName: userName,
+            postName: title,
+            postPrice: price
+          }
+        }
+      })
     } catch (error) {
       console.log(error)
     }
