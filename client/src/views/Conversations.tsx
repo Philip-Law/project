@@ -75,6 +75,22 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
     navigate('/viewconversation', { state: { conversation } })
   }
 
+  const handleDeleteConversation = async (conversation: Conversation): Promise<void> => {
+    try {
+      const { status, response } = await sendRequest<Conversation[]>({
+        method: 'DELETE',
+        endpoint: `conversation/post/${conversation.postId}`
+      })
+
+      if (status !== 200) {
+        console.error('Conversation not deleted')
+      }
+      console.log(response)
+    } catch (error) {
+      console.error('Error deleting conversation', error)
+    }
+  }
+
   useEffect(() => {
     const renderConversations = async (): Promise<any> => {
       const newConversations = await getConversations()
@@ -138,7 +154,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
                   </div>
                   <div className='conversation-right'>
                     <button onClick={() => { handleClick(conversation) }}>View Messages</button>
-                    <button><FontAwesomeIcon icon={faTrash} /></button>
+                    <button onClick={() => { handleDeleteConversation(conversation).catch(error => { console.error(error) }) }}><FontAwesomeIcon icon={faTrash} /></button>
                   </div>
                 </div>
                   ))
