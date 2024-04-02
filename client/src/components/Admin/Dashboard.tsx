@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faList, faCog, faCircleArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faList, faCircleArrowRight, faHome } from '@fortawesome/free-solid-svg-icons'
 import './style/Dashboard.css'
+import { Link } from 'react-router-dom'
 
 interface Props {
   name: string
@@ -68,18 +69,18 @@ const Dashboard: React.FC<Props> = ({ name, desiredView, setDesiredView }): Reac
             <FontAwesomeIcon className='select-icon' onClick={() => { setDesiredView('listings') }} icon={faCircleArrowRight} />
           </div>
         </div>
-        <div className='card' onClick={() => { setDesiredView('settings') }}>
-          <div className='card-header'>
-            <h2>Manage Settings</h2>
-            <FontAwesomeIcon icon={faCog} />
-          </div>
-          <div className='card-content'>
-            <p>Make system adjustments here. Provides a visual interface for admins to configure TMU Connect.</p>
-          </div>
-          <div className='card-footer'>
-            <FontAwesomeIcon className='select-icon' onClick={() => { setDesiredView('settings') }} icon={faCircleArrowRight} />
-          </div>
-        </div>
+        <Link className='card' to='/'>
+            <div className='card-header'>
+              <h2>Go Home</h2>
+              <FontAwesomeIcon icon={faHome} />
+            </div>
+            <div className='card-content'>
+              <p>Safely exit the Admin portal.</p>
+            </div>
+            <div className='card-footer'>
+              <FontAwesomeIcon className='select-icon' onClick={() => { setDesiredView('settings') }} icon={faCircleArrowRight} />
+            </div>
+        </Link>
       </div>
     </div>
   )
