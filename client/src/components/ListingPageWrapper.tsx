@@ -92,7 +92,7 @@ const ListingPageWrapper: React.FC = () => {
         console.error(`User not found: ${error}`)
         return ''
       }
-      return response.firstName
+      return `${response.firstName} ${response.lastName}`
     } catch (error) {
       console.error('Error fetching user:', error)
       return ''
