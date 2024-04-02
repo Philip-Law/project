@@ -198,7 +198,7 @@ const ViewConversation = (): React.ReactElement => {
               </div>
             </div>
             <div className='conversation-messages'>
-              <div className='loading-content'>
+              <div className='loading-content' id='message-load'>
                 <span className="loader"></span>
               </div>
             </div>
