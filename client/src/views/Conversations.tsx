@@ -6,7 +6,7 @@ import type { Conversation } from './ViewConversation'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useApi } from '../context/APIContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faChevronRight, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { type ListingInfo } from '../types/listings'
 import { type UserInfo } from '../types/user'
 
@@ -17,11 +17,13 @@ interface ConversationsProps {
 
 const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
   const [conversations, setConversations] = useState<Conversation[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const { user } = useAuth0()
   const { sendRequest } = useApi()
   const navigate = useNavigate()
 
   const getConversations = async (): Promise<Conversation[]> => {
+    setIsLoading(true)
     try {
       const { status, response } = await sendRequest<Conversation[]>({
         method: 'GET',
@@ -53,6 +55,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
 
           const userDetails = userResponse.response
           const postDetails = postResponse.response
+          setIsLoading(false)
           return {
             ...conversation,
             senderName: userDetails.firstName + ' ' + userDetails.lastName,
@@ -83,6 +86,29 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
     void renderConversations()
   }, [])
 
+  if (isLoading) {
+    return (
+      <div className='App'>
+        <header className='App-header'>
+          <Nav />
+          <div className='conversations container'>
+            <div className='conversations-header'>
+              <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> Conversations</p>
+              <h1>Conversations</h1>
+              <p>View, chat, and manage your conversations.</p>
+            </div>
+            <div className='conversations-list'>
+              <div className='loading-content'>
+                <span className="loader"></span>
+                <p>Loading your conversations...</p>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+    )
+  }
+
   return (
     <div className='App'>
       <header className='App-header'>
@@ -112,6 +138,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
                   </div>
                   <div className='conversation-right'>
                     <button onClick={() => { handleClick(conversation) }}>View Messages</button>
+                    <button><FontAwesomeIcon icon={faTrash} /></button>
                   </div>
                 </div>
                   ))

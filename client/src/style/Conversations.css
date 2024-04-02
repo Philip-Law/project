@@ -55,7 +55,16 @@
 .conversation-right {
     display: flex;
     width: 20%;
+    gap: 0.5rem;
     justify-content: right;
+}
+
+.conversation-right svg {
+    color: orangered;
+    cursor: pointer;
+    background-color: #54769b;
+    font-size: 1rem;
+    transition: 0.5s ease-in-out;
 }
 
 .conversation-details {
@@ -155,7 +164,29 @@
     margin: auto;
     overflow: auto;
     overflow-x: hidden;
+    scrollbar-width: thin;
+    height: 100vh;
+    padding: 0.5rem;
     width: 80%;
+}
+
+.no-messages {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    height: 100vh;
+}
+
+.no-messages h2 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.no-messages p {
+    margin: 0;
+    font-size: 1rem;
 }
 
 .message {
@@ -164,13 +195,15 @@
     background-color: #f9f9f9;
     padding: 0.5rem;
     text-align: left;
+    margin-right: auto;
     border-radius: 10px;
-    width: 100%;
+    width: 50%;
 }
 
 .message.self {
     text-align: right;
-    justify-content: right;
+    margin-right: 0;
+    margin-left: auto;
     align-items: last baseline;
 }
 
@@ -256,6 +289,20 @@
     background-color: #558fcc;
 }
 
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    align-items: center;
+}
+
+#message-load {
+    height: 100vh;
+}
+
+
 @media screen and (max-width: 1440px)
 {
     .conversation-content {
@@ -272,6 +319,13 @@
     }
     .conversations.container {
         margin: 1rem 5rem 1rem 5rem;
+    }
+    .conversation-left {
+        width: 60%;
+    }
+
+    .conversation-right {
+        width: 40%;
     }
 }
 
