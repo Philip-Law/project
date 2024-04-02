@@ -5,19 +5,29 @@ import Listings from '../components/Listings'
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
+import { useApi } from '../context/APIContext'
+import { type ListingInfo } from '../types/listings'
 
 const PLACEHOLDER_IMAGE = '/assets/placeholder.jpg'
 
+interface ProfileInfo {
+  phoneNumber: string
+  major: string
+  year: number
+}
+
 const Profile = (): React.ReactElement => {
-  const { user, isLoading, getAccessTokenSilently } = useAuth0()
+  const { user, isLoading } = useAuth0()
   const [isFirstTime, setIsFirstTime] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [userListings, setUserListings] = useState<any[]>([])
-  const [profileInfo, setProfileInfo] = useState({
+  const [profileInfo, setProfileInfo] = useState<ProfileInfo>({
     phoneNumber: '',
     major: '',
     year: 1
   })
+  const { sendRequest } = useApi()
+
   const validateProfile = (): boolean => {
     return profileInfo.phoneNumber.length === 12 &&
     profileInfo.major.length > 0 &&
@@ -32,11 +42,6 @@ const Profile = (): React.ReactElement => {
       return phoneNumber
     }
   }
-
-  const getToken = async (): Promise<string> => {
-    return await getAccessTokenSilently()
-  }
-
   const convertType = async (input: string): Promise<string> => {
     if (input === 'W') {
       return 'Wanted'
@@ -47,111 +52,91 @@ const Profile = (): React.ReactElement => {
     }
   }
 
-  const getImage = async (id: string): Promise<any> => {
+  const getImage = async (id: string): Promise<string[]> => {
     try {
-      const response = await fetch(`http://localhost:8080/post/image/${id}`, {
-        method: 'GET'
+      const { status, response } = await sendRequest<string[]>({
+        method: 'GET',
+        endpoint: `post/image/${id}`
       })
 
-      if (!response.ok) {
+      if (status !== 200) {
         console.error('Images not found')
-        return
+        return [PLACEHOLDER_IMAGE]
       }
-      const jsonResponse = await response.json()
-      if (jsonResponse.length === 0) {
+      if (response.length === 0) {
         return [PLACEHOLDER_IMAGE]
       } else {
-        return jsonResponse
+        return response
       }
     } catch (error) {
       console.error('Error fetching images:', error)
+      return [PLACEHOLDER_IMAGE]
     }
   }
 
-  const getUserListings = async (token: string): Promise<any> => {
+  const getUserListings = async (): Promise<ListingInfo[]> => {
     try {
-      const response = await fetch('http://localhost:8080/post/user', {
+      const { status, response } = await sendRequest<ListingInfo[]>({
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        endpoint: 'post/user'
       })
 
-      if (!response.ok) {
+      if (status !== 200) {
         console.error('Listings not found')
-        return {}
+        return []
       }
-      const jsonResponse = await response.json()
-      return jsonResponse
+      return response
     } catch (error) {
       console.error('Error fetching details:', error)
+      return []
     }
   }
 
   useEffect(() => {
     const renderPosts = async (): Promise<any> => {
-      const token = await getToken()
-      const posts = await getUserListings(token)
+      const posts = await getUserListings()
 
-      if (posts !== undefined) {
-        try {
-          const newListings = await Promise.all(posts.map(async (post: any) => {
-            const img = await getImage(post.id as string)
-            if (img !== undefined) {
-              const listingInfo = {
-                id: post.id,
-                title: post.title,
-                adType: await convertType(post.adType as string),
-                imgPaths: img,
-                description: post.description,
-                location: post.location,
-                categories: Array.from(post.categories as string),
-                price: parseFloat(post.price as string),
-                postDate: post.postDate
-              }
+      if (posts === undefined) {
+        return
+      }
 
-              return listingInfo
+      try {
+        const newListings = await Promise.all(posts.map(async (post: ListingInfo) => {
+          const img = await getImage(post.id.toString())
+          if (img !== undefined) {
+            return {
+              id: post.id,
+              title: post.title,
+              adType: await convertType(post.adType),
+              imgPaths: img,
+              description: post.description,
+              location: post.location,
+              categories: post.categories,
+              price: parseFloat(post.price),
+              postDate: post.postDate
             }
-          }))
-          setUserListings(newListings)
-        } catch {
-        }
+          }
+        }))
+        setUserListings(newListings)
+      } catch {
       }
     }
     void renderPosts()
   }, [])
 
   const toggleEditing = async (): Promise<void> => {
-    const accessToken = await getToken()
-    if (isEditing && isFirstTime) {
-      const response = await fetch('http://localhost:8080/user/setup', {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(profileInfo)
-      })
-      if (response.status === 200) {
-        setIsEditing(false)
-        window.location.reload()
-      }
-    } else if (isEditing && !isFirstTime) {
-      const response = await fetch('http://localhost:8080/user/update', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(profileInfo)
-      })
-      if (response.status === 200) {
-        setIsEditing(false)
-        window.location.reload()
-      }
-    } else {
+    if (!isEditing) {
       setIsEditing(true)
+      return
     }
+
+    const { status } = await sendRequest({
+      method: isFirstTime ? 'PUT' : 'POST',
+      endpoint: isFirstTime ? 'user/setup' : 'user/update',
+      body: profileInfo
+    })
+    setIsEditing(status !== 200 && status !== 201)
+    window.location.reload()
   }
 
   const handleInputChange = (e: any): void => {
@@ -214,23 +199,13 @@ const Profile = (): React.ReactElement => {
   }
 
   const healthCheck = useCallback(async () => {
-    const accessToken = await getToken()
-    const response = await fetch(`http://localhost:8080/user/${user?.sub}`, {
+    const { status, response } = await sendRequest<ProfileInfo>({
       method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+      endpoint: `user/${user?.sub}`
     })
-    if (response.status === 404) {
-      setIsFirstTime(true)
-    } else {
-      setIsFirstTime(false)
-      const data = await response.json()
-      setProfileInfo({
-        phoneNumber: data.phoneNumber,
-        major: data.major,
-        year: data.year
-      })
+    setIsFirstTime(status === 404)
+    if (status === 200) {
+      setProfileInfo(response)
     }
   }, [user])
 
