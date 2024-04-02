@@ -15,6 +15,7 @@ interface ListingInfo {
   price: number
   postDate: string
   daysAgo: string
+  isProfile: boolean
 }
 
 const ListingPageWrapper: React.FC = () => {
@@ -30,7 +31,8 @@ const ListingPageWrapper: React.FC = () => {
     categories: [],
     price: 0,
     postDate: '',
-    daysAgo: ''
+    daysAgo: '',
+    isProfile: false
   }
   const [listingDetails, setDetails] = useState<ListingInfo>(initialListingInfo)
   const { id } = useParams<{ id: string }>()
@@ -120,7 +122,8 @@ const ListingPageWrapper: React.FC = () => {
         categories: Array.from(listingD.categories as string),
         price: listingD.price,
         postDate: listingD.postDate,
-        daysAgo: await getDaysAgo(listingD.postDate as string)
+        daysAgo: await getDaysAgo(listingD.postDate as string),
+        isProfile: false
       }
       setDetails(listingInfo)
     }

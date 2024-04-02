@@ -88,6 +88,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    resize: none;
 }
 
 .page-row {
@@ -189,4 +190,22 @@ li, .next {
     .post-info {
         margin-top: 1rem;
     }
+}
+
+/* .delete-button {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    position: relative;
+    top: 0;
+    right: 0;
+} */
+
+.delete-button {
+    color: rgb(199, 0, 0);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex: 1;
+    margin-right: 5%;
 }

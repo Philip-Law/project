@@ -21,6 +21,7 @@ export interface ListingProps {
   price: number
   postDate: string
   daysAgo?: string
+  isProfile: boolean
 }
 
 const ListingPage: React.FC<ListingProps> = ({ title, adType, userID, userName, imgPaths, description, location, categories, price, postDate, daysAgo }): React.ReactElement => {

@@ -186,7 +186,7 @@ const Profile = (): React.ReactElement => {
                 </div>
               </div>
             </div>
-            <Listings response={[]} />
+            <Listings response={[]} isProfile={false} />
           </div>
         </header>
       </div>
@@ -294,7 +294,7 @@ const Profile = (): React.ReactElement => {
               </div>
             </div>
           </div>
-          <Listings response={userListings} />
+          <Listings response={userListings} isProfile={true} />
         </div>
       </header>
     </div>
@@ -326,7 +326,7 @@ export default withAuthenticationRequired(Profile, {
               </div>
             </div>
           </div>
-          <Listings response={[]} />
+          <Listings response={[]} isProfile={false} />
         </div>
       </header>
     </div>

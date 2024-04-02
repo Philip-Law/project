@@ -122,7 +122,7 @@ const Home = (): React.ReactElement => {
                 <div className='content'>
                   <Filter setFilters={setFilters}/>
                   <FilterMobile setFilters={setFilters}/>
-                  <Listings response={listings}/>
+                  <Listings response={listings} isProfile={false}/>
                 </div>
             </header>
         </div>
