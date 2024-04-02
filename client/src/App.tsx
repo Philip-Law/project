@@ -25,13 +25,12 @@ const App = (): React.ReactElement => {
 
   const domain = process.env.REACT_APP_DOMAIN ?? ''
   const clientId = process.env.REACT_APP_CLIENT_ID ?? ''
-
   return (
       <Auth0Provider
           domain={domain}
           clientId={clientId}
           authorizationParams={{
-            redirect_uri: 'http://localhost:3000/profile',
+            redirect_uri: `${window.location.protocol}//${window.location.host}/profile`,
             scope: 'openid profile email read:message',
             audience: process.env.REACT_APP_BACKEND_AUDIENCE
           }}
