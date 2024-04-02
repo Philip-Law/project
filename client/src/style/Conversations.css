@@ -3,14 +3,11 @@
     flex-direction: column;
     margin: 1rem 15rem 1rem 15rem;
     text-align: left;
-    background-color: white;
-    padding: 1rem;
-    border-radius: 10px;
     color: black;
 }
 
 .conversations.container h1 {
-    font-size: 1.5rem;
+    font-size: 2.5rem;
     margin: 0;
     margin-bottom: 1rem;
 }
@@ -24,5 +21,282 @@
 .conversations-list {
     display: flex;
     flex-direction: column;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 10px;
     gap: 1rem;
+}
+
+.conversation {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 10px;
+    align-items: center;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    justify-content: space-between;
+}
+
+.conversation h2 {
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.conversation-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 80%;
+}
+
+.conversation-right {
+    display: flex;
+    width: 20%;
+    justify-content: right;
+}
+
+.conversation-details {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.conversation-details img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.conversation-post-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.conversation-post-info p {
+    margin: 0 !important;
+}
+
+#title {
+    color: gray;
+    font-weight: bold;
+}
+
+#price {
+    color: rgb(128, 118, 118);
+}
+
+.conversation-right button {
+    padding: 0.7rem 1.6rem;
+    background-color: #54769b;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    min-width: 50px;
+    text-align: center;
+    font-size: 0.8rem !important;
+    transition: 0.5s ease-in-out;
+}
+
+.conversation-right button:hover {
+    border-radius: 8px;
+    background-color: #558fcc;
+}
+
+.conversation-content {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    height: 80vh;
+    padding: 1rem;
+    width: 55%;
+    margin: auto;
+    border-radius: 5px;
+    color: black;
+}
+
+.conversation-header {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.conversation-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.post-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.post-info h3 {
+    margin: 0;
+}
+
+.post-info p {
+    margin: 0;
+}
+
+.conversation-messages {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+    margin: auto;
+    overflow: auto;
+    overflow-x: hidden;
+    width: 80%;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    background-color: #f9f9f9;
+    padding: 0.5rem;
+    text-align: left;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.message.self {
+    text-align: right;
+    justify-content: right;
+    align-items: last baseline;
+}
+
+.message-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: right;
+    padding: 1rem;
+    width: 50%;
+}
+
+#message-content {
+    margin: 0.5rem;
+    font-size: 0.9rem;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.sender-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.message.self .sender-info {
+    justify-content: right;
+}
+
+.sender-info img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.sender-info-col {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.sender-info-col h2 {
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.sender-info p {
+    margin: 0;
+}
+
+.sendMessage {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    margin: 1rem auto auto auto;
+    width: 80%;
+}
+
+.sendMessage input {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid lightgray;
+}
+
+.sendMessage button {
+    padding: 0.7rem 1.6rem;
+    background-color: #54769b;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    min-width: 50px;
+    text-align: center;
+    font-size: 0.8rem !important;
+    transition: 0.5s ease-in-out;
+}
+
+.sendMessage button:hover {
+    border-radius: 8px;
+    background-color: #558fcc;
+}
+
+@media screen and (max-width: 1440px)
+{
+    .conversation-content {
+        width: 70%;
+    }
+    .conversations.container {
+        margin: 1rem 10rem 1rem 10rem;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .conversation-content {
+        width: 75%;
+    }
+    .conversations.container {
+        margin: 1rem 5rem 1rem 5rem;
+    }
+}
+
+@media screen and (max-width: 435px) {
+    .message-container {
+        width: 100%;
+    }
+
+    .conversation-messages {
+        width: 100%;
+    }
+
+    .conversation-content {
+        width: 90%;
+    }
+
+    .conversations.container {
+        margin: 1rem 2rem 1rem 2rem;
+    }
+
+    .conversation-left {
+        width: 60%;
+    }
+
+    .conversation-right {
+        width: 40%;
+    }
 }
