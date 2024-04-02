@@ -38,4 +38,12 @@ conversationRoutes.get('/post/:postId', checkJwt, requireAuth0User, asyncHandler
   res.status(Status.OK).json(toConversationResponse(conversation));
 }));
 
+// Delete a conversation for a post
+conversationRoutes.delete('/post/:postId', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
+  const postId = postIdSchema.parse(req.params.postId);
+  await ConversationService.deleteConversation(postId, req.auth0!!.id);
+  res.status(Status.OK).send();
+}));
+
+
 export default conversationRoutes;
