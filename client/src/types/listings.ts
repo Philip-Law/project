@@ -1,5 +1,5 @@
 export interface ListingInfo {
-  id: string
+  id: number
   title: string
   adType: string
   description: string

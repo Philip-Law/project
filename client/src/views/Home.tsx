@@ -85,7 +85,7 @@ const Home = (): React.ReactElement => {
       if (posts !== undefined) {
         try {
           const newListings = await Promise.all(posts.map(async (post: ListingInfo) => {
-            const img = await getImage(post.id)
+            const img = await getImage(post.id.toString())
             if (img !== undefined) {
               return {
                 id: post.id,

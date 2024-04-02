@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import ReactPaginate from 'react-paginate'
-import { useAuth0 } from '@auth0/auth0-react'
 import './style/Listings.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faArrowLeft, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { useApi } from '../../context/APIContext'
 
 interface User {
   id: number
@@ -11,10 +11,11 @@ interface User {
   email: string
   year: number
   major: string
+  firstName?: string
+  lastName?: string
 }
 
 const Users = (): React.ReactElement => {
-  const { getAccessTokenSilently } = useAuth0()
   const [users, setUsers] = useState<User[]>([])
   const [currentPage, setCurrentPage] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
@@ -22,11 +23,8 @@ const Users = (): React.ReactElement => {
   const [filter, setFilter] = useState('')
   const [query, setQuery] = useState('')
   const [queryActive, setQueryActive] = useState(false)
+  const { sendRequest } = useApi()
   const itemsPerPage = 10
-
-  const getToken = async (): Promise<string> => {
-    return await getAccessTokenSilently()
-  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     if (e.target.name === 'filter') {
@@ -37,31 +35,25 @@ const Users = (): React.ReactElement => {
   }
 
   const fetchUsers = async (): Promise<void> => {
-    const token = await getToken()
     try {
-      const response = await fetch(`http://localhost:8080/user${query}`, {
+      const { status, response, error } = await sendRequest<User[]>({
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        endpoint: `user${query}`
       })
-      const data = await response.json()
-      if (Array.isArray(data)) {
-        const users = data.map((user: any) => ({
-          id: user.id,
-          name: user.firstName + ' ' + user.lastName,
-          year: user.year,
-          email: user.email,
-          major: user.major
-        }))
-        setUsers(users)
-        if (query !== '') {
-          setQueryActive(true)
-        }
-        setIsLoading(false)
-      } else {
-        setUsers([])
+
+      if (status !== 200) {
+        console.log(`Failed to filter users: ${error}`)
       }
+
+      const users = response.map((user: any) => ({
+        ...user,
+        name: user.firstName + ' ' + user.lastName
+      }))
+      setUsers(users)
+      if (query !== '') {
+        setQueryActive(true)
+      }
+      setIsLoading(false)
     } catch (error) {
       console.error(error)
     }

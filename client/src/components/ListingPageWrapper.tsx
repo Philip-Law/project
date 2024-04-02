@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ListingPage from '../views/ListingPage'
+import { convertType } from '../types/listings'
+import { useApi } from '../context/APIContext'
 
 interface ListingInfo {
   id: number
@@ -34,16 +36,7 @@ const ListingPageWrapper: React.FC = () => {
   }
   const [listingDetails, setDetails] = useState<ListingInfo>(initialListingInfo)
   const { id } = useParams<{ id: string }>()
-
-  const convertType = async (input: string): Promise<string> => {
-    if (input === 'W') {
-      return 'Wanted'
-    } else if (input === 'A') {
-      return 'Academic Service'
-    } else {
-      return 'Selling'
-    }
-  }
+  const { sendRequest } = useApi()
 
   const getDaysAgo = async (dateString: string): Promise<string> => {
     const date = new Date(dateString)
@@ -55,32 +48,35 @@ const ListingPageWrapper: React.FC = () => {
 
   const getDetails = async (): Promise<any> => {
     try {
-      const response = await fetch(`http://localhost:8080/post/details/${id}`, {
-        method: 'GET'
+      const { status, response, error } = await sendRequest({
+        method: 'GET',
+        endpoint: `post/details/${id}`
       })
-      if (!response.ok) {
-        console.error('Details not found')
+      if (status !== 200) {
+        console.error(`Details not found: ${error}`)
         return
       }
-      return await response.json()
+      return response
     } catch (error) {
       console.error('Error fetching details:', error)
     }
   }
 
-  const getImages = async (): Promise<any> => {
+  const getImages = async (): Promise<string[]> => {
     try {
-      const response = await fetch(`http://localhost:8080/post/image/${id}`, {
-        method: 'GET'
+      const { status, response, error } = await sendRequest<string[]>({
+        method: 'GET',
+        endpoint: `post/image/${id}`
       })
 
-      if (!response.ok) {
-        console.error('Images not found')
-        return
+      if (status !== 200) {
+        console.error(`Details not found: ${error}`)
+        return []
       }
-      return await response.json()
+      return response
     } catch (error) {
       console.error('Error fetching images:', error)
+      return []
     }
   }
 

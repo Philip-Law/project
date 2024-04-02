@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Nav from './Nav'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useLocation } from 'react-router-dom'
+import { useApi } from '../context/APIContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 
@@ -30,32 +31,28 @@ export interface Conversation {
 
 const ViewConversation = (): React.ReactElement => {
   const { user, getAccessTokenSilently } = useAuth0()
-  const [messages, setMessages] = useState<any>([])
+  const { sendRequest } = useApi()
+  const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const location = useLocation()
   const conversation = location.state.conversation
   const inputRef = useRef<any>()
   const conversationId = conversation.id
 
-  const getMessages = async (): Promise<any> => {
+  const getMessages = async (): Promise<Message[]> => {
     setIsLoading(true)
     try {
-      const token = await getAccessTokenSilently()
-      const response = await fetch(`http://localhost:8080/message/${conversationId}`, {
+      const { status, response, error } = await sendRequest<Message[]>({
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        endpoint: `message/${conversationId}`
       })
 
-      if (!response.ok) {
-        console.error(`Messages not found for conversation ${conversationId}`)
+      if (status !== 200) {
+        console.error(`Messages not found for conversation ${conversationId}: ${error}`)
         return []
       }
 
-      const messages = await response.json()
-
-      const enrichedMessages = await Promise.all(messages.map(async (message: any) => {
+      const enrichedMessages = await Promise.all(response.map(async (message) => {
         const userDetails = await getUser(message.senderId as string)
         const postDetails = await getPost(conversation.postId as number)
         return {
@@ -70,7 +67,6 @@ const ViewConversation = (): React.ReactElement => {
       enrichedMessages.sort((a: any, b: any) => {
         return new Date(a.sentAt as string).getTime() - new Date(b.sentAt as string).getTime()
       }).reverse()
-      console.log('Enriched Messages: ', enrichedMessages)
       setIsLoading(false)
       return enrichedMessages
     } catch (error) {
@@ -130,27 +126,23 @@ const ViewConversation = (): React.ReactElement => {
 
   const handleSendMessage = async (): Promise<any> => {
     try {
-      const token = await getAccessTokenSilently()
-      const response = await fetch(`http://localhost:8080/message/${conversationId}`, {
+      const { status, error } = await sendRequest({
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          conversationId: conversation.id,
-          senderId: user?.sub,
+        endpoint: `message/${conversationId}`,
+        body: {
           content: inputRef.current.value
-        })
+        }
       })
-      if (!response.ok) {
-        console.error(`Error posting message to conversation ${conversationId}`)
+
+      if (status !== 200) {
+        console.error(`Error posting message to conversation ${conversationId}: ${error}`)
+        return
       }
-      const jsonResponse = await response.json()
       const newMessages = await getMessages()
-      if (response.ok) setMessages(newMessages)
+      if (newMessages.length > 0) {
+        setMessages(newMessages)
+      }
       if (inputRef.current.value !== null) inputRef.current.value = null
-      return jsonResponse
     } catch (error) {
       console.error('Error with message send fetch request: ', error)
     }
@@ -159,7 +151,7 @@ const ViewConversation = (): React.ReactElement => {
   useEffect(() => {
     const renderMessages = async (): Promise<any> => {
       const newMessages = await getMessages()
-      if (Array.isArray(newMessages) && messages !== newMessages) {
+      if (messages !== newMessages) {
         setMessages(newMessages)
       }
     }
