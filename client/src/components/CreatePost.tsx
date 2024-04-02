@@ -1,7 +1,9 @@
 import React, { useState, useEffect, type ChangeEvent } from 'react'
 import '../style/CreatePost.css'
 import { useAuth0 } from '@auth0/auth0-react'
-import { FaUpload } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUpload, faChevronRight, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 
 const CreatePost = (): React.ReactElement => {
   const { getAccessTokenSilently } = useAuth0()
@@ -97,7 +99,7 @@ const CreatePost = (): React.ReactElement => {
     } catch (e) {
       return
     }
-
+    console.log(JSON.stringify(formData))
     void fetch('http://localhost:8080/post/', {
       method: 'POST',
       headers: {
@@ -147,16 +149,18 @@ const CreatePost = (): React.ReactElement => {
 
   return (
         <div className='create-post'>
+          <div className='create-post-container'>
+            <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> Post Ad</p>
             <h2>Post An Ad</h2>
             <form id="adForm" onSubmit={(event) => { void handleCreatePost(event) }}>
                 <label htmlFor="adTitle">Title:</label>
                 <input type="text" id="adTitle" name="adTitle" required maxLength={200} onKeyDown={handleKeyDown}/>
                 <br/>
 
-                <label htmlFor="imageUpload" className="uploadLabel">Upload Images (up to 4):</label>
+                <label htmlFor="imageUpload" className="uploadLabel">Upload Images (4 Maximum):</label>
                 <div id="imageUpload">
                         <div id="arrowWrapper">
-                            <div id="uploadArrow"><FaUpload /></div>
+                            <div id="uploadArrow"><FontAwesomeIcon icon={faUpload}/></div>
                         </div>
                     <input type="file" id="adImages" name="adImages" multiple onChange={handleImageUpload}
                         accept="image/jpeg, image/jpg, image/png"/>
@@ -167,7 +171,7 @@ const CreatePost = (): React.ReactElement => {
                   {Object.entries(displayImages).map(([key, value]) => (
                       <div key={key} className="uploadedImages">
                           <img key={key} src={value} />
-                          <button onClick={(event) => { handleImageDelete(event, Number(key)) }}>X</button>
+                          <button onClick={(event) => { handleImageDelete(event, Number(key)) }}><FontAwesomeIcon icon={faTrashCan}/></button>
                       </div>
                   ))}
 
@@ -201,6 +205,7 @@ const CreatePost = (): React.ReactElement => {
                 <button type="submit">Submit</button>
             </form>
         </div>
+      </div>
   )
 }
 
