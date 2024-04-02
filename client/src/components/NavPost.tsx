@@ -47,7 +47,7 @@ const NavPost = (): React.ReactElement => {
   }
 
   return (
-    <div className='nav-user'>
+    <div className='nav-post'>
       <div className={isLoading ? 'loading nav' : 'nav-button'} onClick={handleClickPost}>{isLoading ? '' : 'Post Ad'}</div>
     </div>
   )

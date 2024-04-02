@@ -58,7 +58,7 @@ const ListingPage: React.FC<ListingProps> = ({
     <div className='App'>
         <header className='App-header'>
             <Nav />
-            <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> {adType} <FontAwesomeIcon icon={faChevronRight} /> {title}</p>
+            <p className='breadcrumb-listings'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> {adType} <FontAwesomeIcon icon={faChevronRight} /> {title}</p>
             <div className='content-listing'>
                 <div className='content-listing-child top'>
                     <div className='content-listing-child top-left'>

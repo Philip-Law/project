@@ -193,6 +193,26 @@ const Profile = (): React.ReactElement => {
     )
   }
 
+  function getOrdinalIndicator (year: number): string {
+    const lastDigit = year % 10
+    const lastTwoDigits = year % 100
+
+    if (lastTwoDigits >= 11 && lastTwoDigits <= 13) {
+      return 'th'
+    }
+
+    switch (lastDigit) {
+      case 1:
+        return 'st'
+      case 2:
+        return 'nd'
+      case 3:
+        return 'rd'
+      default:
+        return 'th'
+    }
+  }
+
   const healthCheck = useCallback(async () => {
     const accessToken = await getToken()
     const response = await fetch(`http://localhost:8080/user/${user?.sub}`, {
@@ -284,7 +304,7 @@ const Profile = (): React.ReactElement => {
                             {
                             isFirstTime
                               ? <p>Click the <strong>prompt</strong> above to setup your account.</p>
-                              : <p><strong>{profileInfo.year}{profileInfo.year > 1 ? 'nd' : 'st'} Year</strong>:</p>
+                              : <p><strong>{`${profileInfo.year}${getOrdinalIndicator(profileInfo.year)} Year`}</strong>:</p>
                             }
                           <p>{profileInfo.major}</p>
                         </div>
