@@ -2,7 +2,7 @@ import { User } from '../entities';
 import AppDataSource from '../configs/db';
 import LOGGER from '../configs/logging';
 import { APIError, Auth0User, Status } from '../types';
-import { retrieveAuth0Users } from './auth0';
+import { retrieveAuth0Users, retrieveAuth0User } from './auth0';
 
 const isUserSetup = async (id: string): Promise<boolean> => {
   const user = await AppDataSource.getRepository(User)
@@ -45,6 +45,15 @@ export const getUser = async (id: string): Promise<User> => {
     );
   }
   return user;
+};
+
+export const getCompleteUser = async (id: string) => {
+  const auth0User = await retrieveAuth0User(id);
+  const user = await getUser(id);
+  return {
+    ...auth0User,
+    ...user,
+  };
 };
 
 export const updateUser = async (updatedUser: User): Promise<User> => {

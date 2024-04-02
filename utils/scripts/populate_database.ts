@@ -19,7 +19,7 @@ const getAllTestUsers = async () => managementClient.users.getAll({
 
 const generatePostsForUser = async (userId: string) => {
   const categories = ['Books', 'Electronics', 'Furniture', 'Clothing', 'Miscellaneous', 'Tutoring', 'Housing', 'Cars', 'Phone', 'Food'];
-  const cities = ['Barrie', 'Toronto', 'Scarborough', 'Richmond Hill', 'Vaughn', 'Mississauga', 'Brampton'];
+  const cities = ['Barrie', 'Toronto', 'Scarborough', 'Richmond Hill', 'Vaughan', 'Mississauga', 'Brampton'];
   const adTypes = ['W', 'S', 'A'];
 
   for (let i = 0; i < 2; i += 1) {

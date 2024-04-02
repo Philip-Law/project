@@ -6,17 +6,19 @@ import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 
+const PLACEHOLDER_IMAGE = '/assets/placeholder.jpg'
+
 const Profile = (): React.ReactElement => {
   const { user, isLoading, getAccessTokenSilently } = useAuth0()
   const [isFirstTime, setIsFirstTime] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const [userListings, setUserListings] = useState<any[]>([])
   const [profileInfo, setProfileInfo] = useState({
     phoneNumber: '',
     major: '',
     year: 1
   })
   const validateProfile = (): boolean => {
-    console.log(profileInfo.phoneNumber.length)
     return profileInfo.phoneNumber.length === 12 &&
     profileInfo.major.length > 0 &&
     /^\+[0-9]{10,15}$/.test(profileInfo.phoneNumber)
@@ -34,6 +36,90 @@ const Profile = (): React.ReactElement => {
   const getToken = async (): Promise<string> => {
     return await getAccessTokenSilently()
   }
+
+  const convertType = async (input: string): Promise<string> => {
+    if (input === 'W') {
+      return 'Wanted'
+    } else if (input === 'A') {
+      return 'Academic Service'
+    } else {
+      return 'Selling'
+    }
+  }
+
+  const getImage = async (id: string): Promise<any> => {
+    try {
+      const response = await fetch(`http://localhost:8080/post/image/${id}`, {
+        method: 'GET'
+      })
+
+      if (!response.ok) {
+        console.error('Images not found')
+        return
+      }
+      const jsonResponse = await response.json()
+      if (jsonResponse.length === 0) {
+        return [PLACEHOLDER_IMAGE]
+      } else {
+        return jsonResponse
+      }
+    } catch (error) {
+      console.error('Error fetching images:', error)
+    }
+  }
+
+  const getUserListings = async (token: string): Promise<any> => {
+    try {
+      const response = await fetch('http://localhost:8080/post/user', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      if (!response.ok) {
+        console.error('Listings not found')
+        return {}
+      }
+      const jsonResponse = await response.json()
+      return jsonResponse
+    } catch (error) {
+      console.error('Error fetching details:', error)
+    }
+  }
+
+  useEffect(() => {
+    const renderPosts = async (): Promise<any> => {
+      const token = await getToken()
+      const posts = await getUserListings(token)
+
+      if (posts !== undefined) {
+        try {
+          const newListings = await Promise.all(posts.map(async (post: any) => {
+            const img = await getImage(post.id as string)
+            if (img !== undefined) {
+              const listingInfo = {
+                id: post.id,
+                title: post.title,
+                adType: await convertType(post.adType as string),
+                imgPaths: img,
+                description: post.description,
+                location: post.location,
+                categories: Array.from(post.categories as string),
+                price: parseFloat(post.price as string),
+                postDate: post.postDate
+              }
+
+              return listingInfo
+            }
+          }))
+          setUserListings(newListings)
+        } catch {
+        }
+      }
+    }
+    void renderPosts()
+  }, [])
 
   const toggleEditing = async (): Promise<void> => {
     const accessToken = await getToken()
@@ -208,7 +294,7 @@ const Profile = (): React.ReactElement => {
               </div>
             </div>
           </div>
-          <Listings response={[]} />
+          <Listings response={userListings} />
         </div>
       </header>
     </div>

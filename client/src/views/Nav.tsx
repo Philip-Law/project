@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faComments } from '@fortawesome/free-solid-svg-icons'
 import '../style/Nav.css'
 import NavUser from '../components/NavUser'
+import NavPost from '../components/NavPost'
 import Search from '../components/Search'
 
 const Nav = (): React.ReactElement => {
@@ -21,7 +22,7 @@ const Nav = (): React.ReactElement => {
                 <h2>TMU Connect</h2>
             </Link>
             <div className='nav child'>
-                <Search />
+                <Search/>
             </div>
             <div className='nav child right'>
               {
@@ -29,7 +30,7 @@ const Nav = (): React.ReactElement => {
                   ? <Link to={'/conversations'} className='nav-button'><FontAwesomeIcon icon={faComments}/></Link>
                   : null
               }
-                <Link to={'/post-ad'} className='nav-button'>Post Ad</Link>
+                <NavPost/>
                 <NavUser/>
             </div>
         </div>

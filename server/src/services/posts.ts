@@ -5,6 +5,7 @@ import {
   AdType, APIError, Auth0User, Status,
 } from '../types';
 import LOGGER from '../configs/logging';
+import { Sort } from 'typeorm';
 
 interface CreatePostRequest {
   title: string;
@@ -17,9 +18,10 @@ interface CreatePostRequest {
 
 interface GetPostQuery {
   category?: string[];
-  adType?: AdType;
+  adType?: string[];
   location?: string;
   title?: string;
+  sort?: string;
 }
 
 export const createPost = async (
@@ -52,14 +54,50 @@ export const getPost = async (postID: number): Promise<Post> => {
   return post;
 };
 
-export const getPostsByQuery = async (query: GetPostQuery): Promise<Post[]> => AppDataSource
-  .getRepository(Post)
-  .createQueryBuilder('post')
-  .where('LOWER(title) LIKE LOWER(:title)', { title: `%${query.title || ''}%` })
-  .andWhere('LOWER(location) LIKE LOWER(:location)', { location: `%${query.location || ''}%` })
-  .andWhere('ad_type LIKE :adType', { adType: `%${query.adType || ''}%` })
-  .andWhere('categories @> :categories', { categories: query.category || [] })
-  .getMany();
+export const getPostsByQuery = async (query: GetPostQuery): Promise<Post[]> => {
+  let queryBuilder = AppDataSource
+    .getRepository(Post)
+    .createQueryBuilder('post')
+    .where('LOWER(title) LIKE LOWER(:title)', { title: `%${query.title || ''}%` })
+    .andWhere('LOWER(location) LIKE LOWER(:location)', { location: `%${query.location || ''}%` })
+    .andWhere('categories @> :categories', { categories: query.category || [] });
+
+    if (query.adType && query.adType.length > 0) {
+      queryBuilder = queryBuilder.andWhere('ad_type = ANY(:adTypes)', { adTypes: query.adType })
+    }
+    if (query.sort && query.sort !== '') {
+      const [field, order] = query.sort.split('|');
+      if (order === 'DESC') {
+        queryBuilder = queryBuilder.orderBy(field, 'DESC');
+      } else {
+        queryBuilder = queryBuilder.orderBy(field, 'ASC');
+      }
+    }
+    
+    return queryBuilder.getMany();
+
+};
+
+export const getUserPosts = async (userID: string): Promise<Post[]> => {
+  let queryBuilder = AppDataSource
+    .getRepository(Post)
+    .createQueryBuilder()
+    .where('user_id = :userId', { userId: userID })
+    .getMany();
+
+  return queryBuilder
+};
+
+export const getLocations = async (): Promise<Post[]> => {
+  let queryBuilder = AppDataSource
+    .getRepository(Post)
+    .createQueryBuilder('post')
+    .select('location')
+    .distinct(true)
+    .getRawMany();
+
+  return queryBuilder
+};
 
 export const deletePost = async (auth0User: Auth0User, postID: number): Promise<void> => {
   const user = await getUser(auth0User.id);

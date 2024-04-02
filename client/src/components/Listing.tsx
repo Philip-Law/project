@@ -5,51 +5,43 @@ import type { ListingProps } from '../views/ListingPage'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock } from '@fortawesome/free-solid-svg-icons'
 
-function calculateDaysAgo (dateString: string): number {
-  const currentDate = new Date()
-  const parts = dateString.split('-')
-  const givenYear = parseInt(parts[0], 10)
-  const givenMonth = parseInt(parts[1], 10) - 1 // Adjust month to be zero-indexed
-  const givenDay = parseInt(parts[2], 10)
-
-  const givenDate = new Date(givenYear, givenMonth, givenDay)
-
-  // Calculate the difference in milliseconds
-  const differenceInMs = currentDate.getTime() - givenDate.getTime()
-
-  // Convert milliseconds to days
-  const daysAgo = Math.floor(differenceInMs / (1000 * 60 * 60 * 24))
-
-  return daysAgo
+function calculateDaysAgo (dateString: string): string {
+  const date = new Date(dateString)
+  const today = new Date()
+  const diffTime = today.getTime() - date.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays.toString()
 }
 
-const Listing: React.FC<ListingProps> = ({ title, adType, userID, imgPath, description, location, categories, price, postDate }): React.ReactElement => {
+const Listing: React.FC<ListingProps> = ({ id, title, adType, userID, imgPaths, description, location, categories, price, postDate }): React.ReactElement => {
   const navigate = useNavigate()
   const daysAgo = calculateDaysAgo(postDate).toString()
+  const categoriesString = categories.join(', ')
   const handleListingClick = (): void => {
-    navigate('/listing', { state: { title, adType, userID, imgPath, description, location, categories, price, daysAgo } })
+    navigate(`/listing/${id}`)
   }
+
   return (
       <div className='listing' onClick={handleListingClick}>
         <div id='img-container'>
-            <img src={`${imgPath}`} alt='ad' />
+            <img src={`${imgPaths[0]}`} alt='ad' />
         </div>
         <div className='ad-content'>
             <div className='top'>
-                <p id='price'>${price % 1 !== 0 ? price.toFixed(2) : price + '.00'}</p>
+                <p id='price'>${price % 1 !== 0 ? Math.round(price * 100) / 100 : price + '.00'}</p>
                 <h3>{title}</h3>
                 <div className='sub-info'>
                     <p>{location}</p>
                     <p>|</p>
-                    <p>{categories}</p>
+                    <p>{categoriesString}</p>
                 </div>
                 <p id='description'>{description}</p>
             </div>
             <div className='post-info'>
                 <FontAwesomeIcon icon={faClock} />
-                <p>{parseInt(daysAgo)} {parseInt(daysAgo) > 1 ? 'days' : 'day'} ago</p>
+                <p>{parseInt(daysAgo)} {parseInt(daysAgo) !== 1 ? 'days' : 'day'} ago</p>
                 <p>|</p>
-                <p>{adType === 1 ? 'For Sale' : 'For Rent'}</p>
+                <p>{adType}</p>
             </div>
         </div>
       </div>
