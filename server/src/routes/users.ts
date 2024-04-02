@@ -3,7 +3,7 @@ import asyncHandler from 'express-async-handler';
 import { z } from 'zod';
 import { checkJwt, requireAuth0User } from '../middleware/authentication';
 import {
-  deleteUser, getName, getUser, retrieveUsersBy, setupUser, updateUser,
+  deleteUser, getCompleteUser, retrieveUsersBy, setupUser, updateUser,
 } from '../services/users';
 import { User } from '../entities';
 import { Status } from '../types';
@@ -38,17 +38,9 @@ userRoutes.post('/update', checkJwt, requireAuth0User, asyncHandler(async (req, 
   res.status(Status.OK).json(user);
 }));
 
-userRoutes.get('/name/:id', asyncHandler(async (req, res) => {
-  const user = await getName(req.params.id);
-  res.status(Status.OK).json({ user });
-}));
-
-userRoutes.get('/:id', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
-  const user = await getUser(req.params.id);
-  res.status(Status.OK).json({
-    ...req.auth0!!,
-    ...user,
-  });
+userRoutes.get('/:id', asyncHandler(async (req, res) => {
+  const user = await getCompleteUser(req.params.id);
+  res.status(Status.OK).json(user);
 }));
 
 userRoutes.get('/', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
