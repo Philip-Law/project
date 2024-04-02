@@ -9,6 +9,7 @@ import ViewConversation from './views/ViewConversation'
 import PostAd from './views/PostAd'
 import ListingPageWrapper from './components/ListingPageWrapper'
 import Admin from './views/Admin'
+import { ApiProvider } from './context/APIContext'
 
 const App = (): React.ReactElement => {
   const router = createBrowserRouter([
@@ -35,7 +36,9 @@ const App = (): React.ReactElement => {
             audience: process.env.REACT_APP_BACKEND_AUDIENCE
           }}
       >
+        <ApiProvider>
           <RouterProvider router={router} />
+        </ApiProvider>
       </Auth0Provider>
 
   )

@@ -4,84 +4,67 @@ import Nav from './Nav'
 import '../style/Conversations.css'
 import type { Conversation } from './ViewConversation'
 import { useAuth0 } from '@auth0/auth0-react'
+import { useApi } from '../context/APIContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
-// You can add Messages to this import statement so you can retrieve latest message for each conversation.
+import { type ListingInfo } from '../types/listings'
+import { type UserInfo } from '../types/user'
+
+// You can add Messages to this import statement, so you can retrieve latest message for each conversation.
 interface ConversationsProps {
   conversations?: Conversation[]
 }
 
-const Conversations: React.FC<ConversationsProps> = (props: ConversationsProps): React.ReactElement => {
-  const [conversations, setConversations] = useState<any>([])
-  const { user, getAccessTokenSilently } = useAuth0()
+const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const { user } = useAuth0()
+  const { sendRequest } = useApi()
   const navigate = useNavigate()
 
-  const getConversations = async (): Promise<any> => {
+  const getConversations = async (): Promise<Conversation[]> => {
     try {
-      const token = await getAccessTokenSilently()
-      const response = await fetch('http://localhost:8080/conversation/user', {
+      const { status, response } = await sendRequest<Conversation[]>({
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        endpoint: 'conversation/user'
       })
 
-      if (!response.ok) {
+      if (status !== 200) {
         console.error(`Conversations not found for user ${user?.sub}`)
         return []
       }
-
-      const conversations = await response.json()
-      console.log('Conversations response: ', conversations)
-      const enrichedConversations = await Promise.all(
-        conversations.map(async (conversation: any) => {
+      return await Promise.all(
+        response.map(async (conversation: any) => {
           const currentUserId = user?.sub
-          let personResponse
-          if (currentUserId === conversation.buyerId) {
-            personResponse = await fetch(`http://localhost:8080/user/${conversation.sellerId}`, {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            })
-          } else {
-            personResponse = await fetch(`http://localhost:8080/user/${conversation.buyerId}`, {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            })
-          }
-
-          const postResponse = await fetch(`http://localhost:8080/post/details/${conversation.postId}`, {
+          const isBuyer = currentUserId === conversation.buyerId
+          const userResponse = await sendRequest<UserInfo>({
             method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
+            endpoint: `user/${isBuyer ? conversation.sellerId : conversation.buyerId}`
           })
 
-          if (!personResponse.ok) {
+          if (userResponse.status !== 200) {
             console.error(`Details not found for buyer ${conversation.buyerId}`)
             return conversation
           }
 
-          const personDetails = await personResponse.json()
-          const postDetails = await postResponse.json()
+          const postResponse = await sendRequest<ListingInfo>({
+            method: 'GET',
+            endpoint: `post/details/${conversation.postId}`
+          })
+
+          const userDetails = userResponse.response
+          const postDetails = postResponse.response
           return {
             ...conversation,
-            senderName: personDetails.firstName + ' ' + personDetails.lastName,
-            senderImage: personDetails.picture,
+            senderName: userDetails.firstName + ' ' + userDetails.lastName,
+            senderImage: userDetails.picture,
             postName: postDetails.title,
             postPrice: postDetails.price
           }
         })
       )
-
-      console.log('Enriched Conversations: ', enrichedConversations)
-      return enrichedConversations
     } catch (error) {
       console.error('Error fetching conversations', error)
-      return [] // Return an empty array or a suitable value on error
+      return []
     }
   }
 

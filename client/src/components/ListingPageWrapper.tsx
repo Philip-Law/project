@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ListingPage from '../views/ListingPage'
+import { convertType } from '../types/listings'
+import { useApi } from '../context/APIContext'
+import { type DetailedListing, type UserInfo } from '../types/user'
 
-interface ListingInfo {
+interface EnhancedListingInfo {
   id: number
   title: string
   adType: string
   imgPaths: string[]
-  userID: number
+  userID: string
   userName: string
   description: string
   location: string
@@ -18,12 +21,12 @@ interface ListingInfo {
 }
 
 const ListingPageWrapper: React.FC = () => {
-  const initialListingInfo: ListingInfo = {
+  const initialListingInfo: EnhancedListingInfo = {
     id: 0,
     title: '',
     adType: '',
     imgPaths: [],
-    userID: 0,
+    userID: '',
     userName: '',
     description: '',
     location: '',
@@ -32,18 +35,9 @@ const ListingPageWrapper: React.FC = () => {
     postDate: '',
     daysAgo: ''
   }
-  const [listingDetails, setDetails] = useState<ListingInfo>(initialListingInfo)
+  const [listingDetails, setDetails] = useState<EnhancedListingInfo>(initialListingInfo)
   const { id } = useParams<{ id: string }>()
-
-  const convertType = async (input: string): Promise<string> => {
-    if (input === 'W') {
-      return 'Wanted'
-    } else if (input === 'A') {
-      return 'Academic Service'
-    } else {
-      return 'Selling'
-    }
-  }
+  const { sendRequest } = useApi()
 
   const getDaysAgo = async (dateString: string): Promise<string> => {
     const date = new Date(dateString)
@@ -53,74 +47,79 @@ const ListingPageWrapper: React.FC = () => {
     return diffDays.toString()
   }
 
-  const getDetails = async (): Promise<any> => {
+  const getDetails = async (): Promise<DetailedListing | undefined> => {
     try {
-      const response = await fetch(`http://localhost:8080/post/details/${id}`, {
-        method: 'GET'
+      const { status, response, error } = await sendRequest<DetailedListing>({
+        method: 'GET',
+        endpoint: `post/details/${id}`
       })
-      if (!response.ok) {
-        console.error('Details not found')
+      if (status !== 200) {
+        console.error(`Details not found: ${error}`)
         return
       }
-      return await response.json()
+      return response
     } catch (error) {
       console.error('Error fetching details:', error)
     }
   }
 
-  const getImages = async (): Promise<any> => {
+  const getImages = async (): Promise<string[]> => {
     try {
-      const response = await fetch(`http://localhost:8080/post/image/${id}`, {
-        method: 'GET'
+      const { status, response, error } = await sendRequest<string[]>({
+        method: 'GET',
+        endpoint: `post/image/${id}`
       })
 
-      if (!response.ok) {
-        console.error('Images not found')
-        return
+      if (status !== 200) {
+        console.error(`Details not found: ${error}`)
+        return []
       }
-      return await response.json()
+      return response
     } catch (error) {
       console.error('Error fetching images:', error)
+      return []
     }
   }
 
-  const getUserName = async (userID: string): Promise<any> => {
+  const getUserName = async (userID: string): Promise<string> => {
     try {
-      const response = await fetch(`http://localhost:8080/user/${userID}`, {
-        method: 'GET'
+      const { status, response, error } = await sendRequest<UserInfo>({
+        method: 'GET',
+        endpoint: `user/${userID}`
       })
 
-      if (!response.ok) {
-        console.error('User not found')
-        return
+      if (status !== 200) {
+        console.error(`User not found: ${error}`)
+        return ''
       }
-      const jsonResponse = await response.json()
-      return jsonResponse.firstName
+      return response.firstName
     } catch (error) {
       console.error('Error fetching user:', error)
+      return ''
     }
   }
 
   useEffect(() => {
     const fillDetails = async (): Promise<void> => {
       const listingD = await getDetails()
+      if (listingD === undefined) {
+        return
+      }
       const imageD = await getImages()
-
-      const listingInfo = {
+      setDetails({
         id: listingD.id,
         title: listingD.title,
-        adType: await convertType(listingD.adType as string),
+        adType: await convertType(listingD.adType),
         imgPaths: imageD,
         userID: listingD.user.id,
-        userName: await getUserName(listingD.user.id as string),
+        userName: await getUserName(listingD.user.id),
         description: listingD.description,
         location: listingD.location,
-        categories: Array.from(listingD.categories as string),
-        price: listingD.price,
+        categories: listingD.categories,
+        price: parseFloat(listingD.price),
         postDate: listingD.postDate,
-        daysAgo: await getDaysAgo(listingD.postDate as string)
-      }
-      setDetails(listingInfo)
+        daysAgo: await getDaysAgo(listingD.postDate)
+      })
     }
     void fillDetails()
   }, [])
