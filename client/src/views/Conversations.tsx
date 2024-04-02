@@ -77,15 +77,19 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
 
   const handleDeleteConversation = async (conversation: Conversation): Promise<void> => {
     try {
-      const { status, response } = await sendRequest<Conversation[]>({
+      const { status } = await sendRequest<Conversation[]>({
         method: 'DELETE',
         endpoint: `conversation/post/${conversation.postId}`
       })
 
-      if (status !== 200) {
-        console.error('Conversation not deleted')
+      if (status !== 200 && status !== 204) {
+        console.error('Conversation not deleted', status)
+        return
       }
-      console.log(response)
+
+      const updatedConversations = conversations.filter(c => c.id !== conversation.id)
+      setConversations(updatedConversations)
+      console.log('Conversation deleted')
     } catch (error) {
       console.error('Error deleting conversation', error)
     }
