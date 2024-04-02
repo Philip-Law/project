@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faArrowLeft, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 
 interface User {
-  id: number
+  id: string
   name: string
   email: string
   year: number
@@ -14,7 +14,7 @@ interface User {
 }
 
 const Users = (): React.ReactElement => {
-  const { getAccessTokenSilently } = useAuth0()
+  const { user, getAccessTokenSilently } = useAuth0()
   const [users, setUsers] = useState<User[]>([])
   const [currentPage, setCurrentPage] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
@@ -22,6 +22,7 @@ const Users = (): React.ReactElement => {
   const [filter, setFilter] = useState('')
   const [query, setQuery] = useState('')
   const [queryActive, setQueryActive] = useState(false)
+  const [curUser, setCurUser] = useState('')
   const itemsPerPage = 10
 
   const getToken = async (): Promise<string> => {
@@ -48,7 +49,7 @@ const Users = (): React.ReactElement => {
       const data = await response.json()
       if (Array.isArray(data)) {
         const users = data.map((user: any) => ({
-          id: user.id,
+          id: user.id as string,
           name: user.firstName + ' ' + user.lastName,
           year: user.year,
           email: user.email,
@@ -65,6 +66,23 @@ const Users = (): React.ReactElement => {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  async function deleteUser (userID: string): Promise<void> {
+    const token = await getToken()
+    void fetch(`http://localhost:8080/user/${userID}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(async response => {
+        if (response.status !== 200) {
+          console.error('User could not be deleted')
+        } else {
+          void fetchUsers()
+        }
+      })
   }
 
   useEffect(() => {
@@ -97,6 +115,17 @@ const Users = (): React.ReactElement => {
   const totalResultsText = currentPage === Math.ceil(users.length / itemsPerPage) - 1
     ? `Displaying ${users.length} of ${users.length} results`
     : `Displaying ${currentItems.length} of ${users.length} results`
+
+  useEffect(() => {
+    const getID = async (): Promise<void> => {
+      const curID: string | undefined = user?.sub
+      if (curID !== undefined) {
+        setCurUser(curID)
+        void fetchUsers()
+      }
+    }
+    void getID()
+  }, [query])
 
   return (
     <div className='listing-container'>
@@ -158,9 +187,14 @@ const Users = (): React.ReactElement => {
                       <td>{user.email}</td>
                       <td>{user.year}</td>
                       <td>{user.major}</td>
-                      <td>
-                        <FontAwesomeIcon icon={faTimesCircle} title='Delete User' />
-                      </td>
+                      {
+                        curUser !== user.id
+                          ? <td>
+                              <FontAwesomeIcon icon={faTimesCircle} title='Delete User' onClick={() => { void deleteUser(user.id) }} />
+                            </td>
+                          : <td></td>
+                      }
+
                       {/* Add more table cells as needed */}
                     </tr>
                 ))

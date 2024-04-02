@@ -3,6 +3,7 @@ import ReactPaginate from 'react-paginate'
 import './style/Listings.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faArrowLeft, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { useAuth0 } from '@auth0/auth0-react'
 
 interface Post {
   id: number
@@ -16,6 +17,7 @@ interface Post {
 }
 
 const Listings = (): React.ReactElement => {
+  const { getAccessTokenSilently } = useAuth0()
   const [posts, setPosts] = useState<Post[]>([])
   const [currentPage, setCurrentPage] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
@@ -24,6 +26,10 @@ const Listings = (): React.ReactElement => {
   const [query, setQuery] = useState('')
   const [queryActive, setQueryActive] = useState(false)
   const itemsPerPage = 10
+
+  const getToken = async (): Promise<string> => {
+    return await getAccessTokenSilently()
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     if (e.target.name === 'filter') {
@@ -61,6 +67,23 @@ const Listings = (): React.ReactElement => {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  async function deletePost (postID: number): Promise<void> {
+    const token = await getToken()
+    void fetch(`http://localhost:8080/post/${postID}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(async response => {
+        if (response.status !== 200) {
+          console.error('Ad could not be deleted')
+        } else {
+          void fetchPosts()
+        }
+      })
   }
 
   useEffect(() => {
@@ -157,7 +180,7 @@ const Listings = (): React.ReactElement => {
                       <td>{post.category.join(', ')}</td>
                       <td>${post.price}</td>
                       <td>
-                        <FontAwesomeIcon title='Delete Listing' icon={faTimesCircle} />
+                        <FontAwesomeIcon title='Delete Listing' icon={faTimesCircle} onClick={() => { void deletePost(post.id) }} />
                       </td>
                     </tr>
                 ))
