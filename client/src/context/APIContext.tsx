@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 
 export interface ApiContextInterface {
-  sendRequest: (options: RequestBody) => Promise<RequestResponse>
+  sendRequest: <T> (options: RequestBody) => Promise<RequestResponse<T>>
 }
 
 export interface RequestBody {
@@ -11,16 +11,17 @@ export interface RequestBody {
   body?: any
 }
 
-export interface RequestResponse {
+export interface RequestResponse<T> {
   status: number
-  response: any
+  response: T
+  error?: string
 }
 
 const ApiContext = createContext<ApiContextInterface>({
-  sendRequest: async (_: RequestBody): Promise<RequestResponse> => {
+  sendRequest: async <T,>(_: RequestBody): Promise<RequestResponse<T>> => {
     return {
       status: 0,
-      response: 'This is a Stubbed Response'
+      response: 'This is a Stubbed Response' as T
     }
   }
 })
@@ -31,7 +32,7 @@ export const ApiProvider = (opts: { children: React.ReactNode }): React.ReactEle
   const { user, getAccessTokenSilently } = useAuth0()
 
   const sendRequest = useCallback(
-    async (options: RequestBody): Promise<RequestResponse> => {
+    async <T,>(options: RequestBody): Promise<RequestResponse<T>> => {
       const init: RequestInit = {
         method: options.method,
         headers: {
@@ -52,7 +53,14 @@ export const ApiProvider = (opts: { children: React.ReactNode }): React.ReactEle
         .then(async resp => {
           return {
             status: resp.status,
-            response: await resp.json()
+            response: await resp.json() as T
+          }
+        }).catch((err) => {
+          console.log(err)
+          return {
+            status: err.code,
+            response: '' as T,
+            error: err.message
           }
         })
     }, [user]

@@ -22,6 +22,10 @@ const Admin = (): React.ReactElement => {
   }
 
   useEffect(() => {
+    if (user == null) {
+      return
+    }
+
     const fetchPermissions = async (): Promise<void> => {
       try {
         const token = await getAccessTokenSilently()
@@ -34,7 +38,7 @@ const Admin = (): React.ReactElement => {
     }
 
     void fetchPermissions()
-  }, [])
+  }, [user])
 
   if (isLoading) {
     return (

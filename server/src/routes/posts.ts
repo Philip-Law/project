@@ -5,7 +5,7 @@ import multer from 'multer';
 import path from 'node:path';
 import { checkJwt, requireAuth0User } from '../middleware/authentication';
 import {
-  createPost, deletePost, getPost, getPostsByQuery, getLocations, getUserPosts
+  createPost, deletePost, getPost, getPostsByQuery, getLocations, getUserPosts,
 } from '../services/posts';
 import { AdType, APIError, Status } from '../types';
 import { deletePostImages, getImageURLs, uploadImages } from '../services/file_store';
