@@ -165,8 +165,28 @@
     overflow: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
+    height: 100vh;
     padding: 0.5rem;
     width: 80%;
+}
+
+.no-messages {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    height: 100vh;
+}
+
+.no-messages h2 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.no-messages p {
+    margin: 0;
+    font-size: 1rem;
 }
 
 .message {
@@ -299,6 +319,13 @@
     }
     .conversations.container {
         margin: 1rem 5rem 1rem 5rem;
+    }
+    .conversation-left {
+        width: 60%;
+    }
+
+    .conversation-right {
+        width: 40%;
     }
 }
 
