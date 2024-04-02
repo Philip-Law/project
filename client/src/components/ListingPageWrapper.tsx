@@ -62,8 +62,7 @@ const ListingPageWrapper: React.FC = () => {
         console.error('Details not found')
         return
       }
-      const jsonResponse = await response.json()
-      return jsonResponse
+      return await response.json()
     } catch (error) {
       console.error('Error fetching details:', error)
     }
@@ -79,8 +78,7 @@ const ListingPageWrapper: React.FC = () => {
         console.error('Images not found')
         return
       }
-      const jsonResponse = await response.json()
-      return jsonResponse
+      return await response.json()
     } catch (error) {
       console.error('Error fetching images:', error)
     }
@@ -88,7 +86,7 @@ const ListingPageWrapper: React.FC = () => {
 
   const getUserName = async (userID: string): Promise<any> => {
     try {
-      const response = await fetch(`http://localhost:8080/user/name/${userID}`, {
+      const response = await fetch(`http://localhost:8080/user/${userID}`, {
         method: 'GET'
       })
 
@@ -97,7 +95,7 @@ const ListingPageWrapper: React.FC = () => {
         return
       }
       const jsonResponse = await response.json()
-      return jsonResponse.user
+      return jsonResponse.firstName
     } catch (error) {
       console.error('Error fetching user:', error)
     }
