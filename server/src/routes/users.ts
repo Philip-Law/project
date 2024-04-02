@@ -51,7 +51,7 @@ userRoutes.get('/', checkJwt, requireAuth0User, asyncHandler(async (req, res) =>
 
 userRoutes.delete('/:id', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
   await deleteUser(req.auth0!!, req.params.id);
-  res.status(Status.OK);
+  res.status(Status.OK).send();
 }));
 
 export default userRoutes;
