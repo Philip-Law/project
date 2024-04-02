@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Nav from './Nav'
 import { useAuth0 } from '@auth0/auth0-react'
@@ -35,14 +35,26 @@ const ListingPage: React.FC<ListingProps> = ({
   id, title, adType, userName, imgPaths, description,
   location, categories, price, daysAgo
 }: ListingProps): React.ReactElement => {
+  const { loginWithRedirect } = useAuth0()
   const { isAuthenticated } = useAuth0()
+  const [conversation, setConversation] = useState<ConversationInfo | null>(null)
   const categoriesString = categories.join(', ')
   const navigate = useNavigate()
   const { sendRequest } = useApi()
 
   const handleContact = async (): Promise<void> => {
     if (!isAuthenticated) {
-      console.log('Please log in to message another user.')
+      loginWithRedirect({
+        authorizationParams: {
+          scope: 'openid profile email'
+        }
+      }).then(() => { console.log('logged in') })
+        .catch(err => { console.log(`Error logging in: ${err}`) })
+      return
+    }
+
+    if (conversation !== null) {
+      navigate('/viewconversation', { state: { conversation } })
       return
     }
 
@@ -61,6 +73,27 @@ const ListingPage: React.FC<ListingProps> = ({
       console.log(error)
     }
   }
+
+  useEffect(() => {
+    if (!isAuthenticated || id === 0) {
+      setConversation(null)
+      return
+    }
+
+    const checkForConversation = async (): Promise<void> => {
+      const { status, response } = await sendRequest<ConversationInfo>({
+        method: 'GET',
+        endpoint: `conversation/post/${id}`
+      })
+
+      if (status !== 200) {
+        setConversation(null)
+      } else {
+        setConversation(response)
+      }
+    }
+    void checkForConversation()
+  }, [isAuthenticated, id])
 
   return (
     <div className='App'>
@@ -116,7 +149,7 @@ const ListingPage: React.FC<ListingProps> = ({
                             <button id='contact' onClick={() => { handleContact().catch(error => { console.log(error) }) }}>
                                 {
                                     isAuthenticated
-                                      ? 'Send Message'
+                                      ? (conversation !== null ? 'Continue Message' : 'Send Message')
                                       : 'Log In to Message'
                                 }
                             </button>
