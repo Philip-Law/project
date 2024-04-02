@@ -32,9 +32,9 @@ const managementClient = new ManagementClient({
 });
 
 export const retrieveUserInfo = async (accessToken: string, id: string) => {
-  const cachedUser = await redisClient.get(id) as Auth0User | null;
+  const cachedUser = await redisClient.get(id);
   if (cachedUser !== null) {
-    return cachedUser;
+    return JSON.parse(cachedUser) as Auth0User;
   }
 
   const user = await userInfoClient
@@ -90,12 +90,12 @@ export const retrieveAuth0Users = async (options?: {
 };
 
 export const retrieveAuth0User = async (id: string): Promise<Auth0User> => {
-  const cachedUser = await redisClient.get(id) as Auth0User | null;
+  const cachedUser = await redisClient.get(id);
   if (cachedUser !== null) {
-    return cachedUser;
+    return JSON.parse(cachedUser) as Auth0User;
   }
 
-  const user = managementClient
+  const user = await managementClient
     .users.get({ id }).then((u) => {
       if (u.status !== 200) {
         throw new APIError(
@@ -113,6 +113,6 @@ export const retrieveAuth0User = async (id: string): Promise<Auth0User> => {
       };
     });
 
-  await redisClient.set(id, JSON.stringify(user));
+  await redisClient.setEx(id, 300, JSON.stringify(user));
   return user;
 };
