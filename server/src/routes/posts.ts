@@ -16,7 +16,6 @@ const postIdSchema = z.coerce.number().int().min(1, 'Post ID must be a positive 
 
 const postQuerySchema = z.object({
   category: z.string().optional().transform((value) => value?.split(',') || []),
-  // adType: z.nativeEnum(AdType).optional(),
   adType: z.string().optional().transform((value) => value?.split(',') || []),
   location: z.string().optional(),
   title: z.string().optional(),
