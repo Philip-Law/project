@@ -5,6 +5,7 @@ const redisClient = createClient();
 
 redisClient.on('error', (err) => {
   LOGGER.error('Redis error: ', err);
+  process.exit(1);
 });
 
 const initializeRedisConnection = async () => {
