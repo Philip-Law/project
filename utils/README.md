@@ -14,7 +14,7 @@ Also add a `.env` file to the root of the `utils` directory with the following c
 ```env
 AUTH0_DOMAIN='dev-cv8djkp6271234j7.us.auth0.com'
 AUTH0_CLIENT_ID='aF5vGpwFPuQxuWJRclhETlm8hS7wgad5'
-AUTH0_CLIENT_SECRET='bTPFvthU1cUljO3ocVNOTGCrlOvv3evCbh8rZAaHlq7kIHobLJl1DupwtpRZoj0r'
+AUTH0_CLIENT_SECRET=<AUTH0_CLIENT_SECRET>
 BACKEND_AUDIENCE='http://localhost:3000'
 ```
 
