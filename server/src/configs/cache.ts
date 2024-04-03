@@ -1,7 +1,9 @@
 import { createClient } from 'redis';
 import LOGGER from './logging';
 
-const redisClient = createClient();
+const redisClient = createClient({
+  url: process.env.REDISCLOUD_URL || '',
+});
 
 redisClient.on('error', (err) => {
   LOGGER.error('Redis error: ', err);
