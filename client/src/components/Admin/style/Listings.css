@@ -7,6 +7,7 @@
 .listing-table {
     display: flex;
     flex-direction: column;
+    width: 100%;
 }
 
 .listing-header {
@@ -97,6 +98,7 @@ ul {
 table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
     height: 100%;
 }
 
@@ -106,10 +108,12 @@ th {
     border: 1px solid #dddddd;
     text-align: center;
     padding: 8px;
+    word-wrap: break-word;
 }
 
 tr {
     font-size: 1rem;
+    word-wrap: break-word;
 }
 
 tbody {

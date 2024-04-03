@@ -14,7 +14,10 @@ function calculateDaysAgo (dateString: string): string {
   return diffDays.toString()
 }
 
-const Listing: React.FC<ListingProps> = ({ id, title, adType, userID, imgPaths, description, location, categories, price, postDate, isProfile }): React.ReactElement => {
+const Listing: React.FC<ListingProps> = ({
+  id, title, adType,
+  imgPaths, description, location, categories, price, postDate, isProfile
+}): React.ReactElement => {
   const { getAccessTokenSilently } = useAuth0()
   const navigate = useNavigate()
   const daysAgo = calculateDaysAgo(postDate).toString()

@@ -88,7 +88,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    resize: none;
+    min-height: fit-content !important;
+    resize: none !important;
 }
 
 .page-row {
@@ -143,7 +144,7 @@ li, .next {
     justify-content: right;
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1024px) {
     .listings {
         width: 100%;
         justify-content: center;
@@ -191,15 +192,6 @@ li, .next {
         margin-top: 1rem;
     }
 }
-
-/* .delete-button {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    position: relative;
-    top: 0;
-    right: 0;
-} */
 
 .delete-button {
     color: rgb(199, 0, 0);

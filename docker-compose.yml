@@ -28,7 +28,16 @@ services:
     volumes:
       - 'minio:/data/minio'
     command: minio server /data/minio --console-address ":9090"
+  cache:
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_cache:/data
 volumes:
   minio:
     driver: local
   pg-db:
+    driver: local
+  redis_cache:
+    driver: local

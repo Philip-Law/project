@@ -22,8 +22,7 @@ const validateIsAdmin = (payload: JWTPayload) => {
     return false;
   }
   const permissions = payload.permissions as string[];
-
-  return !permissions?.includes(ADMIN_PERMISSION);
+  return permissions?.includes(ADMIN_PERMISSION);
 };
 
 export const requireAuth0User = asyncHandler(async (
@@ -37,7 +36,7 @@ export const requireAuth0User = asyncHandler(async (
 
   try {
     req.auth0 = {
-      ...await retrieveUserInfo(req.auth.token),
+      ...await retrieveUserInfo(req.auth.token, req.auth.payload.sub!!),
       isAdmin: validateIsAdmin(req.auth.payload),
     }; // Add the user to the request
     next(); // Continue to the next middleware

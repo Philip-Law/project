@@ -35,6 +35,9 @@
     width: 33%;
     text-align: left;
     cursor: pointer;
+    text-decoration: none;
+    justify-content: space-between;
+    color: black;
     box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.1);
     transition: 0.3s ease-in-out;
 }
