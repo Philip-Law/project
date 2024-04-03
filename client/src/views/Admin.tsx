@@ -3,13 +3,12 @@ import Nav from '../views/Nav'
 import AuthDenied from '../components/AuthDenied'
 import '../style/Admin.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faList, faCog, faHome } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faList, faCog, faHome, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { jwtDecode } from 'jwt-decode'
 import { useAuth0 } from '@auth0/auth0-react'
 import Dashboard from '../components/Admin/Dashboard'
 import Users from '../components/Admin/Users'
 import Listings from '../components/Admin/Listings'
-import Settings from '../components/Admin/Settings'
 
 const Admin = (): React.ReactElement => {
   const { isAuthenticated, user, getAccessTokenSilently, isLoading } = useAuth0()
@@ -23,6 +22,10 @@ const Admin = (): React.ReactElement => {
   }
 
   useEffect(() => {
+    if (user == null) {
+      return
+    }
+
     const fetchPermissions = async (): Promise<void> => {
       try {
         const token = await getAccessTokenSilently()
@@ -35,7 +38,7 @@ const Admin = (): React.ReactElement => {
     }
 
     void fetchPermissions()
-  }, [])
+  }, [user])
 
   if (isLoading) {
     return (
@@ -71,7 +74,6 @@ const Admin = (): React.ReactElement => {
                                                 <button id={`${desiredView === 'dashboard' ? 'active' : null}`} onClick={() => { setDesiredView('dashboard') }}><FontAwesomeIcon className='inner-icon' icon={faHome} /> Dashboard</button>
                                                 <button id={`${desiredView === 'users' ? 'active' : null}`} onClick={() => { setDesiredView('users') }}><FontAwesomeIcon className='inner-icon' icon={faUser} /> Users</button>
                                                 <button id={`${desiredView === 'listings' ? 'active' : null}`} onClick={() => { setDesiredView('listings') }}><FontAwesomeIcon className='inner-icon' icon={faList} /> Listings</button>
-                                                <button id={`${desiredView === 'settings' ? 'active' : null}`} onClick={() => { setDesiredView('settings') }}><FontAwesomeIcon className='inner-icon' icon={faCog} /> Settings</button>
                                             </div>
                                         </div>
                                     </div>
@@ -83,13 +85,11 @@ const Admin = (): React.ReactElement => {
                                                     {desiredView === 'dashboard' && 'Dashboard'}
                                                     {desiredView === 'users' && 'Users'}
                                                     {desiredView === 'listings' && 'Listings'}
-                                                    {desiredView === 'settings' && 'Settings'}
                                                 </h2>
                                             </div>
                                             {desiredView === 'dashboard' && <Dashboard name={user?.name ?? ''} desiredView={desiredView} setDesiredView={setDesiredView} />}
                                             {desiredView === 'users' && <Users />}
                                             {desiredView === 'listings' && <Listings />}
-                                            {desiredView === 'settings' && <Settings />}
                                         </div>
                                     </div>
                                 </div>
@@ -99,6 +99,11 @@ const Admin = (): React.ReactElement => {
                         <AuthDenied message='You need to be logged in to access this page. If you continue to see this error, please try again later.' permissions={permissions} />
                       </div>
                 }
+                <div className='admin-no-mobile'>
+                    <FontAwesomeIcon icon={faTriangleExclamation} />
+                    <h2>Admin Portal</h2>
+                    <p>Admin Portal is not available on mobile devices. Please use a desktop or laptop to access this feature.</p>
+                </div>
             </header>
         </div>
   )

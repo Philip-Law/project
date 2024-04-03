@@ -55,6 +55,14 @@ const Nav = (): React.ReactElement => {
                     <NavUser />
                 </div>
                 <Search />
+                <div className='action-row'>
+                    {
+                    isAuthenticated
+                      ? <Link to={'/conversations'} className='nav-button'><FontAwesomeIcon icon={faComments}/></Link>
+                      : null
+                    }
+                    <NavPost/>
+                </div>
             </div>
         </div>
     </div>

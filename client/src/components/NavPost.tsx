@@ -1,8 +1,12 @@
 import React from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
+import { useApi } from '../context/APIContext'
+import { useNavigate } from 'react-router-dom'
 
 const NavPost = (): React.ReactElement => {
-  const { isAuthenticated, isLoading, loginWithRedirect, user, getAccessTokenSilently } = useAuth0()
+  const { isAuthenticated, isLoading, loginWithRedirect, user } = useAuth0()
+  const navigate = useNavigate()
+  const { sendRequest } = useApi()
 
   const handleClickPost = (): void => {
     if (!isAuthenticated) {
@@ -19,35 +23,24 @@ const NavPost = (): React.ReactElement => {
   }
 
   const checkUserSetup = async (): Promise<void> => {
-    let token: string
     try {
-      token = await getAccessTokenSilently()
-    } catch (e) {
-      console.log(e)
-      return
-    }
-
-    try {
-      void fetch(`http://localhost:8080/user/${user?.sub}`, {
+      const { status } = await sendRequest({
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        endpoint: `user/${user?.sub}`
       })
-        .then((response) => {
-          if (response.status === 200) {
-            window.location.href = '/postad'
-          } else {
-            window.location.href = '/profile'
-          }
-        })
+
+      if (status === 200) {
+        navigate('/postad')
+      } else {
+        navigate('/profile')
+      }
     } catch (error) {
       console.error('Error fetching user data:', error)
     }
   }
 
   return (
-    <div className='nav-user'>
+    <div className='nav-post'>
       <div className={isLoading ? 'loading nav' : 'nav-button'} onClick={handleClickPost}>{isLoading ? '' : 'Post Ad'}</div>
     </div>
   )

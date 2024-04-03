@@ -29,7 +29,7 @@ const NavUser = (): React.ReactElement => {
     void fetchPermissions()
   }, [])
   return (
-    <div className='nav-post'>
+    <div className='nav-user'>
       {
         isAuthenticated
           ? <span className='user-info'>

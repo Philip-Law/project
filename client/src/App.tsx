@@ -5,9 +5,11 @@ import NotFound from './views/NotFound'
 import { Auth0Provider } from '@auth0/auth0-react'
 import Profile from './views/Profile'
 import Conversations from './views/Conversations'
+import ViewConversation from './views/ViewConversation'
 import PostAd from './views/PostAd'
 import ListingPageWrapper from './components/ListingPageWrapper'
 import Admin from './views/Admin'
+import { ApiProvider } from './context/APIContext'
 
 const App = (): React.ReactElement => {
   const router = createBrowserRouter([
@@ -15,6 +17,7 @@ const App = (): React.ReactElement => {
     { path: '/profile', element: <Profile /> },
     { path: '/postad', element: <PostAd /> },
     { path: '/conversations', element: <Conversations /> },
+    { path: '/viewconversation', element: <ViewConversation /> },
     { path: '/listing/:id', element: <ListingPageWrapper /> },
     { path: 'admin', element: <Admin /> },
     { path: '*', element: <NotFound /> }
@@ -22,18 +25,19 @@ const App = (): React.ReactElement => {
 
   const domain = process.env.REACT_APP_DOMAIN ?? ''
   const clientId = process.env.REACT_APP_CLIENT_ID ?? ''
-
   return (
       <Auth0Provider
           domain={domain}
           clientId={clientId}
           authorizationParams={{
-            redirect_uri: 'http://localhost:3000/profile',
+            redirect_uri: `${window.location.protocol}//${window.location.host}/profile`,
             scope: 'openid profile email read:message',
             audience: process.env.REACT_APP_BACKEND_AUDIENCE
           }}
       >
+        <ApiProvider>
           <RouterProvider router={router} />
+        </ApiProvider>
       </Auth0Provider>
 
   )

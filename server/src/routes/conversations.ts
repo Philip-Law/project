@@ -13,7 +13,7 @@ const postIdSchema = z.coerce.number().int().min(1, 'Post ID must be a positive 
 const toConversationResponse = (conversation: Conversation) => ({
   id: conversation.id,
   postId: conversation.post.id,
-  boyerId: conversation.buyer.id,
+  buyerId: conversation.buyer.id,
   sellerId: conversation.seller.id,
 });
 
@@ -37,5 +37,13 @@ conversationRoutes.get('/post/:postId', checkJwt, requireAuth0User, asyncHandler
   const conversation = await ConversationService.getConversationByPost(postId, req.auth0!!.id);
   res.status(Status.OK).json(toConversationResponse(conversation));
 }));
+
+// Delete a conversation for a post
+conversationRoutes.delete('/post/:postId', checkJwt, requireAuth0User, asyncHandler(async (req, res) => {
+  const postId = postIdSchema.parse(req.params.postId);
+  await ConversationService.deleteConversation(postId, req.auth0!!.id);
+  res.status(Status.OK).send();
+}));
+
 
 export default conversationRoutes;
