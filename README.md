@@ -4,7 +4,7 @@ TMU Connect is a web application that allows students to post advertisements for
 with simplicity in mind, allowing students to quickly post and view advertisements.
 
 ## Running Dependencies
-TMU Connect requires a database and S3 bucket to run before starting the server or client. 
+TMU Connect requires a database, S3 bucket and redis cache to run before starting the server or client. 
 
 ### Install Docker
 **Note: If you already have docker installed, then continue to the next step.**
@@ -13,12 +13,22 @@ TMU Connect requires a database and S3 bucket to run before starting the server 
 - Start the Docker Daemon (or Docker Desktop).
 
 ### Start Docker Containers
-Run the following command in the root directory of the project to start the database and S3 bucket:
+Run the following command in the root directory of the project to start the containers:
 ```bash
 docker-compose up -d
 ```
 The database and S3 bucket will run and automatically create the necessary tables and buckets. No additional setup
 should be necessary.
+
+## Populating Database (Optional)
+Populating the database with sample post data can be beneficial for testing/demo purposes, but is not required.
+
+To populate the database with sample data, you will need to run a utility script found under the `utils` directory.
+Please refer to the README.md file in the `utils` directory for instructions on how to run the script.
+
+Steps for populating the database are found under the **"Populate Database with Users and Posts"** header of the 
+`utils/README.md` file.
+**Note:** Do not ignore the 'preparation' step before running the script.
 
 ## Running Client (Frontend)
 

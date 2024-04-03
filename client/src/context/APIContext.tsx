@@ -51,9 +51,11 @@ export const ApiProvider = (opts: { children: React.ReactNode }): React.ReactEle
 
       return await fetch(`http://localhost:8080/${options?.endpoint}`, init)
         .then(async resp => {
+          const isJson = resp.headers.get('content-type')?.includes('application/json')
+          const data = Boolean(isJson) && resp.status !== 204 ? await resp.json() : null
           return {
             status: resp.status,
-            response: await resp.json() as T
+            response: data as T
           }
         }).catch((err) => {
           console.log(err)

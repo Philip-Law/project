@@ -34,7 +34,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
         console.error(`Conversations not found for user ${user?.sub}`)
         return []
       }
-      return await Promise.all(
+      const conversations = await Promise.all(
         response.map(async (conversation: any) => {
           const currentUserId = user?.sub
           const isBuyer = currentUserId === conversation.buyerId
@@ -55,7 +55,6 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
 
           const userDetails = userResponse.response
           const postDetails = postResponse.response
-          setIsLoading(false)
           return {
             ...conversation,
             senderName: userDetails.firstName + ' ' + userDetails.lastName,
@@ -65,6 +64,8 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
           }
         })
       )
+      setIsLoading(false)
+      return conversations
     } catch (error) {
       console.error('Error fetching conversations', error)
       return []
@@ -73,6 +74,26 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
 
   const handleClick = (conversation: Conversation): void => {
     navigate('/viewconversation', { state: { conversation } })
+  }
+
+  const handleDeleteConversation = async (conversation: Conversation): Promise<void> => {
+    try {
+      const { status } = await sendRequest<Conversation[]>({
+        method: 'DELETE',
+        endpoint: `conversation/post/${conversation.postId}`
+      })
+
+      if (status !== 200 && status !== 204) {
+        console.error('Conversation not deleted', status)
+        return
+      }
+
+      const updatedConversations = conversations.filter(c => c.id !== conversation.id)
+      setConversations(updatedConversations)
+      console.log('Conversation deleted')
+    } catch (error) {
+      console.error('Error deleting conversation', error)
+    }
   }
 
   useEffect(() => {
@@ -138,7 +159,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
                   </div>
                   <div className='conversation-right'>
                     <button onClick={() => { handleClick(conversation) }}>View Messages</button>
-                    <button><FontAwesomeIcon icon={faTrash} /></button>
+                    <button onClick={() => { handleDeleteConversation(conversation).catch(error => { console.error(error) }) }}><FontAwesomeIcon icon={faTrash} /></button>
                   </div>
                 </div>
                   ))
