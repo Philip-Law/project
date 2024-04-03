@@ -81,44 +81,35 @@ const Home = (): React.ReactElement => {
   useEffect(() => {
     const renderPosts = async (): Promise<any> => {
       const posts = await getListings()
-
-      if (posts !== undefined) {
-        try {
-          const newListings = await Promise.all(posts.map(async (post: ListingInfo) => {
-            const img = await getImage(post.id.toString())
-            if (img !== undefined) {
-              return {
-                id: post.id,
-                title: post.title,
-                adType: await convertType(post.adType),
-                imgPaths: img,
-                description: post.description,
-                location: post.location,
-                categories: post.categories,
-                price: parseFloat(post.price),
-                postDate: post.postDate
-              }
-            }
-          }))
-          setListings(newListings)
-        } catch {
-        }
+      try {
+        const newListings = await Promise.all(posts.map(async (post: ListingInfo) => {
+          const img = await getImage(post.id.toString())
+          return {
+            ...post,
+            adType: await convertType(post.adType),
+            imgPaths: img,
+            price: parseFloat(post.price)
+          }
+        }))
+        setListings(newListings)
+      } catch (error) {
+        console.log('Failed to render listings', error)
       }
     }
     void renderPosts()
   }, [filters, p])
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <Nav/>
-        <div className='content'>
-          <Filter setFilters={setFilters}/>
-          <FilterMobile setFilters={setFilters}/>
-          <Listings response={listings}/>
+        <div className="App">
+            <header className="App-header">
+                <Nav/>
+                <div className='content'>
+                  <Filter setFilters={setFilters}/>
+                  <FilterMobile setFilters={setFilters}/>
+                  <Listings response={listings} isProfile={false}/>
+                </div>
+            </header>
         </div>
-      </header>
-    </div>
   )
 }
 

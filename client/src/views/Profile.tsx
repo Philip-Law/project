@@ -95,26 +95,19 @@ const Profile = (): React.ReactElement => {
   useEffect(() => {
     const renderPosts = async (): Promise<any> => {
       const posts = await getUserListings()
-
-      if (posts === undefined) {
-        return
-      }
-
       try {
         const newListings = await Promise.all(posts.map(async (post: ListingInfo) => {
           const img = await getImage(post.id.toString())
-          if (img !== undefined) {
-            return {
-              id: post.id,
-              title: post.title,
-              adType: await convertType(post.adType),
-              imgPaths: img,
-              description: post.description,
-              location: post.location,
-              categories: post.categories,
-              price: parseFloat(post.price),
-              postDate: post.postDate
-            }
+          return {
+            id: post.id,
+            title: post.title,
+            adType: await convertType(post.adType),
+            imgPaths: img,
+            description: post.description,
+            location: post.location,
+            categories: post.categories,
+            price: parseFloat(post.price),
+            postDate: post.postDate
           }
         }))
         setUserListings(newListings)
@@ -171,7 +164,7 @@ const Profile = (): React.ReactElement => {
                 </div>
               </div>
             </div>
-            <Listings response={[]} />
+            <Listings response={[]} isProfile={false} />
           </div>
         </header>
       </div>
@@ -289,7 +282,7 @@ const Profile = (): React.ReactElement => {
               </div>
             </div>
           </div>
-          <Listings response={userListings} />
+          <Listings response={userListings} isProfile={true} />
         </div>
       </header>
     </div>
@@ -321,7 +314,7 @@ export default withAuthenticationRequired(Profile, {
               </div>
             </div>
           </div>
-          <Listings response={[]} />
+          <Listings response={[]} isProfile={false} />
         </div>
       </header>
     </div>
