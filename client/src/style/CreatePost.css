@@ -1,18 +1,3 @@
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-20%);
-    }
-}
-
-@keyframes unbounce {
-    0%, 100% {
-        transform: translateY(0);
-    }
-}
-
 .create-post {
     width: 90vw;
     text-align: left;
@@ -91,10 +76,6 @@
     cursor: pointer;
 }
 
-#imageUpload:hover #uploadArrow {
-    animation-play-state: running;
-}
-
 #arrowWrapper {
     position: absolute;
     left: 50%;
@@ -115,12 +96,6 @@
     width: 5rem;
     height: 5rem;
     margin: 0 auto;
-    animation: bounce 1s infinite;
-    animation-play-state: paused;
-}
-
-#uploadArrow {
-    animation-fill-mode: forwards;
 }
 
 #adImages {
