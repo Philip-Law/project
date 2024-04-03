@@ -34,7 +34,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
         console.error(`Conversations not found for user ${user?.sub}`)
         return []
       }
-      return await Promise.all(
+      const conversations = await Promise.all(
         response.map(async (conversation: any) => {
           const currentUserId = user?.sub
           const isBuyer = currentUserId === conversation.buyerId
@@ -55,7 +55,6 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
 
           const userDetails = userResponse.response
           const postDetails = postResponse.response
-          setIsLoading(false)
           return {
             ...conversation,
             senderName: userDetails.firstName + ' ' + userDetails.lastName,
@@ -65,6 +64,8 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
           }
         })
       )
+      setIsLoading(false)
+      return conversations
     } catch (error) {
       console.error('Error fetching conversations', error)
       return []
