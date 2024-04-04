@@ -28,7 +28,7 @@ const ApiContext = createContext<ApiContextInterface>({
 
 type Methods = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS'
 
-export const API_DOMAIN = process.env.API_DOMAIN ?? 'http://localhost:8080/'
+export const API_DOMAIN = process.env.REACT_APP_API_DOMAIN ?? 'http://localhost:8080/'
 
 export const ApiProvider = (opts: { children: React.ReactNode }): React.ReactElement => {
   const { user, getAccessTokenSilently } = useAuth0()
