@@ -30,6 +30,7 @@ export interface Conversation {
   postPrice: number
 }
 
+// HTML for each individual conversation
 const ViewConversation = (): React.ReactElement => {
   const { user, isLoading } = useAuth0()
   const { sendRequest } = useApi()
