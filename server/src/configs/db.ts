@@ -14,6 +14,11 @@ const AppDataSource = new DataSource({
   entities: [User, Post, Conversation, Message],
   subscribers: [],
   migrations: [],
+  extra: {
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  },
 });
 
 export default AppDataSource;
